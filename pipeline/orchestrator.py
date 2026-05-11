@@ -2,6 +2,7 @@ import time
 from typing import Any
 
 from pipeline import c1_ingesta, c2_parser, c3_chunker, c4_embeddings, c5_retriever, c6_evaluador, c7_agregador
+from pipeline.providers import SUPPORTED_PROVIDERS
 from pipeline.router import clasificar
 
 
@@ -159,7 +160,7 @@ def procesar_ajuste(
     solicitud: str,
     competencia_id: str,
     api_key: str,
-    llm_model: str = "gpt-4o-mini",
+    llm_model: str | None = None,
 ) -> dict[str, Any]:
     t_ajuste = time.time()
     clasificacion = clasificar(solicitud)
@@ -191,6 +192,8 @@ def procesar_ajuste(
         evidencia = pipeline_state["resultados_competencias"][idx].get("evidencia_recuperada", [])
         c6_provider = pipeline_state.get("c6_provider") or pipeline_state.get("provider", "gemini")
         c6_api_key = pipeline_state.get("c6_api_key") or api_key
+        if llm_model is None:
+            llm_model = SUPPORTED_PROVIDERS.get(c6_provider, {}).get("llm_model", "models/gemini-2.5-flash")
         if c6_provider == "openrouter" and not c6_api_key:
             import os as _os
             c6_api_key = _os.getenv("OPENROUTER_API_KEY", "")

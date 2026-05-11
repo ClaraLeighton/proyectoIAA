@@ -163,7 +163,12 @@ def render():
         cid = r["competencia_id"]
         nivel = r["nivel"]
         label = r["nivel_label"]
+        estado_icono = {"pendiente": "", "aprobada": "✅", "rechazada": "❌", "modificada": "✏️"}.get(r.get("estado_final", "pendiente"), "")
         with st.expander(f"{cid} - {r['competencia_nombre']} (Nivel {nivel}: {label})", expanded=True):
+            if estado_icono:
+                hdr_cols = st.columns([6, 1])
+                with hdr_cols[1]:
+                    st.markdown(f"## {estado_icono}")
             col_a, col_b = st.columns([3, 1])
             with col_a:
                 estado = r["estado_revision"]
@@ -198,14 +203,9 @@ def render():
                 st.markdown("**Acciones**")
                 if st.button("Aceptar", key=f"accept_{i}_{cid}"):
                     actualizar_competencia_manual(state, cid, "estado_final", "aprobada")
-                    for tr in reporte["trazabilidad_competencias"]:
-                        if tr["competencia_id"] == cid:
-                            tr["estado_final"] = "aprobada"
-                    st.success(f"{cid} validada.")
                     st.rerun()
                 if st.button("Rechazar", key=f"reject_{i}_{cid}"):
                     actualizar_competencia_manual(state, cid, "estado_final", "rechazada")
-                    st.warning(f"{cid} marcada como rechazada.")
                     st.rerun()
 
             st.markdown("---")
