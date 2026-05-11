@@ -1,0 +1,72 @@
+{
+  "pre_professional_practice": {
+    "abstract": {
+      "peso": 0.10,
+      "subsecciones": {
+        "abstract": 0.10
+      }
+    },
+    "introduccion": {
+      "peso": 0.1,
+      "subsecciones": {
+        "department_area_description": 0.05,
+        "company_description": 0.05
+      }
+    },
+    "trabajo_realizado": {
+      "peso": 0.30,
+      "subsecciones": {
+        "most_challenge_activity": 0.20,
+        "general_activities": 0.10
+      }
+    },
+    "analisis": {
+      "peso": 0.30,
+      "subsecciones": {
+        "company_analysis": 0.10,
+        "work_analysis": 0.20
+      }
+    },
+    "reflexion_personal": {
+      "peso": 0.20,
+      "subsecciones": {
+        "personal_reflection": 0.20
+      }
+    }
+  },
+  "professional_practice": {
+    "abstract": {
+      "peso": 0.10,
+      "subsecciones": {
+        "abstract": 0.10
+      }
+    },
+    "introduction": {
+      "peso": 0.1,
+      "subsecciones": {
+        "department_area_description": 0.05,
+        "company_description": 0.05
+      }
+    },
+    "trabajo_realizado": {
+      "peso": 0.30,
+      "subsecciones": {
+        "most_challenge_activity": 0.20,
+        "general_activities": 0.10
+      }
+    },
+    "analysis": {
+      "peso": 0.30,
+      "subsecciones": {
+        "company_analysis": 0.10,
+        "work_analysis": 0.20
+      }
+    },
+    "personal_reflection": {
+      "peso": 0.20,
+      "subsecciones": {
+        "personal_reflection": 0.20
+      }
+    }
+  }
+}
