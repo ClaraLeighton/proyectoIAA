@@ -29,12 +29,13 @@ def render():
         if st.button("Ejecutar Pipeline", type="primary", use_container_width=True):
             progress_bar = st.progress(0)
 
-            stages_order = ["C1", "C2", "C3", "C4", "C5", "C6", "C7"]
+            stages_order = ["C1", "C2", "C3", "C41", "C42", "C5", "C6", "C7"]
             stage_labels = {
                 "C1": "Ingesta del PDF + matriz + rúbrica",
                 "C2": "Parseo de secciones del documento",
                 "C3": "Fragmentación (chunking) del texto",
-                "C4": "Generación de embeddings",
+                "C41": "Embeddings (una sola llamada API)",
+                "C42": "Similitud coseno por competencia",
                 "C5": "Recuperación de evidencia",
                 "C6": "Evaluación LLM",
                 "C7": "Generación de reporte",
@@ -50,7 +51,7 @@ def render():
                     boxes[s] = st.status(f"**{s}**: {stage_labels[s]}", state="running")
 
             last_stage = None
-            loop_stages = {"C4", "C5", "C6"}
+            loop_stages = {"C42", "C5", "C6"}
 
             def output_callback(stage, raw_output):
                 if stage == "C6" and raw_output and c6_output_placeholder:
@@ -72,7 +73,7 @@ def render():
                 m = re.search(r'\((\d+)/(\d+)\)', message)
                 if m:
                     i, n = int(m.group(1)), int(m.group(2))
-                    if stage == "C4":
+                    if stage == "C42":
                         p = 0.35 + (i - 1) / n * 0.10
                     elif stage == "C5":
                         p = 0.45 + (i - 1) / n * 0.25
@@ -84,7 +85,7 @@ def render():
                     else:
                         p = 0.0
                 else:
-                    p = {"C1": 0.05, "C2": 0.15, "C3": 0.25, "C4": 0.35}.get(stage, 0.0)
+                    p = {"C1": 0.05, "C2": 0.15, "C3": 0.25, "C41": 0.35}.get(stage, 0.0)
                 progress_bar.progress(min(p, 1.0))
 
             try:

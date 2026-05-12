@@ -49,22 +49,37 @@ def get_embeddings(
         from google import genai
         client = genai.Client(api_key=api_key)
         m = model or SUPPORTED_PROVIDERS["gemini"]["embedding_model"]
-        all_embeddings = []
+        all_embeddings: list[list[float]] = []
         for i in range(0, len(texts), 20):
             batch = texts[i:i+20]
             result = client.models.embed_content(model=m, contents=batch)
-            all_embeddings.extend([e.values for e in result.embeddings])
+            batch_embeds = [e.values for e in result.embeddings]
+            # Pad if API returns fewer embeddings than requested
+            if len(batch_embeds) < len(batch):
+                import logging
+                logging.warning(
+                    f"Embedding API devolvió {len(batch_embeds)}/{len(batch)} embeddings en lote {i//20+1}"
+                )
+                batch_embeds.extend([[]] * (len(batch) - len(batch_embeds)))
+            all_embeddings.extend(batch_embeds)
         return all_embeddings
 
     elif provider == "openai":
         from openai import OpenAI
         client = OpenAI(api_key=api_key)
         m = model or SUPPORTED_PROVIDERS["openai"]["embedding_model"]
-        all_embeddings = []
+        all_embeddings: list[list[float]] = []
         for i in range(0, len(texts), 20):
             batch = texts[i:i+20]
             resp = client.embeddings.create(input=batch, model=m)
-            all_embeddings.extend([d.embedding for d in resp.data])
+            batch_embeds = [d.embedding for d in resp.data]
+            if len(batch_embeds) < len(batch):
+                import logging
+                logging.warning(
+                    f"Embedding API devolvió {len(batch_embeds)}/{len(batch)} embeddings en lote {i//20+1}"
+                )
+                batch_embeds.extend([[]] * (len(batch) - len(batch_embeds)))
+            all_embeddings.extend(batch_embeds)
         return all_embeddings
 
     elif provider == "openrouter":

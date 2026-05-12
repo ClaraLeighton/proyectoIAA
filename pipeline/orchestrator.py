@@ -1,7 +1,7 @@
 import time
 from typing import Any
 
-from pipeline import c1_ingesta, c2_parser, c3_chunker, c4_embeddings, c5_retriever, c6_evaluador, c7_agregador
+from pipeline import c1_ingesta, c2_parser, c3_chunker, c41_embeddings, c42_similitud_cos, c5_retriever, c6_evaluador, c7_agregador
 from pipeline.providers import SUPPORTED_PROVIDERS
 from pipeline.router import clasificar
 
@@ -48,42 +48,47 @@ def ejecutar_pipeline_completo(
         secciones_informe=c2["secciones_informe"],
         reporte_c2=c2["reporte"],
     )
-    t_c4 = time.time()
-    if progress_callback: progress_callback("C4", "Generación de embeddings (+1 llamada API)")
-    chunk_embeddings, comp_embeddings_c4, model_c4 = c4_embeddings.compute_embeddings(
+    if progress_callback: progress_callback("C41", "Generación de embeddings (+1 llamada API)")
+    c41 = c41_embeddings.run(
         chunks=c3["chunks"],
         competencias_activas=c1["competencias_activas"],
         api_key=api_key,
         model=embedding_model,
         provider=provider,
     )
-    provider_c4 = provider
+    chunk_embeddings = c41["chunk_embeddings"]
+    comp_embeddings = c41["comp_embeddings"]
+    embeddings_data = c41["embeddings_data"]
+    model_c4 = c41["reporte"]["modelo_embeddings"]
+    provider_c4 = c41["reporte"]["proveedor"]
+
     levels, _ = c6_evaluador._extract_levels(c1["config_activa"])
     resultados_competencias = []
     c5_results = []
     c6_results = []
     similarities_by_comp = {}
-    trazabilidad_c4 = []
+    trazabilidad_c42 = []
     n_comps = len(c1["competencias_activas"])
     c6_prov = c6_provider or provider
     for i, comp in enumerate(c1["competencias_activas"]):
         cid = comp["competencia_id"]
 
-        if progress_callback: progress_callback("C4", f"Similitud coseno ({i+1}/{n_comps}) — {cid}")
-        comp_vec = comp_embeddings_c4.get(cid, [])
-        sims = c4_embeddings.compute_similarity(
-            competencia=comp,
-            chunks=c3["chunks"],
-            chunk_embeddings=chunk_embeddings,
+        if progress_callback: progress_callback("C42", f"Similitud coseno ({i+1}/{n_comps}) — {cid}")
+        comp_vec = comp_embeddings[cid]
+        sims = c42_similitud_cos.compute_similarity(
             comp_embedding=comp_vec,
+            chunk_embeddings=chunk_embeddings,
+            chunks=c3["chunks"],
         )
         similarities_by_comp[cid] = sims
-        trazabilidad_c4.append({
+        max_sim = round(max(sims.values()), 4) if sims else 0.0
+        trazabilidad_c42.append({
             "competencia_id": cid,
-            "embedding_generado": len(comp_vec) > 0,
+            "embedding_generado": True,
             "similitud_calculada": True,
             "chunks_comparados": len(c3["chunks"]),
-            "estado_capa_4": "OK" if len(comp_vec) > 0 else "ERROR",
+            "max_similitud": max_sim,
+            "estado_capa_42": "OK" if max_sim > 0 else "SIN_COINCIDENCIA",
         })
 
         if progress_callback: progress_callback("C5", f"Recuperación de evidencia ({i+1}/{n_comps}) — {cid}")
@@ -111,26 +116,26 @@ def ejecutar_pipeline_completo(
         if output_callback:
             output_callback("C6", c6_res.get("raw_response", ""))
         if progress_callback: progress_callback("C6", f"Evaluación LLM ({i+1}/{n_comps}) — {cid} ✓")
-    embeddings_data = c4_embeddings.build_embeddings_data(c3["chunks"], chunk_embeddings)
+
     c4 = {
         "embeddings_data": embeddings_data,
-        "comp_embeddings": comp_embeddings_c4,
+        "comp_embeddings": comp_embeddings,
         "similarities_by_comp": similarities_by_comp,
         "reporte": {
-            "trazabilidad_competencias": trazabilidad_c4,
+            "trazabilidad_competencias": trazabilidad_c42,
             "modelo_embeddings": model_c4,
             "proveedor": provider_c4,
-            "tiempo_c4_s": round(time.time() - t_c4, 3),
+            "tiempo_c4_s": c41["reporte"]["tiempo_c4_s"],
         },
     }
     if c3["reporte"]:
         c4["reporte"].update(c3["reporte"])
     for i, c6 in enumerate(c6_results):
-        c5 = c5_results[i] if i < len(c5_results) else None
+        c5 = c5_results[i]
         resultados_competencias.append({
             **c6,
-            "evidencia_recuperada": c5["evidencia_recuperada"] if c5 else [],
-            "r_similitud": c5["reporte"].get("R_similitud_promedio", 0.0) if c5 else 0.0,
+            "evidencia_recuperada": c5["evidencia_recuperada"],
+            "r_similitud": c5["reporte"]["R_similitud_promedio"],
         })
     reportes_por_competencia = [r.get("reporte", {}) for r in c6_results]
     c7 = c7_agregador.run(
