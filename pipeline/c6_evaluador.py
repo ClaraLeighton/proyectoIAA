@@ -7,7 +7,7 @@ from pipeline.providers import evaluate_llm, SUPPORTED_PROVIDERS
 
 DEFAULT_LEVELS = {
     0: "Sin evidencia",
-    1: "Mención superficial o teórica",
+    1: "No demuestra aplicación",
     2: "Uso concreto con resultados descritos",
     3: "Dominio técnico con reflexión e impacto",
 }
