@@ -154,10 +154,13 @@ def render():
     no_aprobadas = sum(1 for r in preview if r["nivel"] < 2)
     requieren_revision = sum(1 for r in preview if r["nivel"] >= 2 and r["estado_revision"] == "requiere_revision")
 
-    col1, col2, col3 = st.columns(3)
-    col1.metric("APROBADAS", f"{aprobadas} / {total}")
-    col2.metric("NO APROBADAS", f"{no_aprobadas} / {total}")
-    col3.metric("Requieren Revisión", f"{requieren_revision} / {aprobadas}" if aprobadas > 0 else "0")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("APROBADAS", f"{aprobadas} / {total}")
+        if requieren_revision > 0:
+            st.caption(f"⚠️ Requieren revisión: {requieren_revision} de {aprobadas}")
+    with col2:
+        st.metric("NO APROBADAS", f"{no_aprobadas} / {total}")
 
     st.divider()
     st.subheader("Revisión por Competencia (HITL)")
@@ -174,13 +177,13 @@ def render():
                     st.markdown(f"## {estado_icono}")
             col_a, col_b = st.columns([3, 1])
             with col_a:
-                estado = r["estado_revision"]
-                if estado == "respaldo_suficiente":
-                    st.success(f"Estado: Respaldo Suficiente")
-                elif estado == "requiere_revision":
-                    st.warning(f"Estado: Requiere Revisión")
+                nivel = r["nivel"]
+                if nivel >= 2:
+                    st.success(f"Estado: Respaldo Suficiente ({nivel})")
+                elif nivel == 1:
+                    st.error(f"Estado: Respaldo Insuficiente ({nivel})")
                 else:
-                    st.error(f"Estado: Sin Evidencia")
+                    st.error(f"Estado: Sin Evidencia ({nivel})")
 
                 st.markdown(f"**Nivel Asignado:** {nivel} - {label}")
                 st.markdown(f"**Justificación:** {r['justificacion']}")
