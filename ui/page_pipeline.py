@@ -119,6 +119,7 @@ def render():
                     umbral=umbral,
                     progress_callback=progress_callback,
                     output_callback=output_callback,
+                    tipo_documento=st.session_state.get("tipo_documento"),
                 )
                 progress_bar.progress(1.0)
                 for s in stages_order:
@@ -145,16 +146,18 @@ def render():
     reporte = c7["reporte_procesamiento"]
     c1 = state["c1"]
 
-    st.success(f"Documento detectado: **{c1['tipo_documento']}**")
+    tipo_label = c1["tipo_documento"].replace("_", " ").title().replace("Pre ", "Pre-").replace("Practica", "Práctica")
+    st.caption(f"**Tipo:** {tipo_label}")
 
     total = len(preview)
-    aprobadas = sum(1 for r in preview if r["estado_revision"] == "respaldo_suficiente")
-    pendientes = sum(1 for r in preview if r["estado_revision"] in ("requiere_revision", "sin_evidencia"))
+    aprobadas = sum(1 for r in preview if r["nivel"] >= 2)
+    no_aprobadas = sum(1 for r in preview if r["nivel"] < 2)
+    requieren_revision = sum(1 for r in preview if r["nivel"] >= 2 and r["estado_revision"] == "requiere_revision")
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("Total Competencias", total)
-    col2.metric("Respaldo Suficiente", aprobadas, delta_color="off")
-    col3.metric("Requiere Revisión", pendientes, delta_color="inverse")
+    col1.metric("APROBADAS", f"{aprobadas} / {total}")
+    col2.metric("NO APROBADAS", f"{no_aprobadas} / {total}")
+    col3.metric("Requieren Revisión", f"{requieren_revision} / {aprobadas}" if aprobadas > 0 else "0")
 
     st.divider()
     st.subheader("Revisión por Competencia (HITL)")

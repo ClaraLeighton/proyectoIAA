@@ -23,6 +23,7 @@ def ejecutar_pipeline_completo(
     umbral: float = 0.65,
     progress_callback: Any = None,
     output_callback: Any = None,
+    tipo_documento: str | None = None,
 ) -> dict[str, Any]:
     t_inicio = time.time()
     estado = {"historial_ajustes": [], "contador_ajustes": 0}
@@ -33,6 +34,7 @@ def ejecutar_pipeline_completo(
         json_bytes=json_bytes,
         csv_path=None if csv_bytes else csv_path,
         json_path=None if json_bytes else json_path,
+        tipo_documento=tipo_documento,
     )
     if progress_callback: progress_callback("C2", "Parseo de secciones del documento")
     c2 = c2_parser.run(

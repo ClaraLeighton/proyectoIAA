@@ -195,6 +195,7 @@ def run(
     json_bytes: bytes | None = None,
     csv_path: str | None = None,
     json_path: str | None = None,
+    tipo_documento: str | None = None,
 ) -> dict[str, Any]:
     t0 = time.time()
     errors: list[str] = []
@@ -206,7 +207,8 @@ def run(
         errors.append("El PDF tiene muy poco texto extraíble (posiblemente escaneado).")
 
     rubrica = _load_rubric(json_bytes, json_path)
-    tipo_documento = _detect_document_type(texto, rubrica)
+    if tipo_documento is None:
+        tipo_documento = _detect_document_type(texto, rubrica)
     config_activa = rubrica.get(tipo_documento, {})
 
     df_raw = _load_competency_matrix(csv_bytes, csv_path)
