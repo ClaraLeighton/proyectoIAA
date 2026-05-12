@@ -75,6 +75,9 @@ def main():
         if st.button("Resultados", use_container_width=True):
             st.session_state["page"] = "resultados"
             st.rerun()
+        if st.button("Configuración", use_container_width=True):
+            st.session_state["page"] = "admin"
+            st.rerun()
 
         st.markdown("---")
         st.markdown("**Pipeline C1-C7 + HITL**")
@@ -91,6 +94,9 @@ def main():
     elif page == "resultados":
         from ui.page_resultados import render as render_resultados
         render_resultados()
+    elif page == "admin":
+        from ui.page_admin import render as render_admin
+        render_admin()
 
 
 if __name__ == "__main__":

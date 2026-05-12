@@ -17,7 +17,7 @@ def render():
         with col1:
             top_k = st.number_input("Top-K fragmentos", min_value=1, max_value=20, value=5)
         with col2:
-            umbral = st.slider("Umbral de similitud", min_value=0.0, max_value=1.0, value=0.45, step=0.05)
+            umbral = st.slider("Umbral de similitud", min_value=0.0, max_value=1.0, value=0.65, step=0.05)
 
         st.caption(f"Embeddings: **{st.session_state.get('provider', 'gemini').title()}**  |  C6: **{st.session_state.get('c6_provider', 'gemini').title()}**")
 
