@@ -1,3 +1,4 @@
+import base64
 import fitz
 import io
 from typing import Any
@@ -105,6 +106,7 @@ def evaluate_llm(
                 config=gtypes.GenerateContentConfig(
                     system_instruction=system_prompt,
                     temperature=0.1,
+                    max_output_tokens=4096,
                 ),
             )
             return resp.text or ""
@@ -116,12 +118,32 @@ def evaluate_llm(
         client = OpenAI(api_key=api_key)
         m = model or SUPPORTED_PROVIDERS["openai"]["llm_model"]
         try:
+            messages = [
+                {"role": "system", "content": system_prompt},
+            ]
+            if evidence_texts:
+                content_parts = [{"type": "text", "text": user_prompt}]
+                for ev_text in evidence_texts:
+                    pdf_bytes = _text_to_pdf_bytes(ev_text)
+                    try:
+                        file = client.files.create(
+                            file=("evidence.pdf", pdf_bytes, "application/pdf"),
+                            purpose="assistants",
+                        )
+                        content_parts.append({
+                            "type": "file",
+                            "file": {"file_id": file.id, "filename": "evidence.pdf"},
+                        })
+                    except Exception:
+                        content_parts.append({"type": "text", "text": ev_text})
+                messages.append({"role": "user", "content": content_parts})
+            else:
+                messages.append({"role": "user", "content": user_prompt})
+
             resp = client.chat.completions.create(
                 model=m,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
+                messages=messages,
+                max_tokens=4096,
                 temperature=0.1,
             )
             return resp.choices[0].message.content or ""
@@ -133,13 +155,36 @@ def evaluate_llm(
         m = model or SUPPORTED_PROVIDERS["openrouter"]["llm_model"]
         client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
         try:
+            messages = [
+                {"role": "system", "content": system_prompt},
+            ]
+            if evidence_texts:
+                content_parts = [{"type": "text", "text": user_prompt}]
+                for ev_text in evidence_texts:
+                    pdf_bytes = _text_to_pdf_bytes(ev_text)
+                    try:
+                        content_parts.append({
+                            "type": "file",
+                            "file": {
+                                "file_data": f"data:application/pdf;base64,{base64.b64encode(pdf_bytes).decode()}",
+                                "filename": "evidence.pdf",
+                            },
+                        })
+                    except Exception:
+                        content_parts.append({"type": "text", "text": ev_text})
+                messages.append({"role": "user", "content": content_parts})
+            else:
+                messages.append({"role": "user", "content": user_prompt})
+
             resp = client.chat.completions.create(
                 model=m,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
+                messages=messages,
+                max_tokens=4096,
                 temperature=0.1,
+                extra_headers={
+                    "HTTP-Referer": "https://github.com/opencode-ia",
+                    "X-Title": "Evaluador IAA",
+                },
             )
             return resp.choices[0].message.content or ""
         except Exception as e:

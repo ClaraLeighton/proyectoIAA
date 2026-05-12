@@ -163,15 +163,61 @@ Reglas:
     return prompt
 
 
+def _fix_json(raw: str) -> str | None:
+    """Attempt to fix common LLM JSON formatting errors (mismatched/extra/missing closing brackets)."""
+    stack = []
+    chars = list(raw)
+    for i, ch in enumerate(chars):
+        if ch in "{[":
+            stack.append((ch, i))
+        elif ch == "}":
+            if stack and stack[-1][0] == "{":
+                stack.pop()
+            elif stack and stack[-1][0] == "[":
+                chars[i] = "]"
+                stack.pop()
+            else:
+                chars[i] = ""
+        elif ch == "]":
+            if stack and stack[-1][0] == "[":
+                stack.pop()
+            elif stack and stack[-1][0] == "{":
+                chars[i] = "}"
+                stack.pop()
+            else:
+                chars[i] = ""
+
+    fixed = "".join(chars)
+    ob = fixed.count("{")
+    cb = fixed.count("}")
+    obr = fixed.count("[")
+    cbr = fixed.count("]")
+    if cb < ob:
+        fixed += "}" * (ob - cb)
+    if cbr < obr:
+        fixed += "]" * (obr - cbr)
+    return fixed
+
+
 def _parse_batch_response(raw: str, num_levels: int) -> list[dict] | None:
     raw_clean = raw.strip()
     json_match = re.search(r"\{.*\}", raw_clean, re.DOTALL)
     if not json_match:
         return None
+
+    data = None
     try:
         data = json.loads(json_match.group())
     except json.JSONDecodeError:
-        return None
+        fixed = _fix_json(json_match.group())
+        if fixed:
+            try:
+                data = json.loads(fixed)
+            except json.JSONDecodeError:
+                return None
+        else:
+            return None
+
     evaluaciones = data.get("evaluaciones")
     if not isinstance(evaluaciones, list) or not evaluaciones:
         return None
@@ -240,7 +286,7 @@ def run_batch(
     sys_prompt = _build_system_prompt()
 
     resultados = []
-    use_pdf_effective = (provider == "gemini" and use_pdf)
+    use_pdf_effective = use_pdf
     for comp, evidencia in competencias_con_evidencia:
         t0 = time.time()
         error_msg = ""
