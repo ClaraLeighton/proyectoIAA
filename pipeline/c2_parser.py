@@ -116,27 +116,19 @@ def _build_relevance_map(
         weights[sec] = w
     if not weights:
         return {}
-    sorted_weights = sorted(set(weights.values()), reverse=True)
-    if len(sorted_weights) < 3:
-        for s in detected_sections:
-            weights.get(s, 0.1)
-        primary_set = {s for s in detected_sections if weights.get(s, 0.1) >= 0.2}
-        contextual_set = {s for s in detected_sections if weights.get(s, 0.1) < 0.1}
-    else:
-        n = len(sorted_weights)
-        t1 = sorted_weights[n // 3]
-        t2 = sorted_weights[2 * n // 3]
-        primary_set = {s for s in detected_sections if weights.get(s, 0.1) >= t1}
-        contextual_set = {s for s in detected_sections if weights.get(s, 0.1) < t2}
+    unique = sorted(set(weights.values()), reverse=True)
+    max_w = unique[0]
+    min_w = unique[-1]
 
     mapa: dict[str, dict[str, str]] = {}
     for comp in competencias:
         cid = comp["competencia_id"]
         mapa[cid] = {}
         for sec in detected_sections:
-            if sec in primary_set:
+            w = weights.get(sec, 0.1)
+            if w == max_w:
                 mapa[cid][sec] = "principal"
-            elif sec in contextual_set:
+            elif w == min_w:
                 mapa[cid][sec] = "contextual"
             else:
                 mapa[cid][sec] = "secundaria"
@@ -147,7 +139,7 @@ def _get_section_weight(sec_name: str, config_activa: dict) -> float:
     for section_name, section_data in config_activa.items():
         subsecciones = section_data.get("subsecciones") or section_data.get("subsections", {})
         if sec_name in subsecciones:
-            return float(subsecciones[sec_name])
+            return _get_weight(section_data)
         if sec_name == section_name:
             return _get_weight(section_data)
     return 0.1
