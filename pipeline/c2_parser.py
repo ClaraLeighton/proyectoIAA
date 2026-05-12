@@ -3,7 +3,7 @@ import time
 from typing import Any
 
 SECTION_PATTERN = re.compile(
-    r"^(?P<number>\d+(?:\.\d+)*)\s+(?P<title>[A-Z][A-Za-z0-9/&,\-: ]{2,80})$"
+    r"^(?:(?P<number>\d+(?:\.\d+)*)\s+)?(?P<title>[A-Z][A-Za-z0-9/&,\-: ]{2,80})$"
 )
 
 
@@ -41,7 +41,7 @@ def _key_to_titles(key: str) -> list[str]:
     return [c for c in candidates if not (c in seen or seen.add(c))]
 
 
-def _detect_headings(text: str) -> list[tuple[int, str]]:
+def _detect_headings(text: str) -> list[tuple[int, str, str]]:
     headings = []
     lines = text.split("\n")
     cum_pos = 0
@@ -49,9 +49,10 @@ def _detect_headings(text: str) -> list[tuple[int, str]]:
         stripped = line.strip()
         if is_section_heading(stripped):
             match = SECTION_PATTERN.match(stripped)
+            number = match.group("number") or ""
             title = match.group("title").strip()
             actual_pos = cum_pos + (len(line) - len(line.lstrip()))
-            headings.append((actual_pos, title))
+            headings.append((actual_pos, number, title))
         cum_pos += len(line) + 1
     return headings
 
@@ -65,11 +66,11 @@ def _build_title_to_key_map(expected_keys: list[str]) -> dict[str, str]:
 
 
 def _map_headings_to_keys(
-    headings: list[tuple[int, str]],
+    headings: list[tuple[int, str, str]],
     title_to_key: dict[str, str],
 ) -> list[tuple[int, str]]:
     matched = []
-    for pos, title in headings:
+    for pos, number, title in headings:
         key = title_to_key.get(title.lower().strip())
         if key is not None:
             matched.append((pos, key))
@@ -163,6 +164,27 @@ def _get_expected_keys(config_activa: dict) -> list[str]:
     return keys
 
 
+def _find_text_matches(
+    text: str,
+    expected_keys: list[str],
+    matched_keys: set[str],
+) -> list[tuple[int, str]]:
+    unmatched = [k for k in expected_keys if k not in matched_keys]
+    if not unmatched:
+        return []
+    matches = []
+    for key in unmatched:
+        titles = _key_to_titles(key)
+        best = None
+        for title in titles:
+            for m in re.finditer(re.escape(title), text, re.IGNORECASE):
+                if best is None or m.start() < best:
+                    best = m.start()
+        if best is not None:
+            matches.append((best, key))
+    return matches
+
+
 def run(
     texto_completo: str,
     competencias_activas: list[dict],
@@ -175,6 +197,20 @@ def run(
     title_to_key = _build_title_to_key_map(expected_keys)
     headings = _detect_headings(texto_completo)
     matched = _map_headings_to_keys(headings, title_to_key)
+
+    matched_keys = {k for _, k in matched}
+    text_matches = _find_text_matches(texto_completo, expected_keys, matched_keys)
+    matched.extend(text_matches)
+    matched.sort(key=lambda x: x[0])
+
+    seen = set()
+    deduped = []
+    for pos, key in matched:
+        if key not in seen:
+            seen.add(key)
+            deduped.append((pos, key))
+    matched = deduped
+
     secciones = _extract_sections(texto_completo, matched)
 
     detected = list(secciones.keys())
@@ -186,7 +222,7 @@ def run(
         secciones_con_pesos[sec_name] = {"texto": sec_text, "peso": peso}
     reporte = {
         "secciones_detectadas": detected,
-        "heading_titles": [(h[1], h[0]) for h in headings],
+        "heading_titles": [(h[2], h[0]) for h in headings],
         "secciones_ausentes": ausentes,
         "total_secciones": len(detected),
         "tiempo_c2_s": round(time.time() - t0, 3),

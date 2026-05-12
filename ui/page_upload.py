@@ -75,29 +75,38 @@ def render():
     st.divider()
 
     df_default, rubrica_default = _cargar_defaults()
-    usar_propios = st.checkbox("Ingresar mis propios archivos", value=False)
+    st.markdown("### Archivos de configuración")
 
-    if usar_propios:
-        csv_file = st.file_uploader("Matriz de Competencias (CSV)", type=["csv"], key="csv_upload")
-        json_file = st.file_uploader("Rúbrica Estructural (JSON)", type=["json"], key="json_upload")
-    else:
-        st.info("Se están usando los archivos predeterminados de matriz y rúbrica.")
-        with st.expander("Ver contenido de archivos predeterminados"):
-            col_csv, col_json = st.columns(2)
-            with col_csv:
-                st.markdown("**Matriz de Competencias**")
-                if df_default is not None:
-                    st.dataframe(df_default, use_container_width=True)
-                else:
-                    st.info("No se encontró el archivo predeterminado.")
-            with col_json:
-                st.markdown("**Rúbrica Estructural**")
-                if rubrica_default is not None:
-                    st.json(rubrica_default)
-                else:
-                    st.info("No se encontró el archivo predeterminado.")
-        csv_file = None
-        json_file = None
+    with st.expander("Ver archivos predeterminados del sistema", expanded=False):
+        col_csv, col_json = st.columns(2)
+        with col_csv:
+            st.markdown("**Matriz de Competencias**")
+            if df_default is not None:
+                st.dataframe(df_default, use_container_width=True)
+            else:
+                st.info("No se encontró el archivo predeterminado.")
+        with col_json:
+            st.markdown("**Rúbrica Estructural**")
+            if rubrica_default is not None:
+                st.json(rubrica_default)
+            else:
+                st.info("No se encontró el archivo predeterminado.")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        csv_file = st.file_uploader(
+            "Matriz de Competencias (CSV) — opcional",
+            type=["csv"],
+            key="csv_upload",
+            help="Si no se sube, se usará la matriz predeterminada del sistema.",
+        )
+    with col2:
+        json_file = st.file_uploader(
+            "Rúbrica Estructural (JSON) — opcional",
+            type=["json"],
+            key="json_upload",
+            help="Si no se sube, se usará la rúbrica predeterminada del sistema.",
+        )
 
     if st.button("Cargar y Validar", type="primary", use_container_width=True):
         if not pdf_file:
@@ -108,31 +117,24 @@ def render():
         st.session_state["pdf_name"] = pdf_file.name
         st.session_state["tipo_documento"] = tipo_doc
 
-        if usar_propios:
-            if not csv_file:
-                st.error("Debes subir una matriz de competencias (CSV).")
+        if csv_file:
+            valido, msg = _validar_csv(csv_file.getvalue())
+            if not valido:
+                st.error(f"Matriz inválida: {msg}")
                 return
-            if not json_file:
-                st.error("Debes subir una rúbrica estructural (JSON).")
-                return
-
-            valido_csv, msg_csv = _validar_csv(csv_file.getvalue())
-            if not valido_csv:
-                st.error(f"Matriz inválida: {msg_csv}")
-                return
-
-            valido_json, msg_json = _validar_json(json_file.getvalue())
-            if not valido_json:
-                st.error(f"Rúbrica inválida: {msg_json}")
-                return
-
             st.session_state["csv_bytes"] = csv_file.getvalue()
-            st.session_state["json_bytes"] = json_file.getvalue()
         else:
             st.session_state["csv_bytes"] = None
+
+        if json_file:
+            valido, msg = _validar_json(json_file.getvalue())
+            if not valido:
+                st.error(f"Rúbrica inválida: {msg}")
+                return
+            st.session_state["json_bytes"] = json_file.getvalue()
+        else:
             st.session_state["json_bytes"] = None
 
-        st.session_state["usar_propios"] = usar_propios
         st.session_state["pipeline_iniciado"] = False
         st.session_state["page"] = "pipeline"
         st.rerun()

@@ -5,6 +5,7 @@ from pipeline.c2_parser import (
     _build_title_to_key_map,
     _map_headings_to_keys,
     _extract_sections,
+    _find_text_matches,
     _build_relevance_map,
 )
 
@@ -18,6 +19,8 @@ def test_is_section_heading_valid():
     assert is_section_heading("3.1 Company Analysis")
     assert is_section_heading("3.1 Company/Area Description")
     assert is_section_heading("10.11 Final Section Title")
+    assert is_section_heading("Abstract")
+    assert is_section_heading("Personal Reflection")
 
 
 def test_is_section_heading_invalid():
@@ -67,10 +70,10 @@ def test_detect_headings():
     )
     headings = _detect_headings(text)
     assert len(headings) == 3
-    titles = [h[1] for h in headings]
-    assert "Introduction" in titles
-    assert "Company Description" in titles
-    assert "General Activities" in titles
+    numbers = [h[1] for h in headings]
+    titles = [h[2] for h in headings]
+    assert titles == ["Introduction", "Company Description", "General Activities"]
+    assert numbers == ["1", "1.1", "2.1"]
 
 
 def test_title_to_key_map():
@@ -81,7 +84,7 @@ def test_title_to_key_map():
 
 def test_map_headings_to_keys():
     title_to_key = _build_title_to_key_map(["general_activities", "company_analysis"])
-    headings = [(10, "General Activities"), (50, "Company Analysis")]
+    headings = [(10, "1", "General Activities"), (50, "2", "Company Analysis")]
     matched = _map_headings_to_keys(headings, title_to_key)
     assert matched == [(10, "general_activities"), (50, "company_analysis")]
 
@@ -104,48 +107,66 @@ def test_extract_sections():
     assert len(sections["company_analysis"]) > 20
 
 
-def test_integration():
+def test_integration_title_only():
     text = (
-        "Some preliminary text before the first section.\n"
-        "1 Introduction\n"
-        "This is the introduction section with enough content to be considered "
-        "a valid section in the parser module for testing purposes.\n"
-        "1.1 Company Description\n"
-        "The company is a leading organization in the industry with many "
-        "employees working across different departments and locations.\n"
-        "2 Analysis\n"
-        "This is the analysis chapter where we discuss various aspects of "
-        "the work performed during the internship program.\n"
-        "2.1 General Activities\n"
-        "These are the general activities performed during the internship.\n"
-        "2.2 Most Challenging Activity\n"
-        "The most challenging activity was implementing the new system.\n"
+        "Abstract\n"
+        "This is the abstract section with enough content to be valid.\n"
+        "Personal Reflection\n"
+        "My personal reflection on the internship experience and what I "
+        "learned during my time at the company organization.\n"
     )
     config = {
-        "introduction": {
+        "abstract": {
             "peso": 0.1,
             "subsecciones": {
-                "company_description": 0.05,
+                "abstract": 0.1,
             },
         },
-        "analysis": {
-            "peso": 0.3,
+        "reflexion_personal": {
+            "peso": 0.2,
             "subsecciones": {
-                "general_activities": 0.1,
-                "most_challenge_activity": 0.2,
+                "personal_reflection": 0.2,
             },
         },
     }
 
-    expected_keys = ["company_description", "general_activities", "most_challenge_activity"]
+    expected_keys = ["abstract", "personal_reflection"]
     title_to_key = _build_title_to_key_map(expected_keys)
     headings = _detect_headings(text)
     matched = _map_headings_to_keys(headings, title_to_key)
     sections = _extract_sections(text, matched)
 
-    assert "company_description" in sections
-    assert "general_activities" in sections
-    assert "most_challenge_activity" in sections
+    assert "abstract" in sections
+    assert "personal_reflection" in sections
+
+
+def test_find_text_matches_fallback():
+    text = (
+        "Abstract\n"
+        "This is the abstract with some content.\n"
+        "LoRa Communication\n"
+        "The company analysis revealed important insights about the\n"
+        "organization. My work analysis focused on the technical aspects.\n"
+        "After careful consideration, my personal reflection on this\n"
+        "internship experience has been very positive overall.\n"
+    )
+    expected_keys = ["abstract", "company_analysis", "work_analysis", "personal_reflection"]
+    title_to_key = _build_title_to_key_map(expected_keys)
+    headings = _detect_headings(text)
+    matched = _map_headings_to_keys(headings, title_to_key)
+    matched_keys = {k for _, k in matched}
+
+    assert "abstract" in matched_keys
+    assert "company_analysis" not in matched_keys
+    assert "work_analysis" not in matched_keys
+    assert "personal_reflection" not in matched_keys
+
+    text_matches = _find_text_matches(text, expected_keys, matched_keys)
+    text_keys = {k for _, k in text_matches}
+
+    assert "company_analysis" in text_keys
+    assert "work_analysis" in text_keys
+    assert "personal_reflection" in text_keys
 
 
 def test_relevance_map_dynamic():

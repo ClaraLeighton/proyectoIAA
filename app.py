@@ -19,7 +19,7 @@ def main():
 
     for k in ["provider", "api_key", "c6_provider"]:
         if k not in st.session_state:
-            st.session_state[k] = "" if k == "api_key" else "gemini"
+            st.session_state[k] = "" if k == "api_key" else ("openrouter" if k == "c6_provider" else "gemini")
     if "page" not in st.session_state:
         st.session_state["page"] = "upload"
 
