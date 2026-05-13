@@ -4,7 +4,9 @@ import io
 import zipfile
 import uuid
 import streamlit as st
-import pandas as pd
+
+from pipeline.cohorts import create_cohort, get_cohort
+from ui.components import page_hero, section_card, section_card_end
 
 
 def _cargar_tipos_rubrica() -> list[str]:
@@ -23,43 +25,6 @@ def _formatear_tipo(tipo: str) -> str:
     return nombre
 
 
-def _cargar_defaults() -> tuple[pd.DataFrame | None, dict | None]:
-    df = None
-    rubrica = None
-    ruta_csv = "config/matriz.csv"
-    ruta_json = "config/rubrica.json"
-    if os.path.exists(ruta_csv):
-        df = pd.read_csv(ruta_csv, header=None)
-    if os.path.exists(ruta_json):
-        with open(ruta_json) as f:
-            rubrica = json.load(f)
-    return df, rubrica
-
-
-def _validar_csv(contenido: bytes) -> tuple[bool, str]:
-    try:
-        df = pd.read_csv(io.BytesIO(contenido), header=None)
-        if df.shape[1] < 2:
-            return False, "El CSV debe tener al menos 2 columnas."
-        if df.shape[0] < 2:
-            return False, "El CSV debe tener al menos 2 filas."
-        return True, ""
-    except Exception as e:
-        return False, f"Error al leer el CSV: {e}"
-
-
-def _validar_json(contenido: bytes) -> tuple[bool, str]:
-    try:
-        data = json.loads(contenido.decode("utf-8"))
-        if not isinstance(data, dict):
-            return False, "El JSON debe ser un diccionario (objeto)."
-        if len(data) < 1:
-            return False, "El JSON debe tener al menos una clave (tipo de documento)."
-        return True, ""
-    except Exception as e:
-        return False, f"Error al leer el JSON: {e}"
-
-
 def _extraer_pdfs_de_zip(zip_bytes: bytes) -> list[tuple[bytes, str]]:
     pdfs = []
     with zipfile.ZipFile(io.BytesIO(zip_bytes)) as z:
@@ -69,134 +34,125 @@ def _extraer_pdfs_de_zip(zip_bytes: bytes) -> list[tuple[bytes, str]]:
     return pdfs
 
 
-def _extraer_config_de_zip(zip_bytes: bytes) -> tuple[bytes | None, bytes | None]:
-    csv_bytes = None
-    json_bytes = None
-    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as z:
-        for name in z.namelist():
-            lower = name.lower()
-            if lower.endswith(".csv") and csv_bytes is None:
-                csv_bytes = z.read(name)
-            elif lower.endswith(".json") and json_bytes is None:
-                json_bytes = z.read(name)
-    return csv_bytes, json_bytes
+def _build_pending_report(pdf_bytes: bytes, pdf_name: str, tipo_doc: str) -> dict:
+    return {
+        "report_id": str(uuid.uuid4()),
+        "pdf_bytes": pdf_bytes,
+        "pdf_name": pdf_name,
+        "tipo_documento": tipo_doc,
+        "csv_bytes": None,
+        "json_bytes": None,
+        "top_k": 5,
+        "umbral": 0.65,
+        "use_pdf": False,
+    }
 
 
 def render():
-    st.title("Carga de Informes")
-    st.markdown("Sube uno o más informes para evaluar.")
+    st.session_state.pop("upload_submitted", None)
+    new_cohort = st.session_state.get("new_cohort", True)
+    cohort_id = st.session_state.get("selected_cohort_id")
+    existing_cohort = get_cohort(cohort_id) if cohort_id else None
 
+    if new_cohort:
+        title = "Nueva Cohorte"
+        subtitle = "Completa los datos y sube los archivos para crear una nueva cohorte de evaluación."
+    elif existing_cohort:
+        title = f"Agregar a {existing_cohort['name']}"
+        subtitle = "Los informes se agregarán a la cohorte existente."
+    else:
+        title = "Cargar Informes"
+        subtitle = ""
+
+    target = "cohort_config" if existing_cohort else "cohorts"
+    page_hero(title, subtitle=subtitle, back_target=target)
+
+    section_card("Crear Cohortes")
+
+    st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Información General</div></div>', unsafe_allow_html=True)
+
+    if new_cohort:
+        cohort_name = st.text_input(
+            "Nombre de la cohorte",
+            placeholder="Ej: Práctica Pre-Profesional 2026",
+            key="cohort_name_input",
+        )
+    else:
+        cohort_name = existing_cohort["name"] if existing_cohort else ""
+
+    st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Archivos</div></div>', unsafe_allow_html=True)
     uploaded_files = st.file_uploader(
-        "Selecciona PDFs individuales o un archivo ZIP",
+        "Arrastra tus archivos PDF o ZIP aquí",
         type=["pdf", "zip"],
         accept_multiple_files=True,
         key="pdf_upload",
     )
+    st.markdown('<p style="font-size:13px;color:var(--uandes-text-muted);margin-top:-6px">Máximo 200MB por archivo. Se aceptan PDF y ZIP con múltiples PDFs.</p>', unsafe_allow_html=True)
 
+    st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Tipo de Práctica</div></div>', unsafe_allow_html=True)
     tipos_disponibles = _cargar_tipos_rubrica()
     tipo_doc = st.radio(
-        "Tipo de Práctica",
+        "Selecciona el tipo de práctica para estos informes",
         options=tipos_disponibles,
         format_func=_formatear_tipo,
         horizontal=True,
+        key="tipo_doc_radio",
     )
 
-    st.divider()
-    st.markdown("### Archivos de configuración")
+    if not new_cohort and existing_cohort:
+        if tipo_doc != existing_cohort["tipo_documento"]:
+            st.warning(
+                f"Esta cohorte es de tipo '{_formatear_tipo(existing_cohort['tipo_documento'])}'. "
+                f"Los informes deben ser del mismo tipo."
+            )
 
-    df_default, rubrica_default = _cargar_defaults()
-    with st.expander("Ver archivos predeterminados del sistema", expanded=False):
-        col_csv, col_json = st.columns(2)
-        with col_csv:
-            st.markdown("**Matriz de Competencias**")
-            if df_default is not None:
-                st.dataframe(df_default, width="stretch")
-            else:
-                st.info("No se encontró el archivo predeterminado.")
-        with col_json:
-            st.markdown("**Rúbrica Estructural**")
-            if rubrica_default is not None:
-                st.json(rubrica_default)
-            else:
-                st.info("No se encontró el archivo predeterminado.")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        csv_file = st.file_uploader(
-            "Matriz de Competencias (CSV) — opcional",
-            type=["csv"],
-            key="csv_upload",
-            help="Si no se sube, se usará la matriz predeterminada del sistema.",
-        )
-    with col2:
-        json_file = st.file_uploader(
-            "Rúbrica Estructural (JSON) — opcional",
-            type=["json"],
-            key="json_upload",
-            help="Si no se sube, se usará la rúbrica predeterminada del sistema.",
-        )
-
-    if st.button("Cargar y Validar", type="primary", width="stretch"):
-        if not uploaded_files:
-            st.error("Debes subir al menos un archivo PDF o ZIP.")
-            return
-
-        csv_config = csv_file.getvalue() if csv_file else None
-        json_config = json_file.getvalue() if json_file else None
-
-        if csv_config:
-            valido, msg = _validar_csv(csv_config)
-            if not valido:
-                st.error(f"Matriz inválida: {msg}")
-                return
-
-        if json_config:
-            valido, msg = _validar_json(json_config)
-            if not valido:
-                st.error(f"Rúbrica inválida: {msg}")
-                return
-
-        pending_reports = []
+    if uploaded_files:
+        pending = []
         for f in uploaded_files:
             if f.name.lower().endswith(".zip"):
                 pdfs = _extraer_pdfs_de_zip(f.getvalue())
-                if not pdfs:
-                    st.warning(f"El archivo ZIP '{f.name}' no contiene PDFs.")
-                    continue
                 for pdf_bytes, pdf_name in pdfs:
-                    report_id = str(uuid.uuid4())
-                    config_bytes_csv, config_bytes_json = _extraer_config_de_zip(f.getvalue())
-                    pending_reports.append({
-                        "report_id": report_id,
-                        "pdf_bytes": pdf_bytes,
-                        "pdf_name": pdf_name,
-                        "tipo_documento": tipo_doc,
-                        "csv_bytes": config_bytes_csv or csv_config,
-                        "json_bytes": config_bytes_json or json_config,
-                        "top_k": 5,
-                        "umbral": 0.65,
-                        "use_pdf": False,
-                    })
+                    pending.append(_build_pending_report(pdf_bytes, pdf_name, tipo_doc))
             elif f.name.lower().endswith(".pdf"):
-                report_id = str(uuid.uuid4())
-                pending_reports.append({
-                    "report_id": report_id,
-                    "pdf_bytes": f.getvalue(),
-                    "pdf_name": f.name,
-                    "tipo_documento": tipo_doc,
-                    "csv_bytes": csv_config,
-                    "json_bytes": json_config,
-                    "top_k": 5,
-                    "umbral": 0.65,
-                    "use_pdf": False,
-                })
+                pending.append(_build_pending_report(f.getvalue(), f.name, tipo_doc))
 
-        if not pending_reports:
-            st.error("No se encontraron archivos PDF válidos.")
-            return
+        if pending:
+            st.markdown('<hr class="uandes-divider">', unsafe_allow_html=True)
 
-        st.success(f"{len(pending_reports)} informe(s) cargado(s) correctamente.")
-        st.session_state["pending_reports"] = pending_reports
-        st.session_state["pipeline_iniciado"] = False
-        st.session_state["page"] = "pipeline"
-        st.rerun()
+            chip_html = '<div class="uandes-file-chips">'
+            for r in pending:
+                chip_html += f'<span class="uandes-file-chip">📄 {r["pdf_name"]}</span>'
+            chip_html += "</div>"
+            st.markdown(
+                f'<p style="font-size:15px;font-weight:600;margin-bottom:8px">{len(pending)} archivo{"s" if len(pending) != 1 else ""} cargado{"s" if len(pending) != 1 else ""}</p>',
+                unsafe_allow_html=True,
+            )
+            st.markdown(chip_html, unsafe_allow_html=True)
+
+            st.markdown('<div style="margin-top:20px"></div>', unsafe_allow_html=True)
+            st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Acción Final</div></div>', unsafe_allow_html=True)
+            col_p1, col_p2 = st.columns([1, 1])
+            with col_p1:
+                if st.button("Cancelar", type="secondary", use_container_width=True):
+                    target = "cohort_config" if existing_cohort else "cohorts"
+                    st.session_state["page"] = target
+                    st.rerun()
+            with col_p2:
+                btn_label = "Crear Cohorte" if new_cohort else "Agregar a cohorte"
+                if st.button(btn_label, type="primary", use_container_width=True):
+                    if new_cohort and not cohort_name.strip():
+                        st.error("Debes ingresar un nombre para la cohorte.")
+                    else:
+                        if new_cohort:
+                            cohort = create_cohort(cohort_name.strip(), tipo_doc)
+                            st.session_state["selected_cohort_id"] = cohort["cohort_id"]
+                            st.session_state["current_cohort_id"] = cohort["cohort_id"]
+                        else:
+                            st.session_state["current_cohort_id"] = cohort_id
+
+                        st.session_state["pending_reports"] = pending
+                        st.session_state["pipeline_iniciado"] = False
+                        st.session_state["page"] = "processing"
+                        st.rerun()
+
+    section_card_end()

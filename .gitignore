@@ -2,3 +2,13 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# generated/local data
+data/reports/
+evaluaciones.db
+*.db
+
+# secrets
+.env
+.env.*
+*.key

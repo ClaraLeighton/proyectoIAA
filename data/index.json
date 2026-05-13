@@ -1,0 +1,129 @@
+[
+  {
+    "report_id": "4f73859a-bde4-4a8e-858c-8bca633c01f3",
+    "pdf_name": "Informe pre-practica.pdf",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-13T15:14:19.112437",
+    "total_competencias": 11,
+    "avg_jpc": 0.6316,
+    "avg_confianza": 0.6836,
+    "nivel_promedio": 0.6,
+    "nivel_distribucion": {
+      "0": 6,
+      "2": 2,
+      "1": 3
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "c8fc51e5-c686-414b-a073-51111210a025",
+    "pdf_name": "Report Pre Professional Practice.pdf",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-13T15:14:22.700852",
+    "total_competencias": 11,
+    "avg_jpc": 0.6419,
+    "avg_confianza": 0.4636,
+    "nivel_promedio": 0.5,
+    "nivel_distribucion": {
+      "0": 6,
+      "1": 5
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "86f06909-13c8-4ef9-816b-243e769ec420",
+    "pdf_name": "Informe pre-practica.pdf",
+    "tipo_documento": "",
+    "timestamp": "2026-05-13T16:06:01.566690",
+    "total_competencias": 0,
+    "avg_jpc": 0.0,
+    "avg_confianza": 0.0,
+    "nivel_promedio": 0.0,
+    "nivel_distribucion": {},
+    "estado": "error",
+    "error": "No module named 'typing_inspection'"
+  },
+  {
+    "report_id": "86a719d9-76b2-402b-9067-3b6c1a16b925",
+    "pdf_name": "Informe_PrePractica_Castelli.pdf",
+    "tipo_documento": "",
+    "timestamp": "2026-05-13T16:13:58.580940",
+    "total_competencias": 0,
+    "avg_jpc": 0.0,
+    "avg_confianza": 0.0,
+    "nivel_promedio": 0.0,
+    "nivel_distribucion": {},
+    "estado": "error",
+    "error": "No module named 'httpx'"
+  },
+  {
+    "report_id": "a9f0badb-1336-4958-9637-b3212df2705f",
+    "pdf_name": "Informe pre-practica.pdf",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-13T16:40:30.232659",
+    "total_competencias": 11,
+    "avg_jpc": 0.5779,
+    "avg_confianza": 0.47,
+    "nivel_promedio": 0.1,
+    "nivel_distribucion": {
+      "0": 10,
+      "1": 1
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "77d10fce-9c7c-460a-8db0-e876a9ea1cab",
+    "pdf_name": "Report Pre Professional Practice.pdf",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-13T16:40:59.835104",
+    "total_competencias": 11,
+    "avg_jpc": 0.6335,
+    "avg_confianza": 0.5655,
+    "nivel_promedio": 1.0,
+    "nivel_distribucion": {
+      "2": 2,
+      "0": 4,
+      "3": 1,
+      "1": 4
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "5903f683-efe1-4ec2-b937-249b8153826d",
+    "pdf_name": "Informe_PrePractica_Castelli.pdf",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-13T16:42:40.327530",
+    "total_competencias": 11,
+    "avg_jpc": 0.6466,
+    "avg_confianza": 0.5309,
+    "nivel_promedio": 0.5,
+    "nivel_distribucion": {
+      "0": 6,
+      "1": 4,
+      "2": 1
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "dcb8651a-6833-4a98-b849-a6ee25acc66c",
+    "pdf_name": "Informe de Práctica Pre-Profesional844802025_12_23_20_43_44.pdf",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-13T17:54:24.516339",
+    "total_competencias": 11,
+    "avg_jpc": 0.6569,
+    "avg_confianza": 0.57,
+    "nivel_promedio": 0.6,
+    "nivel_distribucion": {
+      "0": 7,
+      "2": 3,
+      "1": 1
+    },
+    "estado": "completado",
+    "error": null
+  }
+]
