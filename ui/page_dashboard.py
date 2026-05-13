@@ -4,14 +4,8 @@ from pipeline.persistence import load_index, get_global_stats, load_report, dele
 from pipeline.reportes_export import exportar_excel_multi_hoja
 
 
-def _colored_bar(pct: float, max_width: int = 200) -> str:
-    color = "#22c55e" if pct >= 0.7 else "#eab308" if pct >= 0.4 else "#ef4444"
-    fill = int(pct * max_width)
-    return f"""
-    <div style="width:{max_width}px;height:18px;background:#e5e7eb;border-radius:4px;overflow:hidden;">
-      <div style="width:{fill}px;height:100%;background:{color};border-radius:4px;"></div>
-    </div>
-    """
+LEVEL_COLORS = {"0": "#ef4444", "1": "#f97316", "2": "#2e9cdb", "3": "#22c55e"}
+LEVEL_LABELS = {"0": "Sin evidencia", "1": "No aplica", "2": "Uso concreto", "3": "Dominio técnico"}
 
 
 def _nivel_color(nivel: float) -> str:
@@ -20,6 +14,27 @@ def _nivel_color(nivel: float) -> str:
     elif nivel >= 1.5:
         return "#eab308"
     return "#ef4444"
+
+
+def _render_level_bar(nivel_dist: dict[str, int], total: int) -> str:
+    if total == 0:
+        return "<i>sin datos</i>"
+    segments = []
+    for lvl in ["0", "1", "2", "3"]:
+        count = nivel_dist.get(lvl, 0)
+        pct = count / total * 100
+        color = LEVEL_COLORS[lvl]
+        if count > 0:
+            segments.append(
+                f'<div style="display:inline-block;width:{pct:.1f}%;height:24px;'
+                f'background:{color};text-align:center;line-height:24px;'
+                f'font-size:12px;font-weight:bold;color:white;'
+                f'min-width:24px" title="Nivel {lvl}: {count} ({pct:.0f}%)">{count}</div>'
+            )
+    joined = "".join(segments)
+    return (
+        f'<div style="display:flex;width:100%;border-radius:6px;overflow:hidden;">{joined}</div>'
+    )
 
 
 def render():
@@ -44,7 +59,26 @@ def render():
     col_a, col_b, col_c = st.columns(3)
     col_a.metric("Avg Confianza", f"{stats.get('avg_confianza_global', 0):.2%}")
     col_b.metric("Avg Nivel", stats.get("avg_nivel_global", 1))
-    col_c.metric("Total Competencias", sum(e.get("total_competencias", 0) for e in index))
+    col_c.metric("Total Competencias", stats.get("total_competencias_global", 0))
+
+    st.divider()
+    st.subheader("Distribución Global de Niveles")
+
+    nivel_dist = stats.get("nivel_distribucion_global", {})
+    total_comps = stats.get("total_competencias_global", 0)
+
+    bar_html = _render_level_bar(nivel_dist, total_comps)
+    st.html(
+        f'<div style="margin:8px 0 4px 0">{bar_html}</div>'
+    )
+    legend_html = " ".join(
+        f'<span style="color:{LEVEL_COLORS[lvl]};font-weight:bold">■</span> '
+        f'N{lvl} {nivel_dist.get(lvl,0)} ({nivel_dist.get(lvl,0)/total_comps*100:.0f}%)'
+        for lvl in ["0", "1", "2", "3"]
+    )
+    st.html(
+        f'<div style="font-size:14px;color:#555;display:flex;gap:24px;flex-wrap:wrap;">{legend_html}</div>'
+    )
 
     st.divider()
     st.subheader("Reportes Procesados")
@@ -54,40 +88,43 @@ def render():
         pct = entry.get("avg_jpc", 0)
         nivel = entry.get("nivel_promedio", 0)
         estado = entry.get("estado", "desconocido")
-        error = entry.get("error")
         rows.append({
             "report_id": entry["report_id"],
             "Informe": entry.get("pdf_name", entry["report_id"][:8]),
             "Tipo": entry.get("tipo_documento", "").replace("_", " "),
             "Fecha": entry.get("timestamp", "")[:19],
             "Comp.": entry.get("total_competencias", 0),
-            "JPC": f"{pct:.0%}",
-            "JPC_bar": _colored_bar(pct),
-            "Nivel": f"{nivel:.1f}",
-            "Nivel_color": f'<span style="color:{_nivel_color(nivel)};font-weight:bold">{nivel:.1f}</span>',
-            "Confianza": f"{entry.get('avg_confianza', 0):.0%}",
+            "JPC": pct,
+            "Nivel": nivel,
+            "Confianza": entry.get("avg_confianza", 0),
             "Estado": ("✅" if estado == "completado" else "❌") + f" {estado}",
-            "_error": error or "",
         })
 
     df = pd.DataFrame(rows)
     if not df.empty:
-        display_cols = ["Informe", "Tipo", "Fecha", "Comp.", "JPC", "JPC_bar", "Nivel_color", "Confianza", "Estado"]
-        col_map = {
-            "JPC_bar": "JPC (bar)",
-            "Nivel_color": "Nivel",
-        }
-        st.html(
-            "<style>"
-            "td:has(> div) { padding: 2px 8px !important; }"
-            ".stHtml { overflow-x: auto; }"
-            "</style>"
-        )
         st.dataframe(
-            df[display_cols].rename(columns=col_map),
+            df.drop(columns=["report_id"]),
             column_config={
-                "JPC (bar)": st.column_config.TextColumn("JPC (bar)"),
-                "Nivel": st.column_config.TextColumn("Nivel"),
+                "JPC": st.column_config.ProgressColumn(
+                    "JPC",
+                    format=".0%",
+                    width="medium",
+                    min_value=0,
+                    max_value=1,
+                ),
+                "Nivel": st.column_config.NumberColumn(
+                    "Nivel",
+                    format="%.1f",
+                    width="small",
+                ),
+                "Confianza": st.column_config.ProgressColumn(
+                    "Confianza",
+                    format=".0%",
+                    width="medium",
+                    min_value=0,
+                    max_value=1,
+                ),
+                "Comp.": st.column_config.NumberColumn("Comp.", width="small"),
             },
             width="stretch",
             hide_index=True,

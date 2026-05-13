@@ -53,7 +53,6 @@ def _mostrar_competencias(report):
                 st.success(f"Nivel {nivel}: {label}")
             else:
                 st.error(f"Nivel {nivel}: {label}")
-
             st.markdown(f"**Justificación:** {r['justificacion']}")
             st.markdown(f"**Secciones Fuente:** {', '.join(r['secciones_fuente'])}")
             if r["citas"]:
@@ -87,7 +86,7 @@ def _mostrar_competencias(report):
 
 
 def render():
-    st.title("Resultados de Evaluación")
+    st.title("Historial de Reportes")
 
     index = load_index()
     selected_id = st.session_state.get("selected_report_id")
@@ -103,10 +102,8 @@ def render():
                     st.session_state["page"] = "admin"
                     st.rerun()
             with col2:
-                if st.button("Volver al Dashboard", width="stretch"):
-                    if "selected_report_id" in st.session_state:
-                        del st.session_state["selected_report_id"]
-                    st.session_state["page"] = "dashboard"
+                if st.button("← Volver al listado", width="stretch"):
+                    st.session_state.pop("selected_report_id", None)
                     st.rerun()
             return
         else:
@@ -115,15 +112,46 @@ def render():
 
     if not index:
         st.info("No hay informes procesados. Ve a 'Cargar Archivos' para comenzar.")
+        if st.button("Ir a Carga de Archivos", width="stretch"):
+            st.session_state["page"] = "upload"
+            st.rerun()
         return
 
-    st.markdown("### Selecciona un informe para ver detalles")
-    for entry in sorted(index, key=lambda e: e.get("timestamp", ""), reverse=True):
+    st.markdown(f"**{len(index)}** reporte(s) guardados en disco. Selecciona uno para ver sus resultados.")
+
+    search = st.text_input("🔍 Buscar por nombre de archivo:", placeholder="Filtrar reportes...")
+    filtered = index
+    if search:
+        q = search.lower()
+        filtered = [e for e in index if q in e.get("pdf_name", "").lower() or q in e.get("report_id", "").lower()]
+
+    cols = st.columns([1, 2, 1, 1, 1])
+    cols[0].markdown("**Estado**")
+    cols[1].markdown("**Informe**")
+    cols[2].markdown("**Tipo**")
+    cols[3].markdown("**Nivel**")
+    cols[4].markdown("**Acción**")
+
+    for entry in sorted(filtered, key=lambda e: e.get("timestamp", ""), reverse=True):
         rid = entry["report_id"]
         pname = entry.get("pdf_name", rid[:8])
-        tipo = entry.get("tipo_documento", "").replace("_", " ")
+        tipo = entry.get("tipo_documento", "").replace("_", " ").title()
         nivel = entry.get("nivel_promedio", 0)
-        estado = "✅" if entry.get("estado") == "completado" else "❌"
-        if st.button(f"{estado} {pname} — {tipo} (nivel avg: {nivel})", key=f"sel_{rid}", width="stretch"):
-            st.session_state["selected_report_id"] = rid
-            st.rerun()
+        fecha = entry.get("timestamp", "")[:19]
+        estado = entry.get("estado", "desconocido")
+
+        icono = "✅" if estado == "completado" else "❌"
+        st_cols = st.columns([1, 2, 1, 1, 1])
+        with st_cols[0]:
+            st.markdown(f"{icono}")
+        with st_cols[1]:
+            st.markdown(f"**{pname}**  ")
+            st.caption(fecha)
+        with st_cols[2]:
+            st.markdown(tipo)
+        with st_cols[3]:
+            st.markdown(f"{nivel:.1f}")
+        with st_cols[4]:
+            if st.button("Ver", key=f"sel_{rid}", width="stretch"):
+                st.session_state["selected_report_id"] = rid
+                st.rerun()

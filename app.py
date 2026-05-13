@@ -80,19 +80,25 @@ def main():
                 st.text_input("OpenRouter API Key:", key="openrouter_key_input")
 
         st.markdown("---")
-        if st.button("Cargar Archivos", width="stretch"):
+        st.markdown("### Navegación")
+        if st.button("📁 Cargar Archivos", width="stretch"):
             st.session_state["page"] = "upload"
             st.rerun()
-        if st.button("Pipeline", width="stretch"):
+        if st.button("⚙️ Pipeline", width="stretch"):
             st.session_state["page"] = "pipeline"
             st.rerun()
-        if st.button("Dashboard", width="stretch"):
+        if st.button("📊 Dashboard", width="stretch"):
             st.session_state["page"] = "dashboard"
             st.rerun()
-        if st.button("Resultados", width="stretch"):
+
+        st.markdown("---")
+        st.markdown("### Historial")
+        saved = st.session_state.get("report_count", 0)
+        hist_label = f"📂 Ver Reportes Anteriores ({saved})" if saved else "📂 Ver Reportes Anteriores"
+        if st.button(hist_label, width="stretch"):
             st.session_state["page"] = "resultados"
             st.rerun()
-        if st.button("Configuración", width="stretch"):
+        if st.button("🔧 Configuración", width="stretch"):
             st.session_state["page"] = "admin"
             st.rerun()
 

@@ -97,6 +97,13 @@ def get_global_stats() -> dict[str, Any]:
     jpc_vals = [e.get("avg_jpc", 0) for e in completados]
     conf_vals = [e.get("avg_confianza", 0) for e in completados]
     nivel_vals = [e.get("nivel_promedio", 0) for e in completados]
+    nivel_dist_global = {}
+    total_comps = 0
+    for e in completados:
+        nd = e.get("nivel_distribucion", {})
+        for lvl, count in nd.items():
+            nivel_dist_global[lvl] = nivel_dist_global.get(lvl, 0) + count
+            total_comps += count
     return {
         "total_reports": total,
         "completados": len(completados),
@@ -104,4 +111,6 @@ def get_global_stats() -> dict[str, Any]:
         "avg_jpc_global": round(sum(jpc_vals) / len(jpc_vals), 4) if jpc_vals else 0.0,
         "avg_confianza_global": round(sum(conf_vals) / len(conf_vals), 4) if conf_vals else 0.0,
         "avg_nivel_global": round(sum(nivel_vals) / len(nivel_vals), 1) if nivel_vals else 0.0,
+        "nivel_distribucion_global": nivel_dist_global,
+        "total_competencias_global": total_comps,
     }

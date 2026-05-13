@@ -41,6 +41,10 @@ class ReportResult:
         preview = self.vista_preliminar
         trazabilidad = self.reporte_procesamiento.get("trazabilidad_competencias", [])
         jpc_values = [t.get("JPC", 0) for t in trazabilidad if t.get("JPC_aplicable")]
+        nivel_dist = {}
+        for r in preview:
+            lvl = r.get("nivel", 0)
+            nivel_dist[str(lvl)] = nivel_dist.get(str(lvl), 0) + 1
         return {
             "report_id": self.report_id,
             "pdf_name": self.pdf_name,
@@ -54,6 +58,7 @@ class ReportResult:
             "nivel_promedio": round(
                 sum(r.get("nivel", 0) for r in preview) / len(preview), 1
             ) if preview else 0.0,
+            "nivel_distribucion": nivel_dist,
             "estado": self.estado,
             "error": self.error,
         }
