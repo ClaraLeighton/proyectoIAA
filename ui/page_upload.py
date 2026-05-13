@@ -1,6 +1,8 @@
 import json
 import os
 import io
+import zipfile
+import uuid
 import streamlit as st
 import pandas as pd
 
@@ -58,11 +60,38 @@ def _validar_json(contenido: bytes) -> tuple[bool, str]:
         return False, f"Error al leer el JSON: {e}"
 
 
+def _extraer_pdfs_de_zip(zip_bytes: bytes) -> list[tuple[bytes, str]]:
+    pdfs = []
+    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as z:
+        for name in z.namelist():
+            if name.lower().endswith(".pdf"):
+                pdfs.append((z.read(name), os.path.basename(name)))
+    return pdfs
+
+
+def _extraer_config_de_zip(zip_bytes: bytes) -> tuple[bytes | None, bytes | None]:
+    csv_bytes = None
+    json_bytes = None
+    with zipfile.ZipFile(io.BytesIO(zip_bytes)) as z:
+        for name in z.namelist():
+            lower = name.lower()
+            if lower.endswith(".csv") and csv_bytes is None:
+                csv_bytes = z.read(name)
+            elif lower.endswith(".json") and json_bytes is None:
+                json_bytes = z.read(name)
+    return csv_bytes, json_bytes
+
+
 def render():
     st.title("Carga de Informes")
-    st.markdown("Sube los archivos necesarios para comenzar la evaluación.")
+    st.markdown("Sube uno o más informes para evaluar.")
 
-    pdf_file = st.file_uploader("Informe en PDF", type=["pdf"], key="pdf_upload")
+    uploaded_files = st.file_uploader(
+        "Selecciona PDFs individuales o un archivo ZIP",
+        type=["pdf", "zip"],
+        accept_multiple_files=True,
+        key="pdf_upload",
+    )
 
     tipos_disponibles = _cargar_tipos_rubrica()
     tipo_doc = st.radio(
@@ -73,16 +102,15 @@ def render():
     )
 
     st.divider()
-
-    df_default, rubrica_default = _cargar_defaults()
     st.markdown("### Archivos de configuración")
 
+    df_default, rubrica_default = _cargar_defaults()
     with st.expander("Ver archivos predeterminados del sistema", expanded=False):
         col_csv, col_json = st.columns(2)
         with col_csv:
             st.markdown("**Matriz de Competencias**")
             if df_default is not None:
-                st.dataframe(df_default, use_container_width=True)
+                st.dataframe(df_default, width="stretch")
             else:
                 st.info("No se encontró el archivo predeterminado.")
         with col_json:
@@ -108,33 +136,67 @@ def render():
             help="Si no se sube, se usará la rúbrica predeterminada del sistema.",
         )
 
-    if st.button("Cargar y Validar", type="primary", use_container_width=True):
-        if not pdf_file:
-            st.error("Debes subir un archivo PDF.")
+    if st.button("Cargar y Validar", type="primary", width="stretch"):
+        if not uploaded_files:
+            st.error("Debes subir al menos un archivo PDF o ZIP.")
             return
 
-        st.session_state["pdf_bytes"] = pdf_file.getvalue()
-        st.session_state["pdf_name"] = pdf_file.name
-        st.session_state["tipo_documento"] = tipo_doc
+        csv_config = csv_file.getvalue() if csv_file else None
+        json_config = json_file.getvalue() if json_file else None
 
-        if csv_file:
-            valido, msg = _validar_csv(csv_file.getvalue())
+        if csv_config:
+            valido, msg = _validar_csv(csv_config)
             if not valido:
                 st.error(f"Matriz inválida: {msg}")
                 return
-            st.session_state["csv_bytes"] = csv_file.getvalue()
-        else:
-            st.session_state["csv_bytes"] = None
 
-        if json_file:
-            valido, msg = _validar_json(json_file.getvalue())
+        if json_config:
+            valido, msg = _validar_json(json_config)
             if not valido:
                 st.error(f"Rúbrica inválida: {msg}")
                 return
-            st.session_state["json_bytes"] = json_file.getvalue()
-        else:
-            st.session_state["json_bytes"] = None
 
+        pending_reports = []
+        for f in uploaded_files:
+            if f.name.lower().endswith(".zip"):
+                pdfs = _extraer_pdfs_de_zip(f.getvalue())
+                if not pdfs:
+                    st.warning(f"El archivo ZIP '{f.name}' no contiene PDFs.")
+                    continue
+                for pdf_bytes, pdf_name in pdfs:
+                    report_id = str(uuid.uuid4())
+                    config_bytes_csv, config_bytes_json = _extraer_config_de_zip(f.getvalue())
+                    pending_reports.append({
+                        "report_id": report_id,
+                        "pdf_bytes": pdf_bytes,
+                        "pdf_name": pdf_name,
+                        "tipo_documento": tipo_doc,
+                        "csv_bytes": config_bytes_csv or csv_config,
+                        "json_bytes": config_bytes_json or json_config,
+                        "top_k": 5,
+                        "umbral": 0.65,
+                        "use_pdf": False,
+                    })
+            elif f.name.lower().endswith(".pdf"):
+                report_id = str(uuid.uuid4())
+                pending_reports.append({
+                    "report_id": report_id,
+                    "pdf_bytes": f.getvalue(),
+                    "pdf_name": f.name,
+                    "tipo_documento": tipo_doc,
+                    "csv_bytes": csv_config,
+                    "json_bytes": json_config,
+                    "top_k": 5,
+                    "umbral": 0.65,
+                    "use_pdf": False,
+                })
+
+        if not pending_reports:
+            st.error("No se encontraron archivos PDF válidos.")
+            return
+
+        st.success(f"{len(pending_reports)} informe(s) cargado(s) correctamente.")
+        st.session_state["pending_reports"] = pending_reports
         st.session_state["pipeline_iniciado"] = False
         st.session_state["page"] = "pipeline"
         st.rerun()

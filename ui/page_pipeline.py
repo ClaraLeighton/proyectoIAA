@@ -1,262 +1,138 @@
 import os
-import re
+import threading
 import streamlit as st
-from pipeline.orchestrator import ejecutar_pipeline_completo, procesar_ajuste, actualizar_competencia_manual
+from pipeline.models import BatchConfig
+from pipeline.batch_orchestrator import run_batch
+from pipeline.persistence import load_index, get_global_stats
 
 
 def render():
-    st.title("Pipeline de Evaluación")
+    st.title("Pipeline de Evaluación — Procesamiento Batch")
 
-    if "pipeline_iniciado" not in st.session_state:
-        st.session_state["pipeline_iniciado"] = False
+    pending = st.session_state.get("pending_reports", [])
+    index = load_index()
+    total_already = len(index)
 
-    if not st.session_state["pipeline_iniciado"]:
-        st.info("Haz clic en 'Ejecutar Pipeline' para comenzar la evaluación automatizada.")
+    if not pending:
+        st.info("No hay informes pendientes. Ve a 'Cargar Archivos' para subir PDFs.")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            top_k = st.number_input("Top-K fragmentos", min_value=1, max_value=20, value=5)
-        with col2:
-            umbral = st.slider("Umbral de similitud", min_value=0.0, max_value=1.0, value=0.65, step=0.05)
-
-        st.caption(f"Embeddings: **{st.session_state.get('provider', 'gemini').title()}**  |  C6: **{st.session_state.get('c6_provider', 'gemini').title()}**")
-
-        use_pdf = False
-        if st.session_state.get("c6_provider") == "gemini":
-            st.caption("PDF en C6 activo")
-            use_pdf = True
-
-        if st.button("Ejecutar Pipeline", type="primary", use_container_width=True):
-            progress_bar = st.progress(0)
-
-            stages_order = ["C1", "C2", "C3", "C41", "C42", "C5", "C6", "C7"]
-            stage_labels = {
-                "C1": "Ingesta del PDF + matriz + rúbrica",
-                "C2": "Parseo de secciones del documento",
-                "C3": "Fragmentación (chunking) del texto",
-                "C41": "Embeddings (una sola llamada API)",
-                "C42": "Similitud coseno por competencia",
-                "C5": "Recuperación de evidencia",
-                "C6": "Evaluación LLM",
-                "C7": "Generación de reporte",
-            }
-            boxes = {}
-            c6_output_placeholder = None
-            for s in stages_order:
-                if s == "C6":
-                    with st.status(f"**{s}**: {stage_labels[s]}", state="running", expanded=True) as box:
-                        c6_output_placeholder = st.empty()
-                        boxes[s] = box
-                else:
-                    boxes[s] = st.status(f"**{s}**: {stage_labels[s]}", state="running")
-
-            last_stage = None
-            loop_stages = {"C42", "C5", "C6"}
-
-            def output_callback(stage, raw_output):
-                if stage == "C6" and raw_output and c6_output_placeholder:
-                    c6_output_placeholder.code(raw_output[:3000], language="json")
-
-            def progress_callback(stage, message):
-                nonlocal last_stage
-                if stage != last_stage:
-                    if last_stage and last_stage in boxes and last_stage not in loop_stages:
-                        boxes[last_stage].update(
-                            state="complete",
-                            label=f"✅ **{last_stage}**: {stage_labels[last_stage]} — Completado",
-                        )
-                    last_stage = stage
-                    boxes[stage].update(state="running", label=f"🔄 **{stage}**: {message}")
-                else:
-                    boxes[stage].update(label=f"🔄 **{stage}**: {message}")
-
-                m = re.search(r'\((\d+)/(\d+)\)', message)
-                if m:
-                    i, n = int(m.group(1)), int(m.group(2))
-                    if stage == "C42":
-                        p = 0.35 + (i - 1) / n * 0.10
-                    elif stage == "C5":
-                        p = 0.45 + (i - 1) / n * 0.25
-                    elif stage == "C6":
-                        if "✓" in message:
-                            p = 0.70 + i / n * 0.25
-                        else:
-                            p = 0.70 + (i - 1) / n * 0.25
-                    else:
-                        p = 0.0
-                else:
-                    p = {"C1": 0.05, "C2": 0.15, "C3": 0.25, "C41": 0.35}.get(stage, 0.0)
-                progress_bar.progress(min(p, 1.0))
-
-            try:
-                api_key = st.session_state.get("api_key", "")
-                if not api_key:
-                    st.error("API Key para embeddings no configurada. Verifica en el panel lateral.")
-                    return
-
-                c6_provider = st.session_state.get("c6_provider", "gemini")
-                if c6_provider == "openrouter":
-                    c6_key = st.session_state.get("openrouter_key_input", "")
-                    if not c6_key:
-                        c6_key = os.getenv("OPENROUTER_API_KEY", "")
-                    if not c6_key:
-                        st.error("API Key de OpenRouter no configurada. Verifica en el panel lateral.")
-                        return
-                elif c6_provider == "openai":
-                    c6_key = st.session_state.get("api_key", "")
-                else:
-                    c6_key = api_key
-
-                result = ejecutar_pipeline_completo(
-                    pdf_bytes=st.session_state["pdf_bytes"],
-                    api_key=api_key,
-                    csv_bytes=st.session_state.get("csv_bytes"),
-                    json_bytes=st.session_state.get("json_bytes"),
-                    provider=st.session_state.get("provider", "gemini"),
-                    c6_provider=c6_provider,
-                    c6_api_key=c6_key,
-                    use_pdf=use_pdf,
-                    top_k=top_k,
-                    umbral=umbral,
-                    progress_callback=progress_callback,
-                    output_callback=output_callback,
-                    tipo_documento=st.session_state.get("tipo_documento"),
-                )
-                progress_bar.progress(1.0)
-                for s in stages_order:
-                    boxes[s].update(
-                        state="complete",
-                        label=f"✅ **{s}**: {stage_labels[s]} — Completado",
-                    )
-                st.session_state["pipeline_state"] = result
-                st.session_state["pipeline_iniciado"] = True
+        if total_already > 0:
+            st.markdown(f"Hay **{total_already}** informe(s) ya procesados en disco.")
+            if st.button("Ir al Dashboard", width="stretch"):
+                st.session_state["page"] = "dashboard"
                 st.rerun()
-            except Exception as e:
-                if last_stage and last_stage in boxes:
-                    boxes[last_stage].update(
-                        state="error",
-                        label=f"❌ **{last_stage}**: {stage_labels.get(last_stage, '')} — Error",
-                    )
-                st.error(f"Error durante la ejecución del pipeline: {e}")
-                return
         return
 
-    state = st.session_state["pipeline_state"]
-    c7 = state["c7"]
-    preview = c7["vista_preliminar"]["resultados_competencias"]
-    reporte = c7["reporte_procesamiento"]
-    c1 = state["c1"]
+    st.markdown(f"### Informes listos para procesar: **{len(pending)}**")
+    pending_df_data = []
+    for i, r in enumerate(pending):
+        pending_df_data.append({
+            "#": i + 1,
+            "Informe": r.get("pdf_name", f"Reporte {i+1}"),
+            "Tipo": r.get("tipo_documento", "").replace("_", " "),
+        })
+    st.dataframe(pending_df_data, width="stretch")
 
-    tipo_label = c1["tipo_documento"].replace("_", " ").title().replace("Pre ", "Pre-").replace("Practica", "Práctica")
-    st.caption(f"**Tipo:** {tipo_label}")
-
-    total = len(preview)
-    aprobadas = sum(1 for r in preview if r["nivel"] >= 2)
-    no_aprobadas = sum(1 for r in preview if r["nivel"] < 2)
-    requieren_revision = sum(1 for r in preview if r["nivel"] >= 2 and r["estado_revision"] == "requiere_revision")
-
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("APROBADAS", f"{aprobadas} / {total}")
-        if requieren_revision > 0:
-            st.caption(f"⚠️ Requieren revisión: {requieren_revision} de {aprobadas}")
+        max_workers = st.number_input("Workers paralelos", min_value=1, max_value=20, value=5)
     with col2:
-        st.metric("NO APROBADAS", f"{no_aprobadas} / {total}")
+        semaphore = st.number_input("LLM calls simultáneas", min_value=1, max_value=20, value=5)
+    with col3:
+        max_per_batch = st.number_input("Máx por batch", min_value=1, max_value=50, value=10)
 
-    st.divider()
-    st.subheader("Revisión por Competencia (HITL)")
+    if "batch_running" not in st.session_state:
+        st.session_state["batch_running"] = False
+    if "batch_progress" not in st.session_state:
+        st.session_state["batch_progress"] = None
+    if "batch_thread" not in st.session_state:
+        st.session_state["batch_thread"] = None
 
-    for i, r in enumerate(preview):
-        cid = r["competencia_id"]
-        nivel = r["nivel"]
-        label = r["nivel_label"]
-        estado_icono = {"pendiente": "", "aprobada": "✅", "rechazada": "❌", "modificada": "✏️"}.get(r.get("estado_final", "pendiente"), "")
-        with st.expander(f"{cid} - {r['competencia_nombre']} (Nivel {nivel}: {label})", expanded=True):
-            if estado_icono:
-                hdr_cols = st.columns([6, 1])
-                with hdr_cols[1]:
-                    st.markdown(f"## {estado_icono}")
-            col_a, col_b = st.columns([3, 1])
-            with col_a:
-                nivel = r["nivel"]
-                if nivel >= 2:
-                    st.success(f"Estado: Respaldo Suficiente ({nivel})")
-                elif nivel == 1:
-                    st.error(f"Estado: Respaldo Insuficiente ({nivel})")
-                else:
-                    st.error(f"Estado: Sin Evidencia ({nivel})")
+    if st.button("Ejecutar Pipeline Batch", type="primary", width="stretch", disabled=st.session_state["batch_running"]):
+        api_key = st.session_state.get("api_key", "")
+        if not api_key:
+            st.error("API Key para embeddings no configurada.")
+            return
 
-                st.markdown(f"**Nivel Asignado:** {nivel} - {label}")
-                st.markdown(f"**Justificación:** {r['justificacion']}")
-                st.markdown(f"**Secciones Fuente:** {', '.join(r['secciones_fuente'])}")
+        c6_provider = st.session_state.get("c6_provider", "gemini")
+        c6_api_key = api_key
+        if c6_provider == "openrouter":
+            c6_api_key = st.session_state.get("openrouter_key_input", "") or os.getenv("OPENROUTER_API_KEY", "")
+            if not c6_api_key:
+                st.error("API Key de OpenRouter no configurada.")
+                return
 
-                if r["citas"]:
-                    st.markdown("**Citas:**")
-                    for j, cita in enumerate(r["citas"]):
-                        st.markdown(f"{j+1}. _{cita}_")
+        provider = st.session_state.get("provider", "gemini")
+        for r in pending:
+            r["use_pdf"] = (c6_provider == "gemini")
+            r["top_k"] = r.get("top_k", 5)
+            r["umbral"] = r.get("umbral", 0.65)
 
-                p = r.get("p", [])
-                if p:
-                    p_str = " ".join(f"N{i}={v:.2f}" for i, v in enumerate(p))
-                    st.markdown(f"**Confianza:** {r.get('confianza', 0):.2%}")
-                    st.markdown(f"**p:** {p_str}")
+        llm_config = {
+            "api_key": api_key,
+            "provider": provider,
+            "c6_provider": c6_provider,
+            "c6_api_key": c6_api_key,
+        }
+        batch_config = BatchConfig(
+            max_workers=max_workers,
+            max_reports_per_batch=max_per_batch,
+            semaphore_limit=semaphore,
+        )
 
-                raw = r.get("raw_response", "")
-                if raw:
-                    with st.expander("Ver respuesta LLM raw", expanded=False):
-                        st.code(raw, language="json")
+        progress = {}
+        st.session_state["batch_progress"] = progress
+        st.session_state["batch_running"] = True
 
-            with col_b:
-                st.markdown("**Acciones**")
-                if st.button("Aceptar", key=f"accept_{i}_{cid}"):
-                    actualizar_competencia_manual(state, cid, "estado_final", "aprobada")
-                    st.rerun()
-                if st.button("Rechazar", key=f"reject_{i}_{cid}"):
-                    actualizar_competencia_manual(state, cid, "estado_final", "rechazada")
-                    st.rerun()
-
-            st.markdown("---")
-            st.markdown("**Modificar**")
-            col_c, col_d = st.columns([3, 1])
-            with col_c:
-                nuevo_nivel = st.number_input(
-                    "Nuevo nivel",
-                    min_value=0,
-                    max_value=st.session_state.get("_max_nivel", 3),
-                    value=nivel,
-                    key=f"nivel_{i}_{cid}",
-                )
-                solicitud = st.text_input(
-                    "Solicitud de ajuste",
-                    placeholder="Ej: cambiar nivel a 2, agregar cita...",
-                    key=f"req_{i}_{cid}",
-                )
-            with col_d:
-                if st.button("Aplicar Cambio", key=f"apply_{i}_{cid}"):
-                    if solicitud.strip():
-                        with st.spinner("Procesando ajuste..."):
-                            api_key = st.session_state.get("api_key", "")
-                            state = procesar_ajuste(state, solicitud, cid, api_key=api_key)
-                            st.session_state["pipeline_state"] = state
-                            st.success(f"Ajuste aplicado a {cid}.")
-                            st.rerun()
-                    elif nuevo_nivel != nivel:
-                        actualizar_competencia_manual(state, cid, "nivel", nuevo_nivel)
-                        actualizar_competencia_manual(state, cid, "estado_final", "modificada")
-                        st.success(f"Nivel de {cid} actualizado a {nuevo_nivel}.")
-                        st.rerun()
-                    else:
-                        st.info("No se detectaron cambios.")
-
-    st.divider()
-    st.subheader("Resumen de Revisión")
-    estados = [r.get("estado_final", "pendiente") for r in preview]
-    col_a, col_b, col_c, col_d = st.columns(4)
-    col_a.metric("Aprobadas", estados.count("aprobada"))
-    col_b.metric("Modificadas", estados.count("modificada"))
-    col_c.metric("Rechazadas", estados.count("rechazada"))
-    col_d.metric("Pendientes", estados.count("pendiente"))
-
-    if st.button("Ir a Resultados", type="primary", use_container_width=True):
-        st.session_state["page"] = "resultados"
+        thread = threading.Thread(
+            target=run_batch,
+            args=(pending, llm_config, batch_config, progress),
+            daemon=True,
+        )
+        st.session_state["batch_thread"] = thread
+        thread.start()
         st.rerun()
+
+    if st.session_state["batch_running"]:
+        progress = st.session_state.get("batch_progress", {})
+        thread = st.session_state.get("batch_thread")
+        total = progress.get("_total", len(pending))
+        done = progress.get("_done", 0)
+        errors = progress.get("_errors", 0)
+        phase = progress.get("_phase", "processing")
+
+        pct = done / total if total > 0 else 0
+        st.progress(pct, text=f"{done}/{total} informes completados")
+
+        col_a, col_b = st.columns(2)
+        col_a.metric("Completados", done)
+        col_b.metric("Errores", errors)
+
+        is_alive = thread and thread.is_alive() if thread else False
+
+        if phase == "processing":
+            with st.expander("Progreso por informe", expanded=True):
+                for r in pending:
+                    rid = r["report_id"]
+                    pname = r.get("pdf_name", rid[:8])
+                    pdata = progress.get(rid, {})
+                    stage = pdata.get("stage", "esperando")
+                    comps_done = pdata.get("comps_done", 0)
+                    comps_total = pdata.get("total_comps", "?")
+                    st.markdown(f"**{pname}**: {stage}  ({comps_done}/{comps_total} competencias)")
+
+        if phase == "processing" and is_alive:
+            st.rerun()
+        else:
+            st.session_state["batch_running"] = False
+            st.session_state["batch_thread"] = None
+            st.session_state["pending_reports"] = []
+            st.session_state["report_count"] = len(load_index())
+
+            if errors:
+                st.warning(f"Procesamiento completado con {errors} error(es).")
+            else:
+                st.success("Procesamiento batch completado exitosamente.")
+            if st.button("Ir al Dashboard", type="primary", width="stretch"):
+                st.session_state["page"] = "dashboard"
+                st.rerun()

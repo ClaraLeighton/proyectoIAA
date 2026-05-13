@@ -5,8 +5,22 @@ warnings.filterwarnings("ignore", message=".*python_version_support.*")
 
 import streamlit as st
 from dotenv import load_dotenv
+from pipeline.persistence import load_index
 
 load_dotenv()
+
+
+def _init_session():
+    for k in ["provider", "api_key", "c6_provider"]:
+        if k not in st.session_state:
+            st.session_state[k] = "" if k == "api_key" else ("openrouter" if k == "c6_provider" else "gemini")
+    if "page" not in st.session_state:
+        st.session_state["page"] = "upload"
+    if "pending_reports" not in st.session_state:
+        st.session_state["pending_reports"] = []
+    if "report_count" not in st.session_state:
+        index = load_index()
+        st.session_state["report_count"] = len(index)
 
 
 def main():
@@ -17,14 +31,14 @@ def main():
         initial_sidebar_state="expanded",
     )
 
-    for k in ["provider", "api_key", "c6_provider"]:
-        if k not in st.session_state:
-            st.session_state[k] = "" if k == "api_key" else ("openrouter" if k == "c6_provider" else "gemini")
-    if "page" not in st.session_state:
-        st.session_state["page"] = "upload"
+    _init_session()
 
     with st.sidebar:
         st.title("Evaluador de Informes")
+
+        total_reports = st.session_state.get("report_count", 0)
+        if total_reports > 0:
+            st.markdown(f"**Informes en disco:** {total_reports}")
 
         st.markdown("### Embeddings (C4)")
         emb_prov = st.selectbox(
@@ -66,21 +80,24 @@ def main():
                 st.text_input("OpenRouter API Key:", key="openrouter_key_input")
 
         st.markdown("---")
-        if st.button("Cargar Archivos", use_container_width=True):
+        if st.button("Cargar Archivos", width="stretch"):
             st.session_state["page"] = "upload"
             st.rerun()
-        if st.button("Pipeline", use_container_width=True):
+        if st.button("Pipeline", width="stretch"):
             st.session_state["page"] = "pipeline"
             st.rerun()
-        if st.button("Resultados", use_container_width=True):
+        if st.button("Dashboard", width="stretch"):
+            st.session_state["page"] = "dashboard"
+            st.rerun()
+        if st.button("Resultados", width="stretch"):
             st.session_state["page"] = "resultados"
             st.rerun()
-        if st.button("Configuración", use_container_width=True):
+        if st.button("Configuración", width="stretch"):
             st.session_state["page"] = "admin"
             st.rerun()
 
         st.markdown("---")
-        st.markdown("**Pipeline C1-C7 + HITL**")
+        st.markdown("**Pipeline C1-C7 con procesamiento paralelo**")
         st.markdown("Desarrollado para IAA - Grupo 2")
 
     page = st.session_state["page"]
@@ -91,6 +108,9 @@ def main():
     elif page == "pipeline":
         from ui.page_pipeline import render as render_pipeline
         render_pipeline()
+    elif page == "dashboard":
+        from ui.page_dashboard import render as render_dashboard
+        render_dashboard()
     elif page == "resultados":
         from ui.page_resultados import render as render_resultados
         render_resultados()
