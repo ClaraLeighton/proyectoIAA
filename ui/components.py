@@ -5,11 +5,11 @@ def topbar_html():
     return """
     <div class="uandes-topbar">
         <div class="uandes-topbar-left">
-            <button class="uandes-topbar-hamburger" onclick="var s=document.querySelector('section[data-testid=\'stSidebar\']');if(s){var c=s.style.width;s.style.width=c==='0px'||c===''?'230px':'0px';s.style.minWidth=s.style.width;s.style.overflow=c==='0px'||c===''?'visible':'hidden'}" title="Toggle sidebar">
+            <button class="uandes-topbar-hamburger" onclick="document.body.classList.toggle('sidebar-toggled')" title="Toggle sidebar">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
-                    <line x1="4" y1="6" x2="20" y2="6"/>
-                    <line x1="4" y1="12" x2="20" y2="12"/>
-                    <line x1="4" y1="18" x2="20" y2="18"/>
+                    <line x1="5" y1="6" x2="19" y2="6"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <line x1="5" y1="18" x2="19" y2="18"/>
                 </svg>
             </button>
             <div class="uandes-topbar-logo">
