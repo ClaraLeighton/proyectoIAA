@@ -23,9 +23,11 @@ def save_report(result: ReportResult):
     rdir = _report_dir(result.report_id)
     os.makedirs(rdir, exist_ok=True)
     state_path = os.path.join(rdir, "state.json")
+    state_copy = dict(result.pipeline_state)
+    state_copy.pop("c6_api_key", None)
     tmp_state = state_path + ".tmp"
     with open(tmp_state, "w", encoding="utf-8") as f:
-        json.dump(result.pipeline_state, f, ensure_ascii=False, indent=2, default=str)
+        json.dump(state_copy, f, ensure_ascii=False, indent=2, default=str)
     os.replace(tmp_state, state_path)
 
     index = load_index()
