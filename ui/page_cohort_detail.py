@@ -4,7 +4,7 @@ import pandas as pd
 from pipeline.cohorts import get_cohort, compute_cohort_macro
 from pipeline.reportes_export import exportar_excel_multi_hoja
 from pipeline.persistence import load_report
-from ui.components import page_hero, section_card, section_card_end, metric_grid, level_bar_panel, empty_state, badge
+from ui.components import page_hero, metric_grid, level_bar_panel, empty_state, badge
 from ui.icons import chart, upload, download, trash
 
 
@@ -49,12 +49,11 @@ def render():
     )
 
     if g["total_reportes"] == 0:
-        section_card("Resultados")
+        st.subheader("Resultados")
         empty_state(
             "Sin resultados",
-            "Aún no hay informes procesados en esta cohorte.",
+            "Aún no hay informes procesados in esta cohorte.",
         )
-        section_card_end()
         return
 
     metric_grid([
@@ -74,7 +73,7 @@ def render():
         level_bar_panel("Distribución de Niveles", nivel_dist, total_comps, LEVEL_COLORS, LEVEL_LABELS)
 
     if competencias:
-        section_card("Desglose por Competencia")
+        st.subheader("Desglose por Competencia")
         rows = []
         for cid in sorted(competencias.keys()):
             c = competencias[cid]
@@ -89,9 +88,8 @@ def render():
             })
         df = pd.DataFrame(rows)
         st.dataframe(df, use_container_width=True, hide_index=True)
-        section_card_end()
 
-        section_card("Distribución por Competencia")
+        st.subheader("Distribución por Competencia")
         dist_rows = []
         for cid in sorted(competencias.keys()):
             c = competencias[cid]
@@ -105,7 +103,6 @@ def render():
             })
         df_dist = pd.DataFrame(dist_rows)
         st.dataframe(df_dist, use_container_width=True, hide_index=True)
-        section_card_end()
 
     col_a, col_b, col_c = st.columns(3)
     with col_a:

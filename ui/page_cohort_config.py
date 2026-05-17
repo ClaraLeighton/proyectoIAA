@@ -2,7 +2,7 @@ import streamlit as st
 from pipeline.cohorts import get_cohort, compute_cohort_macro, delete_cohort, update_cohort_name
 from pipeline.reportes_export import exportar_excel_multi_hoja
 from pipeline.persistence import load_report
-from ui.components import page_hero, section_card, section_card_end, badge, metric_grid, empty_state, action_tiles
+from ui.components import page_hero, badge, metric_grid, empty_state, action_tiles
 from ui.icons import chart, upload, download, trash
 
 
@@ -47,7 +47,7 @@ def render():
         ("Tipo", tipo_label),
     ])
 
-    section_card("Acciones Rápidas")
+    st.subheader("Acciones Rápidas")
     action_tiles([
         {
             "icon": chart(28, 28, "#17212B"),
@@ -71,7 +71,6 @@ def render():
             "danger": True,
         },
     ])
-    section_card_end()
 
     col_tiles = st.columns(4)
     with col_tiles[0]:
@@ -92,7 +91,7 @@ def render():
             st.session_state["_show_delete"] = True
             st.rerun()
 
-    section_card("Configuración")
+    st.subheader("Configuración")
 
     col_info1, col_info2 = st.columns(2)
     with col_info1:
@@ -105,8 +104,6 @@ def render():
         st.markdown(f'<p style="font-size:14px;color:var(--uandes-text-secondary);margin-bottom:4px"><strong>Creada:</strong> {cohort.get("created_at", "")[:19]}</p>', unsafe_allow_html=True)
         st.markdown(f'<p style="font-size:14px;color:var(--uandes-text-secondary);margin-bottom:4px"><strong>Tipo:</strong> {tipo_label}</p>', unsafe_allow_html=True)
         st.markdown(f'<p style="font-size:14px;color:var(--uandes-text-secondary);margin-bottom:4px"><strong>Informes:</strong> {n_reports}</p>', unsafe_allow_html=True)
-
-    section_card_end()
 
     if st.session_state.get("_trigger_export"):
         index = [load_report(rid).to_index_entry() for rid in cohort["report_ids"] if load_report(rid)]
@@ -124,7 +121,7 @@ def render():
         )
 
     if st.session_state.get("_show_delete"):
-        section_card("Eliminar cohorte")
+        st.subheader("Eliminar cohorte")
         st.warning(f"¿Eliminar toda la cohorte **'{cohort['name']}'** y sus **{n_reports}** informes? Esta acción no se puede deshacer.")
         confirm = st.text_input("Escribe 'ELIMINAR' para confirmar:", key="del_confirm")
         if confirm == "ELIMINAR":
@@ -135,4 +132,3 @@ def render():
                 st.session_state.pop("_show_delete", None)
                 st.session_state["page"] = "cohorts"
                 st.rerun()
-        section_card_end()

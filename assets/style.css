@@ -330,8 +330,8 @@ h1, .uandes-h1 {
   text-transform: uppercase !important;
 }
 .uandes-hero-title {
-  color: #CE0019 !important;
-  font-size: 52px !important;
+  color: var(--uandes-text) !important;
+  font-size: 60px !important;
   font-weight: 900 !important;
   line-height: 0.95 !important;
   letter-spacing: -0.04em !important;
@@ -341,20 +341,20 @@ h1, .uandes-h1 {
 }
 h2, .uandes-h2 {
   color: var(--uandes-text);
-  font-size: 30px;
-  font-weight: 700;
+  font-size: 36px;
+  font-weight: 800;
   letter-spacing: -0.02em;
   margin: 0 0 12px;
   line-height: 1.2;
 }
 h3, .uandes-h3 {
   color: var(--uandes-text);
-  font-size: 22px;
-  font-weight: 600;
+  font-size: 28px !important;
+  font-weight: 800 !important;
   margin: 0 0 10px;
   line-height: 1.3;
 }
-p, li, div, span, label {
+p, li, label {
   font-size: 15px;
   line-height: 1.6;
   color: var(--uandes-text);
@@ -391,13 +391,8 @@ p, li, div, span, label {
   color: var(--uandes-red);
 }
 .uandes-page-hero h1 {
-  font-size: 48px !important;
-  font-weight: 900 !important;
-  color: var(--uandes-red) !important;
-  letter-spacing: -0.02em !important;
-  line-height: 1 !important;
+  /* Inherits from .uandes-hero-title */
   margin: 0 0 18px !important;
-  text-transform: uppercase !important;
 }
 .uandes-page-hero-subtitle {
   font-size: 17px;
@@ -431,42 +426,6 @@ p, li, div, span, label {
   gap: 10px;
   flex-shrink: 0;
   padding-top: 4px;
-}
-
-/* ─── SECTION CARD ─── */
-.uandes-section-card {
-  background: var(--uandes-white);
-  border: 1px solid var(--uandes-border);
-  border-radius: var(--uandes-radius-xl);
-  padding: 28px 32px 32px;
-  margin-bottom: 24px;
-  box-shadow: var(--uandes-shadow-sm);
-  transition: box-shadow var(--uandes-transition);
-}
-.uandes-section-card:hover {
-  box-shadow: var(--uandes-shadow-md);
-}
-.uandes-section-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--uandes-border-light);
-}
-.uandes-section-card-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--uandes-text);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.uandes-section-card-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 /* ─── METRIC CARDS ─── */
@@ -1392,14 +1351,14 @@ div[data-baseweb="notification"] {
     margin-left: 0 !important;
     padding: calc(var(--uandes-topbar-h) + 16px) 16px 24px !important;
   }
-  h1, .uandes-h1, .uandes-page-hero h1 {
-    font-size: 32px !important;
+  h1, .uandes-h1, .uandes-page-hero h1, .uandes-hero-title {
+    font-size: 35px !important;
   }
   h2, .uandes-h2 {
-    font-size: 22px;
+    font-size: 28px !important;
   }
   h3, .uandes-h3 {
-    font-size: 18px;
+    font-size: 24px !important;
   }
   .uandes-page-hero-row {
     flex-direction: column;
@@ -1427,9 +1386,6 @@ div[data-baseweb="notification"] {
   }
   .cohort-card-stats {
     gap: 14px;
-  }
-  .uandes-section-card {
-    padding: 20px 22px 24px;
   }
   .uandes-action-tiles {
     grid-template-columns: 1fr 1fr;

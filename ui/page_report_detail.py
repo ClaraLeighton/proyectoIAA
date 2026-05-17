@@ -1,7 +1,7 @@
 import streamlit as st
 from pipeline.persistence import load_report
 from pipeline.reportes_export import exportar_reporte_individual
-from ui.components import page_hero, section_card, section_card_end, badge
+from ui.components import page_hero, badge
 
 
 LEVEL_LABELS = {0: "Sin evidencia", 1: "No aplica", 2: "Uso concreto", 3: "Dominio técnico"}
@@ -38,9 +38,8 @@ def render():
     )
 
     if not preview:
-        section_card("Resultados")
+        st.subheader("Resultados")
         st.info("Este informe no tiene resultados de competencias.")
-        section_card_end()
         return
 
     total = len(preview)
@@ -58,7 +57,7 @@ def render():
         unsafe_allow_html=True,
     )
 
-    section_card("Evaluación por Competencia")
+    st.subheader("Evaluación por Competencia")
 
     for i, r in enumerate(preview):
         cid = r["competencia_id"]
@@ -84,7 +83,6 @@ def render():
             if confianza:
                 st.markdown(f"**Confianza:** {confianza:.1%}")
 
-    section_card_end()
 
     col1, col2, col3 = st.columns(3)
     with col1:

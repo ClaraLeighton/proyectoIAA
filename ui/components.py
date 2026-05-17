@@ -53,29 +53,12 @@ def page_hero(title, subtitle=None, meta_items=None, breadcrumb=None, back_targe
             st.markdown(html, unsafe_allow_html=True)
         with cols[1]:
             st.markdown('<div style="margin-top:6px">', unsafe_allow_html=True)
-            if st.button("← Volver", key="back_btn", use_container_width=True):
+            if st.button("←", key="back_btn", use_container_width=True):
                 st.session_state["page"] = back_target
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
     else:
         st.markdown(html, unsafe_allow_html=True)
-
-
-def section_card(title, actions=None):
-    html = '<div class="uandes-section-card">'
-    if title or actions:
-        html += '<div class="uandes-section-card-header">'
-        if title:
-            html += f'<div class="uandes-section-card-title">{title}</div>'
-        if actions:
-            html += f'<div class="uandes-section-card-actions">{actions}</div>'
-        html += '</div>'
-    html += '<div class="uandes-section-card-body">'
-    st.markdown(html, unsafe_allow_html=True)
-
-
-def section_card_end():
-    st.markdown('</div></div>', unsafe_allow_html=True)
 
 
 def metric_grid(items):

@@ -1,7 +1,7 @@
 import streamlit as st
 from pipeline.cohorts import get_cohort, compute_cohort_macro
 from pipeline.persistence import load_report
-from ui.components import page_hero, section_card, section_card_end, badge, report_card
+from ui.components import page_hero, badge, report_card
 from ui.icons import circle_green, circle_yellow, circle_red
 
 
@@ -41,7 +41,7 @@ def render():
         back_target="cohort_macro",
     )
 
-    section_card("Informes")
+    st.subheader("Informes")
 
     search = st.text_input("", placeholder="Buscar informe por nombre...", label_visibility="collapsed")
     q = search.lower().strip() if search else ""
@@ -50,7 +50,6 @@ def render():
 
     if not report_ids:
         st.info("Esta cohorte no tiene informes aún.")
-        section_card_end()
         return
 
     macro = compute_cohort_macro(cohort_id)
@@ -77,8 +76,6 @@ def render():
             st.session_state["selected_report_id"] = rid
             st.session_state["page"] = "report_detail"
             st.rerun()
-
-    section_card_end()
 
     col1, col2 = st.columns(2)
     with col1:

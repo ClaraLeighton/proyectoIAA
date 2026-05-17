@@ -1,6 +1,6 @@
 import streamlit as st
 from pipeline.cohorts import list_cohorts, compute_cohort_macro, delete_cohort
-from ui.components import page_hero, section_card, section_card_end, badge, empty_state
+from ui.components import page_hero, badge, empty_state
 from ui.icons import eye, chart, trash
 
 
@@ -17,7 +17,6 @@ def render():
         all_cohorts = list_cohorts()
         target = next((c for c in all_cohorts if c["cohort_id"] == cid_to_delete), None)
         if target:
-            section_card(None)
             n = len(target.get("report_ids", []))
             st.warning(f"¿Eliminar la cohorte **'{target['name']}'** y sus **{n}** informe{'s' if n != 1 else ''}? Esta acción no se puede deshacer.")
             col1, col2, _ = st.columns([1, 1, 4])
@@ -29,7 +28,6 @@ def render():
             with col2:
                 if st.button("Cancelar", key="cancel_del"):
                     st.rerun()
-            section_card_end()
             st.markdown("---")
 
     cohorts = list_cohorts()
@@ -55,12 +53,10 @@ def render():
     st.markdown('</div>', unsafe_allow_html=True)
 
     if not cohorts:
-        section_card(None)
         empty_state(
             "No hay cohortes aún",
             "Crea tu primera cohorte para comenzar a evaluar informes de práctica.",
         )
-        section_card_end()
         return
 
     for cohort in sorted(cohorts, key=lambda c: c.get("created_at", ""), reverse=True):

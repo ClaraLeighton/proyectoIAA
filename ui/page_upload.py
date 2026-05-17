@@ -6,7 +6,7 @@ import uuid
 import streamlit as st
 
 from pipeline.cohorts import create_cohort, get_cohort
-from ui.components import page_hero, section_card, section_card_end
+from ui.components import page_hero
 
 
 def _cargar_tipos_rubrica() -> list[str]:
@@ -47,7 +47,6 @@ def _build_pending_report(pdf_bytes: bytes, pdf_name: str, tipo_doc: str) -> dic
         "use_pdf": False,
     }
 
-
 def render():
     st.session_state.pop("upload_submitted", None)
     new_cohort = st.session_state.get("new_cohort", True)
@@ -67,7 +66,7 @@ def render():
     target = "cohort_config" if existing_cohort else "cohorts"
     page_hero(title, subtitle=subtitle, back_target=target)
 
-    section_card("Crear Cohortes")
+    st.subheader("Crear Cohortes")
 
     st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Información General</div></div>', unsafe_allow_html=True)
 
@@ -154,5 +153,3 @@ def render():
                         st.session_state["pipeline_iniciado"] = False
                         st.session_state["page"] = "processing"
                         st.rerun()
-
-    section_card_end()

@@ -7,7 +7,7 @@ from pipeline.models import BatchConfig
 from pipeline.batch_orchestrator import run_batch
 from pipeline.cohorts import add_reports_to_cohort
 from pipeline.persistence import load_index
-from ui.components import page_hero, section_card, section_card_end, processing_panel
+from ui.components import page_hero, processing_panel
 from ui.icons import check, search, cut, brain, clip, cpu, chart, xmark, clock, doc, spinner
 
 
@@ -145,10 +145,9 @@ def _show_progress(pending, total, cohort_id):
             )
 
         if detail_parts:
-            section_card("Detalle por Informe")
+            st.subheader("Detalle por Informe")
             for part in detail_parts:
                 st.markdown(part, unsafe_allow_html=True)
-            section_card_end()
 
         time.sleep(0.3)
         st.rerun()
