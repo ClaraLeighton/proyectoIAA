@@ -4,7 +4,6 @@ __pycache__/
 .pytest_cache/
 
 # generated/local data
-evaluaciones.db
 *.db
 
 # secrets
