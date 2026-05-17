@@ -340,15 +340,15 @@ h1, .uandes-h1 {
   padding: 0 !important;
 }
 h2, .uandes-h2 {
-  color: var(--uandes-text);
-  font-size: 36px;
-  font-weight: 800;
+  color: var(--uandes-text) !important;
+  font-size: 36px !important;
+  font-weight: 800 !important;
   letter-spacing: -0.02em;
   margin: 0 0 12px;
   line-height: 1.2;
 }
 h3, .uandes-h3 {
-  color: var(--uandes-text);
+  color: var(--uandes-text) !important;
   font-size: 28px !important;
   font-weight: 800 !important;
   margin: 0 0 10px;
@@ -358,6 +358,13 @@ p, li, label {
   font-size: 15px;
   line-height: 1.6;
   color: var(--uandes-text);
+}
+
+/* Ensure nested spans/divs inside headings use the parent color/font */
+h1 *, h2 *, h3 *, .uandes-hero-title * {
+  color: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
 }
 
 /* ─── PAGE HERO ─── */
