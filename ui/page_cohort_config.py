@@ -1,8 +1,7 @@
 import streamlit as st
 from pipeline.cohorts import get_cohort, compute_cohort_macro, delete_cohort, update_cohort_name
-from pipeline.reportes_export import exportar_excel_multi_hoja
-from pipeline.persistence import load_report
-from ui.components import page_hero, badge, metric_grid, empty_state, action_tiles
+from pipeline.reportes_export import build_export_index, exportar_excel_multi_hoja
+from ui.components import page_hero, badge, metric_grid, action_tiles
 from ui.icons import chart, upload, download, trash
 
 
@@ -83,9 +82,15 @@ def render():
             st.session_state["page"] = "upload"
             st.rerun()
     with col_tiles[2]:
-        if st.button("Exportar Excel", key="tile_export", use_container_width=True):
-            st.session_state["_trigger_export"] = True
-            st.rerun()
+        export_index = build_export_index(cohort.get("report_ids", []))
+        st.download_button(
+            "Exportar Excel",
+            data=exportar_excel_multi_hoja(export_index),
+            file_name=f"{cohort['name']}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key=f"tile_export_{cohort_id}",
+            use_container_width=True,
+        )
     with col_tiles[3]:
         if st.button("Eliminar cohorte", key="tile_delete", use_container_width=True):
             st.session_state["_show_delete"] = True
@@ -105,30 +110,17 @@ def render():
         st.markdown(f'<p style="font-size:14px;color:var(--uandes-text-secondary);margin-bottom:4px"><strong>Tipo:</strong> {tipo_label}</p>', unsafe_allow_html=True)
         st.markdown(f'<p style="font-size:14px;color:var(--uandes-text-secondary);margin-bottom:4px"><strong>Informes:</strong> {n_reports}</p>', unsafe_allow_html=True)
 
-    if st.session_state.get("_trigger_export"):
-        index = [load_report(rid).to_index_entry() for rid in cohort["report_ids"] if load_report(rid)]
-        index = [e for e in index if e]
-        st.session_state["_export_buf"] = exportar_excel_multi_hoja(index)
-        st.session_state["_export_name"] = f"{cohort['name']}.xlsx"
-        st.session_state["_trigger_export"] = False
-
-    if st.session_state.get("_export_buf"):
-        st.download_button(
-            "Descargar Excel",
-            data=st.session_state["_export_buf"],
-            file_name=st.session_state["_export_name"],
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
-
     if st.session_state.get("_show_delete"):
         st.subheader("Eliminar cohorte")
         st.warning(f"¿Eliminar toda la cohorte **'{cohort['name']}'** y sus **{n_reports}** informes? Esta acción no se puede deshacer.")
         confirm = st.text_input("Escribe 'ELIMINAR' para confirmar:", key="del_confirm")
         if confirm == "ELIMINAR":
-            if st.button("Sí, eliminar", type="primary"):
+            if st.button("Sí, eliminar", type="primary", key=f"confirm_delete_{cohort_id}"):
                 delete_cohort(cohort_id)
                 st.session_state.pop("selected_cohort_id", None)
                 st.session_state.pop("_export_buf", None)
+                st.session_state.pop("_export_name", None)
                 st.session_state.pop("_show_delete", None)
+                st.session_state["report_count"] = max(0, st.session_state.get("report_count", 0) - n_reports)
                 st.session_state["page"] = "cohorts"
                 st.rerun()

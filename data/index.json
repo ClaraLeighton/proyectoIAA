@@ -108,22 +108,5 @@
     },
     "estado": "completado",
     "error": null
-  },
-  {
-    "report_id": "dcb8651a-6833-4a98-b849-a6ee25acc66c",
-    "pdf_name": "Informe de Práctica Pre-Profesional844802025_12_23_20_43_44.pdf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-13T17:54:24.516339",
-    "total_competencias": 11,
-    "avg_jpc": 0.6569,
-    "avg_confianza": 0.57,
-    "nivel_promedio": 0.6,
-    "nivel_distribucion": {
-      "0": 7,
-      "2": 3,
-      "1": 1
-    },
-    "estado": "completado",
-    "error": null
   }
 ]

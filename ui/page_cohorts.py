@@ -1,7 +1,6 @@
 import streamlit as st
 from pipeline.cohorts import list_cohorts, compute_cohort_macro, delete_cohort
 from ui.components import page_hero, badge, empty_state
-from ui.icons import eye, chart, trash
 
 
 def _formatear_tipo(tipo: str) -> str:
@@ -13,7 +12,10 @@ def _formatear_tipo(tipo: str) -> str:
 
 def render():
     if st.session_state.pop("_action", None) == "delete_cohort":
-        cid_to_delete = st.session_state.pop("_action_cid", "")
+        st.session_state["_delete_cohort_id"] = st.session_state.pop("_action_cid", "")
+
+    cid_to_delete = st.session_state.get("_delete_cohort_id", "")
+    if cid_to_delete:
         all_cohorts = list_cohorts()
         target = next((c for c in all_cohorts if c["cohort_id"] == cid_to_delete), None)
         if target:
@@ -23,12 +25,19 @@ def render():
             with col1:
                 if st.button("Sí, eliminar", type="primary", key="confirm_del"):
                     delete_cohort(cid_to_delete)
+                    if st.session_state.get("selected_cohort_id") == cid_to_delete:
+                        st.session_state.pop("selected_cohort_id", None)
+                    st.session_state.pop("_delete_cohort_id", None)
+                    st.session_state["report_count"] = max(0, st.session_state.get("report_count", 0) - n)
                     st.success("Cohorte eliminada.")
                     st.rerun()
             with col2:
                 if st.button("Cancelar", key="cancel_del"):
+                    st.session_state.pop("_delete_cohort_id", None)
                     st.rerun()
             st.markdown("---")
+        else:
+            st.session_state.pop("_delete_cohort_id", None)
 
     cohorts = list_cohorts()
     n_cohorts = len(cohorts)
@@ -73,10 +82,6 @@ def render():
         score_str = f'{g["score_pct"]:.0%}' if g["total_reportes"] > 0 else "—"
         nivel_str = f'{g["nivel_promedio_global"]:.2f}' if g["total_reportes"] > 0 else "—"
 
-        eye_svg = eye(18, 18)
-        chart_svg = chart(18, 18, "#fff")
-        trash_svg = trash(18, 18, "#CE0019")
-
         html = f"""
         <div class="cohort-card" data-cid="{cid}">
           <div class="cohort-card-left">
@@ -93,11 +98,22 @@ def render():
               <div class="cohort-stat-label">Nivel Prom.</div>
             </div>
           </div>
-          <div class="cohort-card-actions">
-            <a class="cohort-btn cohort-btn-icon" href="?page=cohort_config&cid={cid}" target="_self" title="Ver cohorte">{eye_svg}</a>
-            <a class="cohort-btn cohort-btn-icon cohort-btn-icon-primary" href="?page=cohort_macro&cid={cid}" target="_self" title="Resultados">{chart_svg}</a>
-            <a class="cohort-btn cohort-btn-icon cohort-btn-icon-danger" href="?page=cohorts&cid={cid}&action=delete_cohort" target="_self" title="Eliminar cohorte">{trash_svg}</a>
-          </div>
         </div>
         """
         st.markdown(html, unsafe_allow_html=True)
+
+        col_view, col_results, col_delete, _ = st.columns([1, 1, 1, 5])
+        with col_view:
+            if st.button("Ver", key=f"view_{cid}", use_container_width=True):
+                st.session_state["selected_cohort_id"] = cid
+                st.session_state["page"] = "cohort_config"
+                st.rerun()
+        with col_results:
+            if st.button("Resultados", key=f"results_{cid}", type="primary", use_container_width=True):
+                st.session_state["selected_cohort_id"] = cid
+                st.session_state["page"] = "cohort_macro"
+                st.rerun()
+        with col_delete:
+            if st.button("Eliminar", key=f"delete_{cid}", use_container_width=True):
+                st.session_state["_delete_cohort_id"] = cid
+                st.rerun()

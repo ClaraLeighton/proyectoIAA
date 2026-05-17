@@ -2,8 +2,7 @@ import streamlit as st
 import pandas as pd
 
 from pipeline.cohorts import get_cohort, compute_cohort_macro
-from pipeline.reportes_export import exportar_excel_multi_hoja
-from pipeline.persistence import load_report
+from pipeline.reportes_export import build_export_index, exportar_excel_multi_hoja
 from ui.components import page_hero, metric_grid, level_bar_panel, empty_state, badge
 from ui.icons import chart, upload, download, trash
 
@@ -115,15 +114,12 @@ def render():
             st.session_state["page"] = "upload"
             st.rerun()
     with col_c:
-        if st.button("Exportar Excel", use_container_width=True):
-            index = [load_report(rid).to_index_entry() for rid in cohort["report_ids"] if load_report(rid)]
-            index = [e for e in index if e]
-            st.session_state["_export_buf"] = exportar_excel_multi_hoja(index)
-            st.session_state["_export_name"] = f"{cohort['name']}_resultados.xlsx"
-        if st.session_state.get("_export_buf"):
-            st.download_button(
-                "Descargar .xlsx",
-                data=st.session_state["_export_buf"],
-                file_name=st.session_state["_export_name"],
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            )
+        export_index = build_export_index(cohort.get("report_ids", []))
+        st.download_button(
+            "Exportar Excel",
+            data=exportar_excel_multi_hoja(export_index),
+            file_name=f"{cohort['name']}_resultados.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key=f"macro_export_{cohort_id}",
+            use_container_width=True,
+        )

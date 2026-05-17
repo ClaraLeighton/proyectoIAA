@@ -1,7 +1,15 @@
 import io
 import pandas as pd
-from typing import Any
 from pipeline.persistence import load_report
+
+
+def build_export_index(report_ids: list[str]) -> list[dict]:
+    index = []
+    for report_id in report_ids:
+        report = load_report(report_id)
+        if report:
+            index.append(report.to_index_entry())
+    return index
 
 
 def _build_resumen_competencias(index: list[dict]) -> pd.DataFrame:
@@ -83,17 +91,27 @@ def _build_metadatos(index: list[dict]) -> pd.DataFrame:
 def exportar_excel_multi_hoja(index: list[dict]) -> io.BytesIO:
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        wrote_sheet = False
+
         df_resumen = _build_resumen_competencias(index)
         if not df_resumen.empty:
             df_resumen.to_excel(writer, sheet_name="Resumen por Competencia", index=False)
+            wrote_sheet = True
 
         df_detalle = _build_detalle_informes(index)
         if not df_detalle.empty:
             df_detalle.to_excel(writer, sheet_name="Detalle por Informe", index=False)
+            wrote_sheet = True
 
         df_meta = _build_metadatos(index)
         if not df_meta.empty:
             df_meta.to_excel(writer, sheet_name="Metadatos", index=False)
+            wrote_sheet = True
+
+        if not wrote_sheet:
+            pd.DataFrame([{
+                "Mensaje": "No hay informes completados disponibles para exportar.",
+            }]).to_excel(writer, sheet_name="Sin datos", index=False)
 
     output.seek(0)
     return output
