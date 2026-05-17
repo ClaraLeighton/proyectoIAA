@@ -116,3 +116,6 @@ def grid(w=20, h=20, color=_DARK):
 
 def percent(w=20, h=20, color=_DARK):
     return _svg("0 0 24 24", "M19 5L5 19 M7 7h.01 M17 17h.01", w, h, color)
+
+def eye(w=20, h=20, color=_DARK):
+    return _svg("0 0 24 24", "M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z", w, h, color)

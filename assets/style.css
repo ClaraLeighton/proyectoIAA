@@ -609,10 +609,9 @@ p, li, div, span, label {
 }
 .cohort-card-actions {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-direction: row;
+  gap: 6px;
   flex-shrink: 0;
-  min-width: 130px;
 }
 .cohort-btn {
   display: inline-flex;
@@ -653,6 +652,42 @@ p, li, div, span, label {
   background: #FAFAF8;
   border-color: #D4D2CD;
   color: #17212B !important;
+}
+.cohort-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 10px;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: all var(--uandes-transition);
+  border: 1px solid var(--uandes-border);
+  background: var(--uandes-white);
+  color: var(--uandes-text);
+}
+.cohort-btn-icon:hover {
+  background: #FAFAF8;
+  border-color: #D4D2CD;
+}
+.cohort-btn-icon-primary {
+  background: #CE0019;
+  border: none;
+  box-shadow: 0 2px 8px rgba(206,0,25,0.2);
+}
+.cohort-btn-icon-primary:hover {
+  background: #A30D12;
+  box-shadow: 0 4px 14px rgba(206,0,25,0.3);
+}
+.cohort-btn-icon-danger {
+  background: transparent;
+  border: 1px solid rgba(206,0,25,0.2);
+}
+.cohort-btn-icon-danger:hover {
+  background: var(--uandes-red-light);
+  border-color: rgba(206,0,25,0.3);
 }
 
 /* ─── REPORT CARD ─── */
@@ -1321,16 +1356,33 @@ div[data-baseweb="notification"] {
 }
 
 /* ─── RESPONSIVE ─── */
-@media (max-width: 1024px) {
-  .main > .block-container {
-    padding: calc(var(--uandes-topbar-h) + 24px) 24px 32px !important;
-  }
+@media (max-width: 1100px) {
   .cohort-card {
+    flex-direction: column;
+    align-items: stretch;
     padding: 22px 24px;
-    gap: 18px;
+    gap: 16px;
+  }
+  .cohort-card-name {
+    font-size: 20px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  .cohort-stat-value {
+    font-size: 26px;
+  }
+  .cohort-stat {
+    min-width: 70px;
   }
   .cohort-card-stats {
     gap: 18px;
+  }
+  .cohort-card-actions {
+    flex-direction: row;
+    min-width: 0;
+  }
+  .main > .block-container {
+    padding: calc(var(--uandes-topbar-h) + 24px) 24px 32px !important;
   }
   .uandes-metrics-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1370,31 +1422,51 @@ div[data-baseweb="notification"] {
     font-size: 28px;
   }
   .cohort-card {
-    flex-direction: column;
-    padding: 20px 20px;
-    gap: 16px;
-    align-items: stretch;
+    padding: 18px 18px;
+    gap: 14px;
   }
   .cohort-card-name {
-    font-size: 20px;
+    font-size: 18px;
   }
   .cohort-stat-value {
-    font-size: 26px;
+    font-size: 22px;
   }
   .cohort-stat {
-    min-width: 70px;
-  }
-  .cohort-card-actions {
-    flex-direction: row;
-    min-width: 0;
+    min-width: 60px;
   }
   .cohort-card-stats {
-    gap: 18px;
+    gap: 14px;
   }
   .uandes-section-card {
     padding: 20px 22px 24px;
   }
   .uandes-action-tiles {
     grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .cohort-card {
+    padding: 14px 14px;
+    gap: 12px;
+  }
+  .cohort-card-stats {
+    gap: 10px;
+  }
+  .cohort-stat {
+    min-width: 50px;
+  }
+  .cohort-stat-value {
+    font-size: 18px;
+  }
+  .cohort-stat-label {
+    font-size: 10px;
+  }
+  .cohort-card-actions {
+    gap: 4px;
+  }
+  .cohort-btn-icon {
+    width: 34px;
+    height: 34px;
   }
 }

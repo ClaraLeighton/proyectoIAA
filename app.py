@@ -176,14 +176,15 @@ def main():
 
     st.markdown(topbar_html(), unsafe_allow_html=True)
 
-    # Handle URL query params (cohort card links) — these come from full page reloads
-    # triggered by cohort card buttons using window.location.search.
     params = st.query_params
     if "page" in params:
         st.session_state["page"] = params["page"]
     if "cid" in params:
         st.session_state["selected_cohort_id"] = params["cid"]
-    if "page" in params or "cid" in params:
+    if "action" in params:
+        st.session_state["_action"] = params["action"]
+        st.session_state["_action_cid"] = params.get("cid", "")
+    if "page" in params or "cid" in params or "action" in params:
         st.query_params.clear()
 
     _init_session()
