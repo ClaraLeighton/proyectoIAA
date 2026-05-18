@@ -1,5 +1,5 @@
 _RED = "#CE0019"
-_DARK = "#17212B"
+_DARK = "currentColor"
 _MUTED = "#8E98A3"
 
 def _svg(view_box, path, w=20, h=20, color=_DARK):

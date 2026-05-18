@@ -6,6 +6,7 @@ import streamlit as st
 from pipeline.cohorts import get_cohort
 from pipeline.persistence import load_report
 from ui.components import page_hero, badge
+from ui.icons import search, file_text
 
 
 LEVEL_COLORS = {"0": "#ef4444", "1": "#f97316", "2": "#2e9cdb", "3": "#22c55e"}
@@ -77,6 +78,14 @@ def _report_card_html(report, rid: str, stats: dict) -> str:
         <div class="micro-report-status">{escape(stats["estado_label"])}</div>
         <h3>{escape(report.pdf_name)}</h3>
         <div class="micro-report-meta">ID {escape(rid[:8])}{f" · {escape(timestamp)}" if timestamp else ""}</div>
+      </div>
+      <div class="micro-report-actions-container">
+        <a href="?page=report_detail&selected_report_id={rid}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver detalle de {escape(report.pdf_name)}">
+            {search(18, 18, "currentColor")}
+        </a>
+        <a href="?page=cohort_reports&action=preview_pdf&selected_report_id={rid}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver informe PDF de {escape(report.pdf_name)}">
+            {file_text(18, 18, "currentColor")}
+        </a>
       </div>
       <div class="micro-report-approved"><strong>{stats["aprobadas"]}/{stats["total"]}</strong><span>competencias aprobadas</span></div>
     </div>
@@ -180,7 +189,7 @@ def render():
     st.markdown(
         _html_block(f"""
         <div class="micro-list-intro">
-          <span>{escape(cohort["name"])}</span>
+          <span class="uandes-badge-tipo">{escape(cohort["name"])}</span>
           <h2>Informes individuales</h2>
           <p>Listado simple de informes. Usa búsqueda y filtros para encontrar entregas que requieren revisión.</p>
         </div>
@@ -190,7 +199,7 @@ def render():
 
     filter_col, sort_col = st.columns([1, 1])
     with filter_col:
-        search = st.text_input("Buscar informe", placeholder="Buscar informe por nombre o ID...", label_visibility="collapsed")
+        search_val = st.text_input("Buscar informe", placeholder="Buscar informe por nombre o ID...", label_visibility="collapsed")
     with sort_col:
         view_filter = st.selectbox(
             "Filtro",
@@ -203,7 +212,7 @@ def render():
         horizontal=True,
         label_visibility="collapsed",
     )
-    q = search.lower().strip() if search else ""
+    q = search_val.lower().strip() if search_val else ""
 
     filtered = []
     for item in reports:
@@ -242,27 +251,16 @@ def render():
         stats = item["stats"]
         name = report.pdf_name or "Informe"
 
-        row_col, detail_col, preview_col = st.columns([7, 0.7, 0.7], vertical_alignment="center")
-        with row_col:
-            st.markdown(_report_card_html(report, rid, stats), unsafe_allow_html=True)
-        with detail_col:
-            if st.button(
-                "🔎",
-                key=f"view_report_{rid}",
-                help=f"Ver detalle de {name}",
-                use_container_width=True,
-            ):
-                st.session_state["selected_report_id"] = rid
-                st.session_state["page"] = "report_detail"
-                st.rerun()
-        with preview_col:
-            if st.button(
-                "📄",
-                key=f"preview_report_{rid}",
-                help=f"Ver informe PDF de {name}",
-                use_container_width=True,
-            ):
-                _show_pdf_preview_modal(report, rid)
+        st.markdown(_report_card_html(report, rid, stats), unsafe_allow_html=True)
+
+        # Row for icon-only action buttons
+    if st.session_state.get("_action") == "preview_pdf":
+        report_id_to_preview = st.session_state.get("selected_report_id")
+        if report_id_to_preview:
+            report_to_preview = load_report(report_id_to_preview)
+            if report_to_preview:
+                st.session_state.pop("_action", None)
+                _show_pdf_preview_modal(report_to_preview, report_id_to_preview)
 
     col1, col2 = st.columns(2)
     with col1:

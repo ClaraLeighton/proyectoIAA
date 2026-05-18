@@ -283,7 +283,8 @@ def render():
 
             chip_html = '<div class="uandes-file-chips">'
             for r in pending:
-                chip_html += f'<span class="uandes-file-chip">📄 {r["pdf_name"]}</span>'
+                doc_svg = doc(14, 14, "currentColor")
+                chip_html += f'<span class="uandes-file-chip">{doc_svg} {r["pdf_name"]}</span>'
             chip_html += "</div>"
             st.markdown(
                 f'<p style="font-size:15px;font-weight:600;margin-bottom:8px">{len(pending)} archivo{"s" if len(pending) != 1 else ""} cargado{"s" if len(pending) != 1 else ""}</p>',
