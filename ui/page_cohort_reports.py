@@ -81,10 +81,10 @@ def _report_card_html(report, rid: str, stats: dict, cohort_id: str = "") -> str
         <div class="micro-report-meta">ID {escape(rid[:8])}{f" · {escape(timestamp)}" if timestamp else ""}</div>
       </div>
       <div class="micro-report-actions-container">
-        <a href="?page=report_detail&selected_report_id={rid}&cid={cohort_id}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver detalle de {escape(report.pdf_name)}">
+        <a href="?page=report_detail&selected_report_id={rid}&cid={cohort_id}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver detalle">
             {search(18, 18, "currentColor")}
         </a>
-        <a href="?page=cohort_reports&action=preview_pdf&selected_report_id={rid}&cid={cohort_id}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver informe PDF de {escape(report.pdf_name)}">
+        <a href="?page=cohort_reports&action=preview_pdf&selected_report_id={rid}&cid={cohort_id}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver informe PDF">
             {file_text(18, 18, "currentColor")}
         </a>
       </div>
