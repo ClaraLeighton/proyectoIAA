@@ -40,14 +40,20 @@ def _extraer_pdfs_de_zip(zip_bytes: bytes) -> list[tuple[bytes, str]]:
     return pdfs
 
 
-def _build_pending_report(pdf_bytes: bytes, pdf_name: str, tipo_doc: str) -> dict:
+def _build_pending_report(
+    pdf_bytes: bytes,
+    pdf_name: str,
+    tipo_doc: str,
+    csv_bytes: bytes | None = None,
+    json_bytes: bytes | None = None,
+) -> dict:
     return {
         "report_id": str(uuid.uuid4()),
         "pdf_bytes": pdf_bytes,
         "pdf_name": pdf_name,
         "tipo_documento": tipo_doc,
-        "csv_bytes": None,
-        "json_bytes": None,
+        "csv_bytes": csv_bytes,
+        "json_bytes": json_bytes,
         "top_k": 5,
         "umbral": 0.65,
         "use_pdf": False,
@@ -76,7 +82,6 @@ def _stage_html(stage: str, comps_done: int, comps_total) -> str:
 
 def _render_processing():
     pending = st.session_state.get("pending_reports", [])
-    cohort_id = st.session_state.get("current_cohort_id")
     total = len(pending)
 
     progress = st.session_state.get("batch_progress", {})
@@ -84,79 +89,77 @@ def _render_processing():
     done = progress.get("_done", 0)
     errors = progress.get("_errors", 0)
 
-    sp = spinner(40, 40)
-    spinner_html = f'<div class="uandes-processing-spinner">{sp}</div>'
-
-    metrics_html = (
-        f'<div style="text-align:center;display:flex;gap:24px;justify-content:center">'
-        f'<div><div style="font-size:28px;font-weight:700;color:var(--uandes-text)">{done}</div>'
-        f'<div style="font-size:12px;color:var(--uandes-text-muted);text-transform:uppercase;letter-spacing:0.5px">Completados</div></div>'
-        f'<div><div style="font-size:28px;font-weight:700;color:var(--uandes-text)">{errors}</div>'
-        f'<div style="font-size:12px;color:var(--uandes-text-muted);text-transform:uppercase;letter-spacing:0.5px">Errores</div></div>'
-        f'</div>'
-    )
-
-    pct = done / total if total > 0 else 0
-    page_hero(
-        "Procesando Informes",
-        subtitle="Los informes se están procesando con IA.",
-        meta_items=[f"{done} de {total} informes procesados"],
-    )
-
-    processing_panel(
-        "Procesando informes",
-        f"{done} de {total} informes procesados",
-        pct,
-        metrics_html,
-        None,
-    )
-    st.markdown(spinner_html, unsafe_allow_html=True)
-
     is_alive = thread and thread.is_alive() if thread else False
-    if is_alive:
-        detail_parts = []
-        for r in pending:
-            rid = r["report_id"]
-            pdata = progress.get(rid, {})
-            stage = pdata.get("stage", "esperando")
-            comps_done = pdata.get("comps_done", 0)
-            comps_total = pdata.get("total_comps", "?")
-            name = r.get("pdf_name", rid[:8])
-            stage_markup = _stage_html(stage, comps_done, comps_total)
-            detail_parts.append(
-                f'<div style="padding:10px 0;border-bottom:1px solid var(--uandes-border-light);display:flex;justify-content:space-between;align-items:center">'
-                f'<span style="font-weight:600;font-size:14px">{name}</span>'
-                f'<span style="font-size:13px;color:var(--uandes-text-secondary)">{stage_markup}</span>'
-                f"</div>"
-            )
 
-        if detail_parts:
-            st.subheader("Detalle por Informe")
-            for part in detail_parts:
-                st.markdown(part, unsafe_allow_html=True)
-
-        time.sleep(0.3)
+    if not is_alive and thread is not None:
+        st.session_state["batch_thread"] = None
+        st.session_state["batch_running"] = False
+        st.session_state["pending_reports"] = []
+        st.session_state["report_count"] = len(load_index())
+        st.session_state["page"] = "cohort_macro"
         st.rerun()
-    else:
-        if thread is not None:
-            st.session_state["batch_thread"] = None
-            st.session_state["batch_running"] = False
-            st.session_state["pending_reports"] = []
-            st.session_state["report_count"] = len(load_index())
-            st.session_state["page"] = "cohort_macro"
-            st.rerun()
+        return
+
+    st.markdown(f'<h3 style="margin-bottom:24px">Procesando Informes</h3>', unsafe_allow_html=True)
+
+    for r in pending:
+        rid = r["report_id"]
+        pdata = progress.get(rid, {})
+        stage = pdata.get("stage", "esperando")
+        comps_done = pdata.get("comps_done", 0)
+        comps_total = pdata.get("total_comps", "?")
+        current_comp = pdata.get("current_comp_name", "")
+        name = r.get("pdf_name", rid[:8])
+
+        icon_fn, stage_label = STAGE_LABELS.get(stage, (doc, stage))
+        icon_svg = icon_fn(16, 16, "#5F6B76")
+
+        if stage == "C42_C5_C6" and isinstance(comps_total, int) and comps_total > 0:
+            comp_pct = comps_done / comps_total
+            remaining = comps_total - comps_done
+        else:
+            comp_pct = 0
+            remaining = 0
+
+        st.markdown(f'<div class="uandes-report-card" style="display:block;padding:16px 20px;margin-bottom:10px">', unsafe_allow_html=True)
+
+        header_col, stage_col = st.columns([3, 2])
+        with header_col:
+            st.markdown(f'<div style="font-weight:600;font-size:15px">{name}</div>', unsafe_allow_html=True)
+        with stage_col:
+            st.markdown(f'<div style="text-align:right;font-size:13px;color:#6B7280">{icon_svg} {stage_label}</div>', unsafe_allow_html=True)
+
+        if stage == "C42_C5_C6" and isinstance(comps_total, int) and comps_total > 0:
+            st.markdown(f'<div style="margin:6px 0 2px;font-size:13px;color:#4B5563">Competencia: {current_comp} ({remaining} restantes)</div>', unsafe_allow_html=True)
+            st.progress(comp_pct)
+
+        elif stage in ("C1", "C2", "C3", "C41"):
+            st.markdown(f'<div style="margin:6px 0 2px;font-size:13px;color:#9CA3AF">Preparando competencias…</div>', unsafe_allow_html=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # Overall progress bar at the bottom
+    pct = done / total if total > 0 else 0
+    st.markdown('<hr style="margin:20px 0 12px">', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:14px;font-weight:600;margin-bottom:6px">{done} de {total} informes completados ({errors} errores)</div>', unsafe_allow_html=True)
+    st.progress(pct)
+
+    sp = spinner(32, 32)
+    st.markdown(f'<div style="text-align:center;margin-top:16px">{sp}</div>', unsafe_allow_html=True)
+
+    time.sleep(0.3)
+    st.rerun()
 
 
 def _start_processing(pending, cohort_id):
     api_key = st.session_state.get("api_key", "")
-    c6_provider = st.session_state.get("c6_provider", "gemini")
-    c6_api_key = api_key
-    if c6_provider == "openrouter":
-        c6_api_key = os.getenv("OPENROUTER_API_KEY", "")
+    c6_provider = "openrouter"
+    c6_api_key = st.session_state.get("openrouter_key_input") or os.getenv("OPENROUTER_API_KEY", "")
     provider = st.session_state.get("provider", "gemini")
+    st.session_state["c6_provider"] = c6_provider
 
     for r in pending:
-        r["use_pdf"] = (c6_provider == "gemini")
+        r["use_pdf"] = False
         r["top_k"] = r.get("top_k", 5)
         r["umbral"] = r.get("umbral", 0.65)
 
@@ -231,6 +234,23 @@ def render():
     )
     st.markdown('<p style="font-size:13px;color:var(--uandes-text-muted);margin-top:-6px">Máximo 200MB por archivo. Se aceptan PDF y ZIP con múltiples PDFs.</p>', unsafe_allow_html=True)
 
+    st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Configuración Avanzada (opcional)</div></div>', unsafe_allow_html=True)
+    csv_file = st.file_uploader(
+        "Matriz de competencias (CSV)",
+        type=["csv"],
+        key="csv_upload",
+        help="Si no se provee, se usará la matriz por defecto (config/matriz.csv).",
+    )
+    json_file = st.file_uploader(
+        "Rúbrica de evaluación (JSON)",
+        type=["json"],
+        key="json_upload",
+        help="Si no se provee, se usará la rúbrica por defecto (config/rubrica.json).",
+    )
+
+    csv_bytes = csv_file.getvalue() if csv_file else None
+    json_bytes = json_file.getvalue() if json_file else None
+
     st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Tipo de Práctica</div></div>', unsafe_allow_html=True)
     tipos_disponibles = _cargar_tipos_rubrica()
     tipo_doc = st.radio(
@@ -254,9 +274,9 @@ def render():
             if f.name.lower().endswith(".zip"):
                 pdfs = _extraer_pdfs_de_zip(f.getvalue())
                 for pdf_bytes, pdf_name in pdfs:
-                    pending.append(_build_pending_report(pdf_bytes, pdf_name, tipo_doc))
+                    pending.append(_build_pending_report(pdf_bytes, pdf_name, tipo_doc, csv_bytes, json_bytes))
             elif f.name.lower().endswith(".pdf"):
-                pending.append(_build_pending_report(f.getvalue(), f.name, tipo_doc))
+                pending.append(_build_pending_report(f.getvalue(), f.name, tipo_doc, csv_bytes, json_bytes))
 
         if pending:
             st.markdown('<hr class="uandes-divider">', unsafe_allow_html=True)

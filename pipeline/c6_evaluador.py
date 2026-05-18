@@ -275,11 +275,12 @@ def run_batch(
     competencias_con_evidencia: list[tuple[dict, list[dict]]],
     api_key: str,
     model: str | None = None,
-    provider: str = "gemini",
+    provider: str = "openrouter",
     config_activa: dict | None = None,
     use_pdf: bool = False,
 ) -> list[dict]:
-    m = model or SUPPORTED_PROVIDERS.get(provider, {}).get("llm_model", "models/gemini-2.5-flash")
+    provider = "openrouter"
+    m = model or SUPPORTED_PROVIDERS["openrouter"]["llm_model"]
     cfg = config_activa or {}
     levels, level_details = _extract_levels(cfg)
     max_level = max(levels.keys())
@@ -356,7 +357,7 @@ def run(
     evidencia_recuperada: list[dict],
     api_key: str,
     model: str | None = None,
-    provider: str = "gemini",
+    provider: str = "openrouter",
     config_activa: dict | None = None,
     use_pdf: bool = False,
     reporte_c5: dict | None = None,

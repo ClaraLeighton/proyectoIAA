@@ -127,18 +127,34 @@
     "error": null
   },
   {
-    "report_id": "cb0da86e-bc1e-4a27-a8e7-22494ef82a01",
+    "report_id": "4f3fb891-5691-44f5-9ce9-eee6cfc622c1",
+    "pdf_name": "Informe Practica Pre-Profesional Estefania Sandoval.docx.pdf",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-17T21:22:16.900979",
+    "total_competencias": 11,
+    "avg_jpc": 0.6774,
+    "avg_confianza": 0.7009,
+    "nivel_promedio": 1.5,
+    "nivel_distribucion": {
+      "0": 3,
+      "2": 8
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "b3f50022-f232-4576-b311-c6d30a0fe436",
     "pdf_name": "Informe_PrePractica_Castelli.pdf",
     "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-17T20:49:09.160296",
+    "timestamp": "2026-05-17T21:22:37.246036",
     "total_competencias": 11,
-    "avg_jpc": 0.6634,
-    "avg_confianza": 0.6621,
-    "nivel_promedio": 1.2,
+    "avg_jpc": 0.6558,
+    "avg_confianza": 0.7155,
+    "nivel_promedio": 1.0,
     "nivel_distribucion": {
-      "2": 5,
       "0": 3,
-      "1": 3
+      "1": 5,
+      "2": 3
     },
     "estado": "completado",
     "error": null

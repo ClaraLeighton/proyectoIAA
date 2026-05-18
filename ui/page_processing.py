@@ -71,14 +71,13 @@ def render():
 
 def _start_batch(pending, cohort_id):
     api_key = st.session_state.get("api_key", "")
-    c6_provider = st.session_state.get("c6_provider", "gemini")
-    c6_api_key = api_key
-    if c6_provider == "openrouter":
-        c6_api_key = os.getenv("OPENROUTER_API_KEY", "")
+    c6_provider = "openrouter"
+    c6_api_key = st.session_state.get("openrouter_key_input") or os.getenv("OPENROUTER_API_KEY", "")
     provider = st.session_state.get("provider", "gemini")
+    st.session_state["c6_provider"] = c6_provider
 
     for r in pending:
-        r["use_pdf"] = (c6_provider == "gemini")
+        r["use_pdf"] = False
         r["top_k"] = r.get("top_k", 5)
         r["umbral"] = r.get("umbral", 0.65)
 

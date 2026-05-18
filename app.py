@@ -32,9 +32,11 @@ def _init_session():
     if "new_cohort" not in st.session_state:
         st.session_state["new_cohort"] = True
 
-    for k in ["provider", "api_key", "c6_provider"]:
+    for k in ["provider", "api_key"]:
         if k not in st.session_state:
-            st.session_state[k] = "" if k == "api_key" else ("openrouter" if k == "c6_provider" else "gemini")
+            st.session_state[k] = "" if k == "api_key" else "gemini"
+
+    st.session_state["c6_provider"] = "openrouter"
 
     emb_prov = st.session_state.get("provider", "gemini")
     env_key = os.getenv(
@@ -133,32 +135,25 @@ def _sidebar():
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-        has_env_key = any(os.getenv(k) for k in ["GEMINI_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY"])
-        if not has_env_key:
+        has_embedding_key = any(os.getenv(k) for k in ["GEMINI_API_KEY", "OPENAI_API_KEY"])
+        has_openrouter_key = bool(os.getenv("OPENROUTER_API_KEY"))
+        if not has_embedding_key or not has_openrouter_key:
             with st.expander("Config. API"):
-                emb_prov = st.selectbox(
-                    "Proveedor Embeddings",
-                    options=["gemini", "openai"],
-                    index=0 if st.session_state.get("provider", "gemini") == "gemini" else 1,
-                    key="emb_prov_sel",
-                )
-                st.session_state["provider"] = emb_prov
-                inp = st.text_input(f"API Key {emb_prov.title()}", key="embed_key_input", type="password")
-                if inp:
-                    st.session_state["api_key"] = inp
+                if not has_embedding_key:
+                    emb_prov = st.selectbox(
+                        "Proveedor Embeddings",
+                        options=["gemini", "openai"],
+                        index=0 if st.session_state.get("provider", "gemini") == "gemini" else 1,
+                        key="emb_prov_sel",
+                    )
+                    st.session_state["provider"] = emb_prov
+                    inp = st.text_input(f"API Key {emb_prov.title()}", key="embed_key_input", type="password")
+                    if inp:
+                        st.session_state["api_key"] = inp
 
-                c6_prov = st.selectbox(
-                    "Proveedor Eval.",
-                    options=["gemini", "openai", "openrouter"],
-                    index=(
-                        0 if st.session_state.get("c6_provider", "gemini") == "gemini"
-                        else 1 if st.session_state.get("c6_provider") == "openai"
-                        else 2
-                    ),
-                    key="c6_prov_sel",
-                )
-                st.session_state["c6_provider"] = c6_prov
-                if c6_prov == "openrouter":
+                st.session_state["c6_provider"] = "openrouter"
+                st.caption("Proveedor Eval.: OpenRouter")
+                if not has_openrouter_key:
                     or_key = st.text_input("OpenRouter Key", key="openrouter_key_input", type="password")
                     if or_key:
                         st.session_state["openrouter_key_input"] = or_key

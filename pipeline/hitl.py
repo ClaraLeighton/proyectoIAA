@@ -40,11 +40,11 @@ def procesar_ajuste(
     if capa == "C6" or (capa == "C5" and capas_reprocesadas):
         comp = next(c for c in pipeline_state["c1"]["competencias_activas"] if c["competencia_id"] == competencia_id)
         evidencia = pipeline_state["resultados_competencias"][idx].get("evidencia_recuperada", [])
-        c6_provider = pipeline_state.get("c6_provider") or pipeline_state.get("provider", "gemini")
+        c6_provider = "openrouter"
         c6_api_key = pipeline_state.get("c6_api_key") or api_key
         if llm_model is None:
-            llm_model = SUPPORTED_PROVIDERS.get(c6_provider, {}).get("llm_model", "models/gemini-2.5-flash")
-        if c6_provider == "openrouter" and not c6_api_key:
+            llm_model = SUPPORTED_PROVIDERS["openrouter"]["llm_model"]
+        if not c6_api_key:
             import os as _os
             c6_api_key = _os.getenv("OPENROUTER_API_KEY", "")
         c6_result = c6_evaluador.run(

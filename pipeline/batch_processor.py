@@ -95,7 +95,7 @@ def procesar_lote(
     csv_bytes: bytes | None = None,
     json_bytes: bytes | None = None,
     provider: str = "gemini",
-    c6_provider: str = "gemini",
+    c6_provider: str = "openrouter",
     c6_api_key: str | None = None,
     use_pdf: bool = False,
     top_k: int = 5,

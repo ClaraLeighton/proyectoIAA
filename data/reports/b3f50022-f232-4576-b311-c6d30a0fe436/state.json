@@ -210,7 +210,7 @@
       ],
       "total_competencias_esperadas": 11,
       "errores_c1": [],
-      "tiempo_c1_s": 0.213
+      "tiempo_c1_s": 0.229
     }
   },
   "c2": {
@@ -502,7 +502,7 @@
       ],
       "total_competencias_esperadas": 11,
       "errores_c1": [],
-      "tiempo_c1_s": 0.213
+      "tiempo_c1_s": 0.229
     }
   },
   "c3": {
@@ -1121,7 +1121,7 @@
       ],
       "total_competencias_esperadas": 11,
       "errores_c1": [],
-      "tiempo_c1_s": 0.213
+      "tiempo_c1_s": 0.229
     }
   },
   "c4": {
@@ -48558,7 +48558,7 @@
       ],
       "modelo_embeddings": "models/gemini-embedding-2",
       "proveedor": "gemini",
-      "tiempo_c4_s": 9.226,
+      "tiempo_c4_s": 11.16,
       "total_chunks": 67,
       "tiempo_c3_s": 0.0,
       "secciones_detectadas": [
@@ -48702,67 +48702,36 @@
       ],
       "total_competencias_esperadas": 11,
       "errores_c1": [],
-      "tiempo_c1_s": 0.213
+      "tiempo_c1_s": 0.229
     }
   },
   "c7": {
     "vista_preliminar": {
       "resultados_competencias": [
         {
-          "competencia_id": "C1",
-          "competencia_nombre": "Con destrezas básicas consolidadas: pensar",
-          "nivel": 2,
-          "nivel_label": "Uso concreto con resultados descritos",
+          "competencia_id": "C3",
+          "competencia_nombre": "Con  conocimientos básicos de los fundamentos de la fe católica y su coherencia",
+          "nivel": 0,
+          "nivel_label": "Sin evidencia",
           "secciones_fuente": [
             "general_activities",
             "abstract",
             "company_analysis",
             "work_analysis"
           ],
-          "citas": [
-            "Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.",
-            "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment. By implementing the solutions and improvements outlined, I believe I can continue to contribute more effectively, delivering even higher quality work in future endeavors."
-          ],
-          "justificacion": "El estudiante describe la implementación de validaciones de datos y comparaciones año a año, demostrando aplicación práctica sin profundizar en reflexión técnica.",
-          "estado_revision": "respaldo_suficiente",
+          "citas": [],
+          "justificacion": "No se menciona la fe católica ni fundamentos religiosos en los fragmentos.",
+          "estado_revision": "sin_evidencia",
           "estado_final": "pendiente",
           "p": [
-            0.05,
-            0.1,
-            0.75,
-            0.1
+            0.95,
+            0.02,
+            0.02,
+            0.01
           ],
-          "confianza": 0.75,
-          "entropy": 1.1918,
-          "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C1\",\"nivel\":2,\"justificacion\":\"El estudiante describe la implementación de validaciones de datos y comparaciones año a año, demostrando aplicación práctica sin profundizar en reflexión técnica.\",\"citas\":[\"Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\",\"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment. By implementing the solutions and improvements outlined, I believe I can continue to contribute more effectively, delivering even higher quality work in future endeavors.\"],\"p\":[0.05,0.1,0.75,0.1]}]}"
-        },
-        {
-          "competencia_id": "C2",
-          "competencia_nombre": "Con fuerte deseo de servicio a la sociedad",
-          "nivel": 2,
-          "nivel_label": "Uso concreto con resultados descritos",
-          "secciones_fuente": [
-            "general_activities",
-            "abstract",
-            "company_analysis",
-            "work_analysis"
-          ],
-          "citas": [
-            "Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.",
-            "By implementing the solutions and improvements outlined, I  can continue to contribute more effectively, delivering even higher quality work in future endeavors."
-          ],
-          "justificacion": "El estudiante describe resultados tangibles como validaciones de datos y comparaciones año a año, y menciona la implementación de soluciones que mejoran la calidad del trabajo, aunque sin profundizar en reflexiones sobre trade‑offs.",
-          "estado_revision": "respaldo_suficiente",
-          "estado_final": "pendiente",
-          "p": [
-            0.05,
-            0.15,
-            0.65,
-            0.15
-          ],
-          "confianza": 0.65,
-          "entropy": 1.4412,
-          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C2\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante describe resultados tangibles como validaciones de datos y comparaciones año a año, y menciona la implementación de soluciones que mejoran la calidad del trabajo, aunque sin profundizar en reflexiones sobre trade‑offs.\",\n      \"citas\": [\n        \"Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\",\n        \"By implementing the solutions and improvements outlined, I  can continue to contribute more effectively, delivering even higher quality work in future endeavors.\"\n      ],\n      \"p\": [\n        0.05,\n        0.15,\n        0.65,\n        0.15\n      ]\n    }\n  ]\n}"
+          "confianza": 0.95,
+          "entropy": 0.3625,
+          "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C3\",\"nivel\":0,\"justificacion\":\"No se menciona la fe católica ni fundamentos religiosos en los fragmentos.\",\"citas\":[],\"p\":[0.95,0.02,0.02,0.01]}]}"
         },
         {
           "competencia_id": "C4",
@@ -48790,33 +48759,8 @@
           "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C4\",\"nivel\":0,\"justificacion\":\"No se menciona discernimiento crítico de paradigmas sociales en los fragmentos.\",\"citas\":[],\"p\":[0.92,0.03,0.03,0.02]}]}"
         },
         {
-          "competencia_id": "C3",
-          "competencia_nombre": "Con  conocimientos básicos de los fundamentos de la fe católica y su coherencia",
-          "nivel": 0,
-          "nivel_label": "Sin evidencia",
-          "secciones_fuente": [
-            "general_activities",
-            "abstract",
-            "company_analysis",
-            "work_analysis"
-          ],
-          "citas": [],
-          "justificacion": "No hay mención de la fe católica o sus fundamentos en los fragmentos proporcionados. La evidencia se centra exclusivamente en actividades de Business Intelligence.",
-          "estado_revision": "sin_evidencia",
-          "estado_final": "pendiente",
-          "p": [
-            1.0,
-            0.0,
-            0.0,
-            0.0
-          ],
-          "confianza": 1.0,
-          "entropy": -0.0,
-          "raw_response": "\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C3\",\n      \"nivel\": 0,\n      \"justificacion\": \"No hay mención de la fe católica o sus fundamentos en los fragmentos proporcionados. La evidencia se centra exclusivamente en actividades de Business Intelligence.\",\n      \"citas\": [],\n      \"p\": [1.0, 0.0, 0.0, 0.0]\n    }\n  ]\n}"
-        },
-        {
-          "competencia_id": "C7",
-          "competencia_nombre": "Integra eficazmente equipos de trabajo",
+          "competencia_id": "C1",
+          "competencia_nombre": "Con destrezas básicas consolidadas: pensar",
           "nivel": 1,
           "nivel_label": "No demuestra aplicación",
           "secciones_fuente": [
@@ -48826,77 +48770,25 @@
             "work_analysis"
           ],
           "citas": [
-            "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.",
-            "Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team."
+            "On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.",
+            "I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration"
           ],
-          "justificacion": "El estudiante menciona la colaboración y la comunicación en entornos de datos, pero no muestra evidencia de planificación de tareas, establecimiento de metas o cumplimiento de plazos.",
+          "justificacion": "El estudiante menciona actividades relacionadas con análisis de datos, validaciones, y trabajo en equipo, pero no demuestra aplicación práctica con resultados tangibles específicos. Se observan descripciones generales de funciones sin evidencia de implementación concreta con impacto medible.",
           "estado_revision": "respaldo_suficiente",
           "estado_final": "pendiente",
           "p": [
             0.1,
-            0.7,
-            0.15,
+            0.6,
+            0.25,
             0.05
           ],
-          "confianza": 0.7,
-          "entropy": 1.319,
-          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C7\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona la colaboración y la comunicación en entornos de datos, pero no muestra evidencia de planificación de tareas, establecimiento de metas o cumplimiento de plazos.\",\n      \"citas\": [\n        \"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\",\n        \"Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team.\"\n      ],\n      \"p\": [0.1, 0.7, 0.15, 0.05]\n    }\n  ]\n}"
+          "confianza": 0.6,
+          "entropy": 1.4905,
+          "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C1\",\"nivel\":1,\"justificacion\":\"El estudiante menciona actividades relacionadas con análisis de datos, validaciones, y trabajo en equipo, pero no demuestra aplicación práctica con resultados tangibles específicos. Se observan descripciones generales de funciones sin evidencia de implementación concreta con impacto medible.\",\"citas\":[\"On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\",\"I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration\"],\"p\":[0.1,0.6,0.25,0.05]}]}"
         },
         {
           "competencia_id": "C5",
           "competencia_nombre": "Utiliza conocimientos y metodologías de ciencias básicas y ciencias de la ingeniería",
-          "nivel": 2,
-          "nivel_label": "Uso concreto con resultados descritos",
-          "secciones_fuente": [
-            "general_activities",
-            "abstract",
-            "company_analysis",
-            "work_analysis"
-          ],
-          "citas": [
-            "Fragmento 1 (ID: c021, Similitud: 0.56)"
-          ],
-          "justificacion": "Implementación de soluciones con herramientas y resultados tangibles.",
-          "estado_revision": "requiere_revision",
-          "estado_final": "pendiente",
-          "p": [
-            0.25,
-            0.25,
-            0.25,
-            0.25
-          ],
-          "confianza": 0.25,
-          "entropy": 2.0,
-          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C5\",\n      \"nivel\": 2,\n      \"justificacion\": \"Implementación de soluciones con herramientas y resultados tangibles.\",\n      \"citas\": [\"Fragmento 1 (ID: c021, Similitud: 0.56)\"],\n      \"p\": [0.25, 0.25, 0.25, 0.25]\n    }\n  ]\n}"
-        },
-        {
-          "competencia_id": "C9",
-          "competencia_nombre": "Reconoce responsabilidades éticas y profesionales en problemas de ingeniería",
-          "nivel": 0,
-          "nivel_label": "Sin evidencia",
-          "secciones_fuente": [
-            "general_activities",
-            "abstract",
-            "company_analysis",
-            "work_analysis"
-          ],
-          "citas": [],
-          "justificacion": "No hay mención explícita de responsabilidades éticas o profesionales en problemas de ingeniería, ni se considera el impacto de las soluciones en contextos técnicos, económicos, ambientales o sociales. Los fragmentos se centran en actividades técnicas y descripción de la empresa.",
-          "estado_revision": "sin_evidencia",
-          "estado_final": "pendiente",
-          "p": [
-            1.0,
-            0.0,
-            0.0,
-            0.0
-          ],
-          "confianza": 1.0,
-          "entropy": -0.0,
-          "raw_response": "\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C9\",\n      \"nivel\": 0,\n      \"justificacion\": \"No hay mención explícita de responsabilidades éticas o profesionales en problemas de ingeniería, ni se considera el impacto de las soluciones en contextos técnicos, económicos, ambientales o sociales. Los fragmentos se centran en actividades técnicas y descripción de la empresa.\",\n      \"citas\": [],\n      \"p\": [1, 0, 0, 0]\n    }\n  ]\n}"
-        },
-        {
-          "competencia_id": "C6",
-          "competencia_nombre": "Aplica las técnicas y métodos de las ciencias de la ingeniería a la resolución de problemas fundamentales",
           "nivel": 1,
           "nivel_label": "No demuestra aplicación",
           "secciones_fuente": [
@@ -48906,10 +48798,10 @@
             "work_analysis"
           ],
           "citas": [
-            "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.",
-            "On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences."
+            "On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.",
+            "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development"
           ],
-          "justificacion": "El estudiante menciona herramientas y conceptos como data validation, query optimization y dashboard development, pero sin demostrar aplicación práctica con profundidad técnica ni resultados tangibles. No hay evidencia de uso de metodologías de ingeniería ni reflexión sobre supuestos y limitaciones.",
+          "justificacion": "El estudiante menciona actividades técnicas como validaciones de datos, optimización de consultas y desarrollo de dashboards, pero no demuestra explícitamente la aplicación de metodologías de ciencias básicas o de ingeniería, ni la formulación de problemas de ingeniería que combinen teoría y práctica.",
           "estado_revision": "respaldo_suficiente",
           "estado_final": "pendiente",
           "p": [
@@ -48920,11 +48812,11 @@
           ],
           "confianza": 0.7,
           "entropy": 1.319,
-          "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C6\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona herramientas y conceptos como data validation, query optimization y dashboard development, pero sin demostrar aplicación práctica con profundidad técnica ni resultados tangibles. No hay evidencia de uso de metodologías de ingeniería ni reflexión sobre supuestos y limitaciones.\",\n      \"citas\": [\n        \"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\",\n        \"On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\"\n      ],\n      \"p\": [0.1, 0.7, 0.15, 0.05]\n    }\n  ]\n}\n```"
+          "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C5\",\"nivel\":1,\"justificacion\":\"El estudiante menciona actividades técnicas como validaciones de datos, optimización de consultas y desarrollo de dashboards, pero no demuestra explícitamente la aplicación de metodologías de ciencias básicas o de ingeniería, ni la formulación de problemas de ingeniería que combinen teoría y práctica.\",\"citas\":[\"On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\",\"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development\"],\"p\":[0.1,0.7,0.15,0.05]}]}"
         },
         {
-          "competencia_id": "c061",
-          "competencia_nombre": "Demuestra conocimientos de ciencias de la computación y la capacidad para aplica",
+          "competencia_id": "C6",
+          "competencia_nombre": "Aplica las técnicas y métodos de las ciencias de la ingeniería a la resolución de problemas fundamentales",
           "nivel": 2,
           "nivel_label": "Uso concreto con resultados descritos",
           "secciones_fuente": [
@@ -48934,20 +48826,49 @@
             "work_analysis"
           ],
           "citas": [
-            "Fragment 1"
+            "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.",
+            "Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences."
           ],
-          "justificacion": "Demostró aplicación práctica mediante herramientas de validación de datos y desarrollo de dashboards.",
-          "estado_revision": "requiere_revision",
+          "justificacion": "El estudiante describe la implementación de técnicas de validación de datos, optimización de consultas y desarrollo de dashboards, indicando resultados tangibles aunque sin reflexión profunda.",
+          "estado_revision": "respaldo_suficiente",
           "estado_final": "pendiente",
           "p": [
-            0.3636,
-            0.2727,
-            0.2727,
-            0.0909
+            0.1,
+            0.2,
+            0.6,
+            0.1
           ],
-          "confianza": 0.3636,
-          "entropy": 1.8676,
-          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"c061\",\n      \"nivel\": 2,\n      \"justificacion\": \"Demostró aplicación práctica mediante herramientas de validación de datos y desarrollo de dashboards.\",\n      \"citas\": [\"Fragment 1\"],\n      \"p\": [0.4, 0.3, 0.3, 0.1]\n    }\n  ]\n}"
+          "confianza": 0.6,
+          "entropy": 1.571,
+          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C6\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante describe la implementación de técnicas de validación de datos, optimización de consultas y desarrollo de dashboards, indicando resultados tangibles aunque sin reflexión profunda.\",\n      \"citas\": [\n        \"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\",\n        \"Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\"\n      ],\n      \"p\": [0.1, 0.2, 0.6, 0.1]\n    }\n  ]\n}"
+        },
+        {
+          "competencia_id": "C7",
+          "competencia_nombre": "Integra eficazmente equipos de trabajo",
+          "nivel": 2,
+          "nivel_label": "Uso concreto con resultados descritos",
+          "secciones_fuente": [
+            "general_activities",
+            "abstract",
+            "company_analysis",
+            "work_analysis"
+          ],
+          "citas": [
+            "Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team.",
+            "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment."
+          ],
+          "justificacion": "El estudiante describe su participación activa en equipos, validaciones de datos y mejoras de dashboards, evidenciando aplicación práctica y resultados tangibles, pero sin profundizar en la planificación de tareas ni en la reflexión sobre alternativas.",
+          "estado_revision": "respaldo_suficiente",
+          "estado_final": "pendiente",
+          "p": [
+            0.05,
+            0.1,
+            0.75,
+            0.1
+          ],
+          "confianza": 0.75,
+          "entropy": 1.1918,
+          "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C7\",\"nivel\":2,\"justificacion\":\"El estudiante describe su participación activa en equipos, validaciones de datos y mejoras de dashboards, evidenciando aplicación práctica y resultados tangibles, pero sin profundizar en la planificación de tareas ni en la reflexión sobre alternativas.\",\"citas\":[\"Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team.\",\"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\"],\"p\":[0.05,0.1,0.75,0.1]}]}"
         },
         {
           "competencia_id": "C8",
@@ -48961,94 +48882,153 @@
             "work_analysis"
           ],
           "citas": [
-            "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment."
+            "Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment."
           ],
-          "justificacion": "El estudiante menciona comunicación clara y colaboración en un entorno de datos, pero no demuestra aplicación práctica ni resultados tangibles de sus habilidades de comunicación.",
+          "justificacion": "El estudiante menciona la importancia de la comunicación clara en un entorno de datos, pero no muestra evidencia concreta de comunicación escrita u oral en español o inglés.",
+          "estado_revision": "respaldo_suficiente",
+          "estado_final": "pendiente",
+          "p": [
+            0.1,
+            0.6,
+            0.2,
+            0.1
+          ],
+          "confianza": 0.6,
+          "entropy": 1.571,
+          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C8\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona la importancia de la comunicación clara en un entorno de datos, pero no muestra evidencia concreta de comunicación escrita u oral en español o inglés.\",\n      \"citas\": [\n        \"Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment.\"\n      ],\n      \"p\": [0.1, 0.6, 0.2, 0.1]\n    }\n  ]\n}"
+        },
+        {
+          "competencia_id": "C10",
+          "competencia_nombre": "Demuestra conocimientos de ciencias de la computación y la capacidad para aplica",
+          "nivel": 2,
+          "nivel_label": "Uso concreto con resultados descritos",
+          "secciones_fuente": [
+            "general_activities",
+            "abstract",
+            "company_analysis",
+            "work_analysis"
+          ],
+          "citas": [
+            "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.",
+            "On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences."
+          ],
+          "justificacion": "El estudiante implementa soluciones con herramientas específicas y describe resultados tangibles, como validaciones de datos y análisis de tendencias, pero no hay evidencia de reflexión profunda sobre alternativas.",
           "estado_revision": "respaldo_suficiente",
           "estado_final": "pendiente",
           "p": [
             0.0,
+            0.1,
             0.7,
-            0.2,
-            0.1
+            0.2
           ],
           "confianza": 0.7,
           "entropy": 1.1568,
-          "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C8\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona comunicación clara y colaboración en un entorno de datos, pero no demuestra aplicación práctica ni resultados tangibles de sus habilidades de comunicación.\",\n      \"citas\": [\"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\"],\n      \"p\": [0.0, 0.7, 0.2, 0.1]\n    }\n  ]\n}\n```"
+          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C10\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante implementa soluciones con herramientas específicas y describe resultados tangibles, como validaciones de datos y análisis de tendencias, pero no hay evidencia de reflexión profunda sobre alternativas.\",\n      \"citas\": [\"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\", \"On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\"],\n      \"p\": [0.0, 0.1, 0.7, 0.2]\n    }\n  ]\n}"
         },
         {
           "competencia_id": "C11",
           "competencia_nombre": "Desarrolla software para la solución de problemas de distinta índole",
-          "nivel": 2,
-          "nivel_label": "Uso concreto con resultados descritos",
+          "nivel": 1,
+          "nivel_label": "No demuestra aplicación",
           "secciones_fuente": [
             "general_activities",
             "abstract",
             "work_analysis"
           ],
           "citas": [
-            "c061",
-            "c021",
-            "c001"
+            "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.",
+            "Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences."
           ],
-          "justificacion": "El estudiante muestra implementaciones con herramientas específicas, aunque con limitaciones en profundidad técnica, lo que indica un dominio parcial con resultados tangibles.",
+          "justificacion": "El estudiante menciona actividades como validación de datos y desarrollo de dashboards, pero no muestra evidencia concreta de implementación de software ni resultados medibles.",
           "estado_revision": "respaldo_suficiente",
           "estado_final": "pendiente",
           "p": [
-            0.25,
-            0.25,
-            0.25,
-            0.25
+            0.1,
+            0.6,
+            0.2,
+            0.1
           ],
-          "confianza": 0.25,
-          "entropy": 2.0,
-          "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C11\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante muestra implementaciones con herramientas específicas, aunque con limitaciones en profundidad técnica, lo que indica un dominio parcial con resultados tangibles.\",\n      \"citas\": [\"c061\", \"c021\", \"c001\"],\n      \"p\": [0.3, 0.3, 0.4]\n    }\n  ]\n}\n```"
+          "confianza": 0.6,
+          "entropy": 1.571,
+          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C11\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona actividades como validación de datos y desarrollo de dashboards, pero no muestra evidencia concreta de implementación de software ni resultados medibles.\",\n      \"citas\": [\n        \"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\",\n        \"Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\"\n      ],\n      \"p\": [0.1, 0.6, 0.2, 0.1]\n    }\n  ]\n}"
+        },
+        {
+          "competencia_id": "C2",
+          "competencia_nombre": "Con fuerte deseo de servicio a la sociedad",
+          "nivel": 1,
+          "nivel_label": "No demuestra aplicación",
+          "secciones_fuente": [
+            "general_activities",
+            "abstract",
+            "company_analysis",
+            "work_analysis"
+          ],
+          "citas": [
+            "Preunic’s commitment to customer satisfaction, technological integration, and employee development positions it well for sustained success.",
+            "I believe I can continue to contribute more effectively, delivering even higher quality work in future endeavors."
+          ],
+          "justificacion": "Los fragmentos describen actividades técnicas (validación de datos, dashboards, optimización) y mencionan conceptos organizacionales como satisfacción del cliente y desarrollo de empleados, pero no demuestran explícitamente un deseo de servicio a la sociedad ni acciones con impacto social identificable.",
+          "estado_revision": "respaldo_suficiente",
+          "estado_final": "pendiente",
+          "p": [
+            0.35,
+            0.45,
+            0.15,
+            0.05
+          ],
+          "confianza": 0.45,
+          "entropy": 1.6751,
+          "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C2\",\n      \"nivel\": 1,\n      \"justificacion\": \"Los fragmentos describen actividades técnicas (validación de datos, dashboards, optimización) y mencionan conceptos organizacionales como satisfacción del cliente y desarrollo de empleados, pero no demuestran explícitamente un deseo de servicio a la sociedad ni acciones con impacto social identificable.\",\n      \"citas\": [\n        \"Preunic’s commitment to customer satisfaction, technological integration, and employee development positions it well for sustained success.\",\n        \"I believe I can continue to contribute more effectively, delivering even higher quality work in future endeavors.\"\n      ],\n      \"p\": [0.35, 0.45, 0.15, 0.05]\n    }\n  ]\n}\n```"
+        },
+        {
+          "competencia_id": "C9",
+          "competencia_nombre": "Reconoce responsabilidades éticas y profesionales en problemas de ingeniería",
+          "nivel": 0,
+          "nivel_label": "Sin evidencia",
+          "secciones_fuente": [
+            "general_activities",
+            "abstract",
+            "company_analysis",
+            "work_analysis"
+          ],
+          "citas": [],
+          "justificacion": "No hay mención alguna de responsabilidades éticas, profesionales, ni consideración del impacto de las soluciones en contextos sociales, ambientales o económicos. Los fragmentos se centran únicamente en aspectos técnicos (validación de datos, optimización, dashboards) y comerciales (expansión, satisfacción del cliente, crecimiento).",
+          "estado_revision": "sin_evidencia",
+          "estado_final": "pendiente",
+          "p": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "confianza": 1.0,
+          "entropy": -0.0,
+          "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C9\",\n      \"nivel\": 0,\n      \"justificacion\": \"No hay mención alguna de responsabilidades éticas, profesionales, ni consideración del impacto de las soluciones en contextos sociales, ambientales o económicos. Los fragmentos se centran únicamente en aspectos técnicos (validación de datos, optimización, dashboards) y comerciales (expansión, satisfacción del cliente, crecimiento).\",\n      \"citas\": [],\n      \"p\": [1.0, 0.0, 0.0, 0.0]\n    }\n  ]\n}\n```"
         }
       ]
     },
     "reporte_procesamiento": {
       "trazabilidad_competencias": [
         {
-          "competencia_id": "C1",
-          "embedding_generado": true,
-          "similitud_calculada": true,
-          "recuperacion_ejecutada": true,
-          "chunks_recuperados": 4,
-          "dictamen_generado": true,
-          "estado_cobertura": "procesada",
-          "estado_final": "pendiente",
-          "nivel_asignado": 2,
-          "p0": 0.05,
-          "p1": 0.1,
-          "p2": 0.75,
-          "p3": 0.1,
-          "C_cobertura_citas": 0.6667,
-          "S_pertinencia_seccion": 0.85,
-          "R_similitud_promedio": 0.5493,
-          "F_confianza": 0.75,
-          "JPC": 0.704,
-          "JPC_aplicable": true
-        },
-        {
-          "competencia_id": "C2",
+          "competencia_id": "C3",
           "embedding_generado": true,
           "similitud_calculada": true,
           "recuperacion_ejecutada": true,
           "chunks_recuperados": 5,
-          "dictamen_generado": true,
-          "estado_cobertura": "procesada",
+          "dictamen_generado": false,
+          "estado_cobertura": "sin_evidencia",
           "estado_final": "pendiente",
-          "nivel_asignado": 2,
-          "p0": 0.05,
-          "p1": 0.15,
-          "p2": 0.65,
-          "p3": 0.15,
-          "C_cobertura_citas": 0.6667,
+          "nivel_asignado": 0,
+          "p0": 0.95,
+          "p1": 0.02,
+          "p2": 0.02,
+          "p3": 0.01,
+          "C_cobertura_citas": 0.0,
           "S_pertinencia_seccion": 0.85,
-          "R_similitud_promedio": 0.3223,
-          "F_confianza": 0.65,
-          "JPC": 0.6222,
-          "JPC_aplicable": true
+          "R_similitud_promedio": 0.3756,
+          "F_confianza": 0.95,
+          "JPC": 0.5439,
+          "JPC_aplicable": false
         },
         {
           "competencia_id": "C4",
@@ -49072,28 +49052,28 @@
           "JPC_aplicable": false
         },
         {
-          "competencia_id": "C3",
+          "competencia_id": "C1",
           "embedding_generado": true,
           "similitud_calculada": true,
           "recuperacion_ejecutada": true,
-          "chunks_recuperados": 5,
-          "dictamen_generado": false,
-          "estado_cobertura": "sin_evidencia",
+          "chunks_recuperados": 4,
+          "dictamen_generado": true,
+          "estado_cobertura": "procesada",
           "estado_final": "pendiente",
-          "nivel_asignado": 0,
-          "p0": 1.0,
-          "p1": 0.0,
-          "p2": 0.0,
-          "p3": 0.0,
-          "C_cobertura_citas": 0.0,
+          "nivel_asignado": 1,
+          "p0": 0.1,
+          "p1": 0.6,
+          "p2": 0.25,
+          "p3": 0.05,
+          "C_cobertura_citas": 0.6667,
           "S_pertinencia_seccion": 0.85,
-          "R_similitud_promedio": 0.3756,
-          "F_confianza": 1.0,
-          "JPC": 0.5564,
-          "JPC_aplicable": false
+          "R_similitud_promedio": 0.5493,
+          "F_confianza": 0.6,
+          "JPC": 0.6665,
+          "JPC_aplicable": true
         },
         {
-          "competencia_id": "C7",
+          "competencia_id": "C5",
           "embedding_generado": true,
           "similitud_calculada": true,
           "recuperacion_ejecutada": true,
@@ -49108,13 +49088,13 @@
           "p3": 0.05,
           "C_cobertura_citas": 0.6667,
           "S_pertinencia_seccion": 0.85,
-          "R_similitud_promedio": 0.6019,
+          "R_similitud_promedio": 0.5587,
           "F_confianza": 0.7,
-          "JPC": 0.7046,
+          "JPC": 0.6939,
           "JPC_aplicable": true
         },
         {
-          "competencia_id": "C5",
+          "competencia_id": "C6",
           "embedding_generado": true,
           "similitud_calculada": true,
           "recuperacion_ejecutada": true,
@@ -49123,16 +49103,121 @@
           "estado_cobertura": "procesada",
           "estado_final": "pendiente",
           "nivel_asignado": 2,
-          "p0": 0.25,
-          "p1": 0.25,
-          "p2": 0.25,
-          "p3": 0.25,
+          "p0": 0.1,
+          "p1": 0.2,
+          "p2": 0.6,
+          "p3": 0.1,
+          "C_cobertura_citas": 0.6667,
+          "S_pertinencia_seccion": 0.85,
+          "R_similitud_promedio": 0.5421,
+          "F_confianza": 0.6,
+          "JPC": 0.6647,
+          "JPC_aplicable": true
+        },
+        {
+          "competencia_id": "C7",
+          "embedding_generado": true,
+          "similitud_calculada": true,
+          "recuperacion_ejecutada": true,
+          "chunks_recuperados": 4,
+          "dictamen_generado": true,
+          "estado_cobertura": "procesada",
+          "estado_final": "pendiente",
+          "nivel_asignado": 2,
+          "p0": 0.05,
+          "p1": 0.1,
+          "p2": 0.75,
+          "p3": 0.1,
+          "C_cobertura_citas": 0.6667,
+          "S_pertinencia_seccion": 0.85,
+          "R_similitud_promedio": 0.6019,
+          "F_confianza": 0.75,
+          "JPC": 0.7171,
+          "JPC_aplicable": true
+        },
+        {
+          "competencia_id": "C8",
+          "embedding_generado": true,
+          "similitud_calculada": true,
+          "recuperacion_ejecutada": true,
+          "chunks_recuperados": 4,
+          "dictamen_generado": true,
+          "estado_cobertura": "procesada",
+          "estado_final": "pendiente",
+          "nivel_asignado": 1,
+          "p0": 0.1,
+          "p1": 0.6,
+          "p2": 0.2,
+          "p3": 0.1,
           "C_cobertura_citas": 0.3333,
           "S_pertinencia_seccion": 0.85,
-          "R_similitud_promedio": 0.5587,
-          "F_confianza": 0.25,
-          "JPC": 0.498,
-          "JPC_aplicable": false
+          "R_similitud_promedio": 0.5609,
+          "F_confianza": 0.6,
+          "JPC": 0.586,
+          "JPC_aplicable": true
+        },
+        {
+          "competencia_id": "C10",
+          "embedding_generado": true,
+          "similitud_calculada": true,
+          "recuperacion_ejecutada": true,
+          "chunks_recuperados": 4,
+          "dictamen_generado": true,
+          "estado_cobertura": "procesada",
+          "estado_final": "pendiente",
+          "nivel_asignado": 2,
+          "p0": 0.0,
+          "p1": 0.1,
+          "p2": 0.7,
+          "p3": 0.2,
+          "C_cobertura_citas": 0.6667,
+          "S_pertinencia_seccion": 0.85,
+          "R_similitud_promedio": 0.5524,
+          "F_confianza": 0.7,
+          "JPC": 0.6923,
+          "JPC_aplicable": true
+        },
+        {
+          "competencia_id": "C11",
+          "embedding_generado": true,
+          "similitud_calculada": true,
+          "recuperacion_ejecutada": true,
+          "chunks_recuperados": 3,
+          "dictamen_generado": true,
+          "estado_cobertura": "procesada",
+          "estado_final": "pendiente",
+          "nivel_asignado": 1,
+          "p0": 0.1,
+          "p1": 0.6,
+          "p2": 0.2,
+          "p3": 0.1,
+          "C_cobertura_citas": 0.6667,
+          "S_pertinencia_seccion": 0.8,
+          "R_similitud_promedio": 0.547,
+          "F_confianza": 0.6,
+          "JPC": 0.6534,
+          "JPC_aplicable": true
+        },
+        {
+          "competencia_id": "C2",
+          "embedding_generado": true,
+          "similitud_calculada": true,
+          "recuperacion_ejecutada": true,
+          "chunks_recuperados": 5,
+          "dictamen_generado": true,
+          "estado_cobertura": "procesada",
+          "estado_final": "pendiente",
+          "nivel_asignado": 1,
+          "p0": 0.35,
+          "p1": 0.45,
+          "p2": 0.15,
+          "p3": 0.05,
+          "C_cobertura_citas": 0.6667,
+          "S_pertinencia_seccion": 0.85,
+          "R_similitud_promedio": 0.3223,
+          "F_confianza": 0.45,
+          "JPC": 0.5723,
+          "JPC_aplicable": true
         },
         {
           "competencia_id": "C9",
@@ -49154,94 +49239,10 @@
           "F_confianza": 1.0,
           "JPC": 0.6024,
           "JPC_aplicable": false
-        },
-        {
-          "competencia_id": "C6",
-          "embedding_generado": true,
-          "similitud_calculada": true,
-          "recuperacion_ejecutada": true,
-          "chunks_recuperados": 4,
-          "dictamen_generado": true,
-          "estado_cobertura": "procesada",
-          "estado_final": "pendiente",
-          "nivel_asignado": 1,
-          "p0": 0.1,
-          "p1": 0.7,
-          "p2": 0.15,
-          "p3": 0.05,
-          "C_cobertura_citas": 0.6667,
-          "S_pertinencia_seccion": 0.85,
-          "R_similitud_promedio": 0.5421,
-          "F_confianza": 0.7,
-          "JPC": 0.6897,
-          "JPC_aplicable": true
-        },
-        {
-          "competencia_id": "c061",
-          "embedding_generado": true,
-          "similitud_calculada": true,
-          "recuperacion_ejecutada": true,
-          "chunks_recuperados": 4,
-          "dictamen_generado": true,
-          "estado_cobertura": "procesada",
-          "estado_final": "pendiente",
-          "nivel_asignado": 2,
-          "p0": 0.3636,
-          "p1": 0.2727,
-          "p2": 0.2727,
-          "p3": 0.0909,
-          "C_cobertura_citas": 0.3333,
-          "S_pertinencia_seccion": 0.4,
-          "R_similitud_promedio": 0.5524,
-          "F_confianza": 0.3636,
-          "JPC": 0.4123,
-          "JPC_aplicable": false
-        },
-        {
-          "competencia_id": "C8",
-          "embedding_generado": true,
-          "similitud_calculada": true,
-          "recuperacion_ejecutada": true,
-          "chunks_recuperados": 4,
-          "dictamen_generado": true,
-          "estado_cobertura": "procesada",
-          "estado_final": "pendiente",
-          "nivel_asignado": 1,
-          "p0": 0.0,
-          "p1": 0.7,
-          "p2": 0.2,
-          "p3": 0.1,
-          "C_cobertura_citas": 0.3333,
-          "S_pertinencia_seccion": 0.85,
-          "R_similitud_promedio": 0.5609,
-          "F_confianza": 0.7,
-          "JPC": 0.611,
-          "JPC_aplicable": true
-        },
-        {
-          "competencia_id": "C11",
-          "embedding_generado": true,
-          "similitud_calculada": true,
-          "recuperacion_ejecutada": true,
-          "chunks_recuperados": 3,
-          "dictamen_generado": true,
-          "estado_cobertura": "procesada",
-          "estado_final": "pendiente",
-          "nivel_asignado": 2,
-          "p0": 0.25,
-          "p1": 0.25,
-          "p2": 0.25,
-          "p3": 0.25,
-          "C_cobertura_citas": 1.0,
-          "S_pertinencia_seccion": 0.8,
-          "R_similitud_promedio": 0.547,
-          "F_confianza": 0.25,
-          "JPC": 0.6492,
-          "JPC_aplicable": true
         }
       ],
       "tiempos": {
-        "T_procesamiento_automatico_min": 1.71,
+        "T_procesamiento_automatico_min": 2.08,
         "T_revision_humana_min": null,
         "T_ajustes_min": null,
         "T_IA_total_min": null
@@ -49252,241 +49253,19 @@
   },
   "resultados_competencias": [
     {
-      "competencia_id": "C1",
-      "nivel": 2,
-      "justificacion": "El estudiante describe la implementación de validaciones de datos y comparaciones año a año, demostrando aplicación práctica sin profundizar en reflexión técnica.",
-      "citas": [
-        "Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.",
-        "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment. By implementing the solutions and improvements outlined, I believe I can continue to contribute more effectively, delivering even higher quality work in future endeavors."
-      ],
-      "p": [
-        0.05,
-        0.1,
-        0.75,
-        0.1
-      ],
-      "competencia_nombre": "Con destrezas básicas consolidadas: pensar",
-      "max_nivel": 3,
-      "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C1\",\"nivel\":2,\"justificacion\":\"El estudiante describe la implementación de validaciones de datos y comparaciones año a año, demostrando aplicación práctica sin profundizar en reflexión técnica.\",\"citas\":[\"Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\",\"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment. By implementing the solutions and improvements outlined, I believe I can continue to contribute more effectively, delivering even higher quality work in future endeavors.\"],\"p\":[0.05,0.1,0.75,0.1]}]}",
-      "reporte": {
-        "competencia_id": "C1",
-        "estado_capa_6": "OK",
-        "dictamen_generado": true,
-        "formato_llm_ok": true,
-        "citas_validas": true,
-        "modelo_llm": "openrouter/free",
-        "proveedor": "openrouter",
-        "uso_pdf": false,
-        "error": null,
-        "tiempo_c6_s": 11.025
-      },
-      "evidencia_recuperada": [
-        {
-          "chunk_id": "c021",
-          "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
-          "seccion": "general_activities",
-          "tipo_fuente": "principal",
-          "similitud": 0.556845623494442,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c061",
-          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
-          "seccion": "work_analysis",
-          "tipo_fuente": "principal",
-          "similitud": 0.5468301669837061,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c041",
-          "texto": "Additionally, opportunities for international expansion, deeper digitalization, and enhanced Business  Intelligence capabilities present new avenues for long-term growth, allowing it to strengthen its  market presence and adapt to evolving industry demands. Preunic’s commitment to customer satisfaction, technological integration, and employee development  positions it well for sustained success.",
-          "seccion": "company_analysis",
-          "tipo_fuente": "principal",
-          "similitud": 0.5369604249765263,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c001",
-          "texto": "Abstract  Preunic, a subsidiary of Empresas SB, is a leading beauty, personal care, and household products  retailer in Chile, with a strong market presence across physical store and online platforms. The  company is committed to customer satisfaction, competitive pricing, and organizational efficiency,  leveraging Business Intelligence tools to optimize its decision-making processes.",
-          "seccion": "abstract",
-          "tipo_fuente": "contextual",
-          "similitud": 0.5567310187432385,
-          "peso": 0.1,
-          "_priority": 2
-        }
-      ],
-      "r_similitud": 0.5493
-    },
-    {
-      "competencia_id": "C2",
-      "nivel": 2,
-      "justificacion": "El estudiante describe resultados tangibles como validaciones de datos y comparaciones año a año, y menciona la implementación de soluciones que mejoran la calidad del trabajo, aunque sin profundizar en reflexiones sobre trade‑offs.",
-      "citas": [
-        "Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.",
-        "By implementing the solutions and improvements outlined, I  can continue to contribute more effectively, delivering even higher quality work in future endeavors."
-      ],
-      "p": [
-        0.05,
-        0.15,
-        0.65,
-        0.15
-      ],
-      "competencia_nombre": "Con fuerte deseo de servicio a la sociedad",
-      "max_nivel": 3,
-      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C2\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante describe resultados tangibles como validaciones de datos y comparaciones año a año, y menciona la implementación de soluciones que mejoran la calidad del trabajo, aunque sin profundizar en reflexiones sobre trade‑offs.\",\n      \"citas\": [\n        \"Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\",\n        \"By implementing the solutions and improvements outlined, I  can continue to contribute more effectively, delivering even higher quality work in future endeavors.\"\n      ],\n      \"p\": [\n        0.05,\n        0.15,\n        0.65,\n        0.15\n      ]\n    }\n  ]\n}",
-      "reporte": {
-        "competencia_id": "C2",
-        "estado_capa_6": "OK",
-        "dictamen_generado": true,
-        "formato_llm_ok": true,
-        "citas_validas": true,
-        "modelo_llm": "openrouter/free",
-        "proveedor": "openrouter",
-        "uso_pdf": false,
-        "error": null,
-        "tiempo_c6_s": 11.03
-      },
-      "evidencia_recuperada": [
-        {
-          "chunk_id": "c061",
-          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
-          "seccion": "work_analysis",
-          "tipo_fuente": "principal",
-          "similitud": 0.4072446383898142,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c021",
-          "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
-          "seccion": "general_activities",
-          "tipo_fuente": "principal",
-          "similitud": 0.4055822511255347,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c041",
-          "texto": "Additionally, opportunities for international expansion, deeper digitalization, and enhanced Business  Intelligence capabilities present new avenues for long-term growth, allowing it to strengthen its  market presence and adapt to evolving industry demands. Preunic’s commitment to customer satisfaction, technological integration, and employee development  positions it well for sustained success.",
-          "seccion": "company_analysis",
-          "tipo_fuente": "principal",
-          "similitud": 0.404458500627465,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c001",
-          "texto": "Abstract  Preunic, a subsidiary of Empresas SB, is a leading beauty, personal care, and household products  retailer in Chile, with a strong market presence across physical store and online platforms. The  company is committed to customer satisfaction, competitive pricing, and organizational efficiency,  leveraging Business Intelligence tools to optimize its decision-making processes.",
-          "seccion": "abstract",
-          "tipo_fuente": "contextual",
-          "similitud": 0.39442338302134805,
-          "peso": 0.1,
-          "_priority": 2
-        },
-        {
-          "chunk_id": "c020",
-          "texto": "2.1 General Activities  During my internship at Preunic’s BI department, I worked on different projects, including:  Familiarization with Tools and Training: Initially, I took time to familiarize myself with the tools and  processes essential for my tasks, such as Qlik and DBeaver. Where I received training with the  guidance of experience team members, to navigate these systems and understand their impact on  daily operations.",
-          "seccion": "general_activities",
-          "tipo_fuente": "principal",
-          "similitud": 0.0,
-          "peso": 0.3,
-          "_priority": 0
-        }
-      ],
-      "r_similitud": 0.3223
-    },
-    {
-      "competencia_id": "C4",
-      "nivel": 0,
-      "justificacion": "No se menciona discernimiento crítico de paradigmas sociales en los fragmentos.",
-      "citas": [],
-      "p": [
-        0.92,
-        0.03,
-        0.03,
-        0.02
-      ],
-      "competencia_nombre": "Capaces de discernir con sentido crítico los paradigmas de la sociedad en la que",
-      "max_nivel": 3,
-      "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C4\",\"nivel\":0,\"justificacion\":\"No se menciona discernimiento crítico de paradigmas sociales en los fragmentos.\",\"citas\":[],\"p\":[0.92,0.03,0.03,0.02]}]}",
-      "reporte": {
-        "competencia_id": "C4",
-        "estado_capa_6": "OK_NIVEL0",
-        "dictamen_generado": [],
-        "formato_llm_ok": true,
-        "citas_validas": true,
-        "modelo_llm": "openrouter/free",
-        "proveedor": "openrouter",
-        "uso_pdf": false,
-        "error": null,
-        "tiempo_c6_s": 6.545
-      },
-      "evidencia_recuperada": [
-        {
-          "chunk_id": "c041",
-          "texto": "Additionally, opportunities for international expansion, deeper digitalization, and enhanced Business  Intelligence capabilities present new avenues for long-term growth, allowing it to strengthen its  market presence and adapt to evolving industry demands. Preunic’s commitment to customer satisfaction, technological integration, and employee development  positions it well for sustained success.",
-          "seccion": "company_analysis",
-          "tipo_fuente": "principal",
-          "similitud": 0.4769009602351585,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c001",
-          "texto": "Abstract  Preunic, a subsidiary of Empresas SB, is a leading beauty, personal care, and household products  retailer in Chile, with a strong market presence across physical store and online platforms. The  company is committed to customer satisfaction, competitive pricing, and organizational efficiency,  leveraging Business Intelligence tools to optimize its decision-making processes.",
-          "seccion": "abstract",
-          "tipo_fuente": "contextual",
-          "similitud": 0.4648920047182739,
-          "peso": 0.1,
-          "_priority": 2
-        },
-        {
-          "chunk_id": "c021",
-          "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
-          "seccion": "general_activities",
-          "tipo_fuente": "principal",
-          "similitud": 0.4628294385162724,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c061",
-          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
-          "seccion": "work_analysis",
-          "tipo_fuente": "principal",
-          "similitud": 0.458313258948278,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c020",
-          "texto": "2.1 General Activities  During my internship at Preunic’s BI department, I worked on different projects, including:  Familiarization with Tools and Training: Initially, I took time to familiarize myself with the tools and  processes essential for my tasks, such as Qlik and DBeaver. Where I received training with the  guidance of experience team members, to navigate these systems and understand their impact on  daily operations.",
-          "seccion": "general_activities",
-          "tipo_fuente": "principal",
-          "similitud": 0.0,
-          "peso": 0.3,
-          "_priority": 0
-        }
-      ],
-      "r_similitud": 0.3726
-    },
-    {
       "competencia_id": "C3",
       "nivel": 0,
-      "justificacion": "No hay mención de la fe católica o sus fundamentos en los fragmentos proporcionados. La evidencia se centra exclusivamente en actividades de Business Intelligence.",
+      "justificacion": "No se menciona la fe católica ni fundamentos religiosos en los fragmentos.",
       "citas": [],
       "p": [
-        1.0,
-        0.0,
-        0.0,
-        0.0
+        0.95,
+        0.02,
+        0.02,
+        0.01
       ],
       "competencia_nombre": "Con  conocimientos básicos de los fundamentos de la fe católica y su coherencia",
       "max_nivel": 3,
-      "raw_response": "\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C3\",\n      \"nivel\": 0,\n      \"justificacion\": \"No hay mención de la fe católica o sus fundamentos en los fragmentos proporcionados. La evidencia se centra exclusivamente en actividades de Business Intelligence.\",\n      \"citas\": [],\n      \"p\": [1.0, 0.0, 0.0, 0.0]\n    }\n  ]\n}",
+      "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C3\",\"nivel\":0,\"justificacion\":\"No se menciona la fe católica ni fundamentos religiosos en los fragmentos.\",\"citas\":[],\"p\":[0.95,0.02,0.02,0.01]}]}",
       "reporte": {
         "competencia_id": "C3",
         "estado_capa_6": "OK_NIVEL0",
@@ -49497,7 +49276,7 @@
         "proveedor": "openrouter",
         "uso_pdf": false,
         "error": null,
-        "tiempo_c6_s": 19.071
+        "tiempo_c6_s": 5.557
       },
       "evidencia_recuperada": [
         {
@@ -49549,59 +49328,38 @@
       "r_similitud": 0.3756
     },
     {
-      "competencia_id": "C7",
-      "nivel": 1,
-      "justificacion": "El estudiante menciona la colaboración y la comunicación en entornos de datos, pero no muestra evidencia de planificación de tareas, establecimiento de metas o cumplimiento de plazos.",
-      "citas": [
-        "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.",
-        "Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team."
-      ],
+      "competencia_id": "C4",
+      "nivel": 0,
+      "justificacion": "No se menciona discernimiento crítico de paradigmas sociales en los fragmentos.",
+      "citas": [],
       "p": [
-        0.1,
-        0.7,
-        0.15,
-        0.05
+        0.92,
+        0.03,
+        0.03,
+        0.02
       ],
-      "competencia_nombre": "Integra eficazmente equipos de trabajo",
+      "competencia_nombre": "Capaces de discernir con sentido crítico los paradigmas de la sociedad en la que",
       "max_nivel": 3,
-      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C7\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona la colaboración y la comunicación en entornos de datos, pero no muestra evidencia de planificación de tareas, establecimiento de metas o cumplimiento de plazos.\",\n      \"citas\": [\n        \"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\",\n        \"Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team.\"\n      ],\n      \"p\": [0.1, 0.7, 0.15, 0.05]\n    }\n  ]\n}",
+      "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C4\",\"nivel\":0,\"justificacion\":\"No se menciona discernimiento crítico de paradigmas sociales en los fragmentos.\",\"citas\":[],\"p\":[0.92,0.03,0.03,0.02]}]}",
       "reporte": {
-        "competencia_id": "C7",
-        "estado_capa_6": "OK",
-        "dictamen_generado": true,
+        "competencia_id": "C4",
+        "estado_capa_6": "OK_NIVEL0",
+        "dictamen_generado": [],
         "formato_llm_ok": true,
         "citas_validas": true,
         "modelo_llm": "openrouter/free",
         "proveedor": "openrouter",
         "uso_pdf": false,
         "error": null,
-        "tiempo_c6_s": 10.578
+        "tiempo_c6_s": 5.925
       },
       "evidencia_recuperada": [
-        {
-          "chunk_id": "c021",
-          "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
-          "seccion": "general_activities",
-          "tipo_fuente": "principal",
-          "similitud": 0.6156155680858015,
-          "peso": 0.3,
-          "_priority": 0
-        },
         {
           "chunk_id": "c041",
           "texto": "Additionally, opportunities for international expansion, deeper digitalization, and enhanced Business  Intelligence capabilities present new avenues for long-term growth, allowing it to strengthen its  market presence and adapt to evolving industry demands. Preunic’s commitment to customer satisfaction, technological integration, and employee development  positions it well for sustained success.",
           "seccion": "company_analysis",
           "tipo_fuente": "principal",
-          "similitud": 0.5888696945858892,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c061",
-          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
-          "seccion": "work_analysis",
-          "tipo_fuente": "principal",
-          "similitud": 0.5858106490832622,
+          "similitud": 0.4769009602351585,
           "peso": 0.3,
           "_priority": 0
         },
@@ -49610,29 +49368,126 @@
           "texto": "Abstract  Preunic, a subsidiary of Empresas SB, is a leading beauty, personal care, and household products  retailer in Chile, with a strong market presence across physical store and online platforms. The  company is committed to customer satisfaction, competitive pricing, and organizational efficiency,  leveraging Business Intelligence tools to optimize its decision-making processes.",
           "seccion": "abstract",
           "tipo_fuente": "contextual",
-          "similitud": 0.6172789710232764,
+          "similitud": 0.4648920047182739,
+          "peso": 0.1,
+          "_priority": 2
+        },
+        {
+          "chunk_id": "c021",
+          "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
+          "seccion": "general_activities",
+          "tipo_fuente": "principal",
+          "similitud": 0.4628294385162724,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c061",
+          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
+          "seccion": "work_analysis",
+          "tipo_fuente": "principal",
+          "similitud": 0.458313258948278,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c020",
+          "texto": "2.1 General Activities  During my internship at Preunic’s BI department, I worked on different projects, including:  Familiarization with Tools and Training: Initially, I took time to familiarize myself with the tools and  processes essential for my tasks, such as Qlik and DBeaver. Where I received training with the  guidance of experience team members, to navigate these systems and understand their impact on  daily operations.",
+          "seccion": "general_activities",
+          "tipo_fuente": "principal",
+          "similitud": 0.0,
+          "peso": 0.3,
+          "_priority": 0
+        }
+      ],
+      "r_similitud": 0.3726
+    },
+    {
+      "competencia_id": "C1",
+      "nivel": 1,
+      "justificacion": "El estudiante menciona actividades relacionadas con análisis de datos, validaciones, y trabajo en equipo, pero no demuestra aplicación práctica con resultados tangibles específicos. Se observan descripciones generales de funciones sin evidencia de implementación concreta con impacto medible.",
+      "citas": [
+        "On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.",
+        "I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration"
+      ],
+      "p": [
+        0.1,
+        0.6,
+        0.25,
+        0.05
+      ],
+      "competencia_nombre": "Con destrezas básicas consolidadas: pensar",
+      "max_nivel": 3,
+      "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C1\",\"nivel\":1,\"justificacion\":\"El estudiante menciona actividades relacionadas con análisis de datos, validaciones, y trabajo en equipo, pero no demuestra aplicación práctica con resultados tangibles específicos. Se observan descripciones generales de funciones sin evidencia de implementación concreta con impacto medible.\",\"citas\":[\"On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\",\"I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration\"],\"p\":[0.1,0.6,0.25,0.05]}]}",
+      "reporte": {
+        "competencia_id": "C1",
+        "estado_capa_6": "OK",
+        "dictamen_generado": true,
+        "formato_llm_ok": true,
+        "citas_validas": true,
+        "modelo_llm": "openrouter/free",
+        "proveedor": "openrouter",
+        "uso_pdf": false,
+        "error": null,
+        "tiempo_c6_s": 27.972
+      },
+      "evidencia_recuperada": [
+        {
+          "chunk_id": "c021",
+          "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
+          "seccion": "general_activities",
+          "tipo_fuente": "principal",
+          "similitud": 0.556845623494442,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c061",
+          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
+          "seccion": "work_analysis",
+          "tipo_fuente": "principal",
+          "similitud": 0.5468301669837061,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c041",
+          "texto": "Additionally, opportunities for international expansion, deeper digitalization, and enhanced Business  Intelligence capabilities present new avenues for long-term growth, allowing it to strengthen its  market presence and adapt to evolving industry demands. Preunic’s commitment to customer satisfaction, technological integration, and employee development  positions it well for sustained success.",
+          "seccion": "company_analysis",
+          "tipo_fuente": "principal",
+          "similitud": 0.5369604249765263,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c001",
+          "texto": "Abstract  Preunic, a subsidiary of Empresas SB, is a leading beauty, personal care, and household products  retailer in Chile, with a strong market presence across physical store and online platforms. The  company is committed to customer satisfaction, competitive pricing, and organizational efficiency,  leveraging Business Intelligence tools to optimize its decision-making processes.",
+          "seccion": "abstract",
+          "tipo_fuente": "contextual",
+          "similitud": 0.5567310187432385,
           "peso": 0.1,
           "_priority": 2
         }
       ],
-      "r_similitud": 0.6019
+      "r_similitud": 0.5493
     },
     {
       "competencia_id": "C5",
-      "nivel": 2,
-      "justificacion": "Implementación de soluciones con herramientas y resultados tangibles.",
+      "nivel": 1,
+      "justificacion": "El estudiante menciona actividades técnicas como validaciones de datos, optimización de consultas y desarrollo de dashboards, pero no demuestra explícitamente la aplicación de metodologías de ciencias básicas o de ingeniería, ni la formulación de problemas de ingeniería que combinen teoría y práctica.",
       "citas": [
-        "Fragmento 1 (ID: c021, Similitud: 0.56)"
+        "On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.",
+        "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development"
       ],
       "p": [
-        0.25,
-        0.25,
-        0.25,
-        0.25
+        0.1,
+        0.7,
+        0.15,
+        0.05
       ],
       "competencia_nombre": "Utiliza conocimientos y metodologías de ciencias básicas y ciencias de la ingeniería",
       "max_nivel": 3,
-      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C5\",\n      \"nivel\": 2,\n      \"justificacion\": \"Implementación de soluciones con herramientas y resultados tangibles.\",\n      \"citas\": [\"Fragmento 1 (ID: c021, Similitud: 0.56)\"],\n      \"p\": [0.25, 0.25, 0.25, 0.25]\n    }\n  ]\n}",
+      "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C5\",\"nivel\":1,\"justificacion\":\"El estudiante menciona actividades técnicas como validaciones de datos, optimización de consultas y desarrollo de dashboards, pero no demuestra explícitamente la aplicación de metodologías de ciencias básicas o de ingeniería, ni la formulación de problemas de ingeniería que combinen teoría y práctica.\",\"citas\":[\"On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\",\"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development\"],\"p\":[0.1,0.7,0.15,0.05]}]}",
       "reporte": {
         "competencia_id": "C5",
         "estado_capa_6": "OK",
@@ -49643,7 +49498,7 @@
         "proveedor": "openrouter",
         "uso_pdf": false,
         "error": null,
-        "tiempo_c6_s": 32.088
+        "tiempo_c6_s": 18.284
       },
       "evidencia_recuperada": [
         {
@@ -49686,88 +49541,22 @@
       "r_similitud": 0.5587
     },
     {
-      "competencia_id": "C9",
-      "nivel": 0,
-      "justificacion": "No hay mención explícita de responsabilidades éticas o profesionales en problemas de ingeniería, ni se considera el impacto de las soluciones en contextos técnicos, económicos, ambientales o sociales. Los fragmentos se centran en actividades técnicas y descripción de la empresa.",
-      "citas": [],
-      "p": [
-        1.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      "competencia_nombre": "Reconoce responsabilidades éticas y profesionales en problemas de ingeniería",
-      "max_nivel": 3,
-      "raw_response": "\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C9\",\n      \"nivel\": 0,\n      \"justificacion\": \"No hay mención explícita de responsabilidades éticas o profesionales en problemas de ingeniería, ni se considera el impacto de las soluciones en contextos técnicos, económicos, ambientales o sociales. Los fragmentos se centran en actividades técnicas y descripción de la empresa.\",\n      \"citas\": [],\n      \"p\": [1, 0, 0, 0]\n    }\n  ]\n}",
-      "reporte": {
-        "competencia_id": "C9",
-        "estado_capa_6": "OK_NIVEL0",
-        "dictamen_generado": [],
-        "formato_llm_ok": true,
-        "citas_validas": true,
-        "modelo_llm": "openrouter/free",
-        "proveedor": "openrouter",
-        "uso_pdf": false,
-        "error": null,
-        "tiempo_c6_s": 10.874
-      },
-      "evidencia_recuperada": [
-        {
-          "chunk_id": "c061",
-          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
-          "seccion": "work_analysis",
-          "tipo_fuente": "principal",
-          "similitud": 0.5793357769532265,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c021",
-          "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
-          "seccion": "general_activities",
-          "tipo_fuente": "principal",
-          "similitud": 0.5480851897156557,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c041",
-          "texto": "Additionally, opportunities for international expansion, deeper digitalization, and enhanced Business  Intelligence capabilities present new avenues for long-term growth, allowing it to strengthen its  market presence and adapt to evolving industry demands. Preunic’s commitment to customer satisfaction, technological integration, and employee development  positions it well for sustained success.",
-          "seccion": "company_analysis",
-          "tipo_fuente": "principal",
-          "similitud": 0.5420138537592142,
-          "peso": 0.3,
-          "_priority": 0
-        },
-        {
-          "chunk_id": "c001",
-          "texto": "Abstract  Preunic, a subsidiary of Empresas SB, is a leading beauty, personal care, and household products  retailer in Chile, with a strong market presence across physical store and online platforms. The  company is committed to customer satisfaction, competitive pricing, and organizational efficiency,  leveraging Business Intelligence tools to optimize its decision-making processes.",
-          "seccion": "abstract",
-          "tipo_fuente": "contextual",
-          "similitud": 0.5684634829828854,
-          "peso": 0.1,
-          "_priority": 2
-        }
-      ],
-      "r_similitud": 0.5595
-    },
-    {
       "competencia_id": "C6",
-      "nivel": 1,
-      "justificacion": "El estudiante menciona herramientas y conceptos como data validation, query optimization y dashboard development, pero sin demostrar aplicación práctica con profundidad técnica ni resultados tangibles. No hay evidencia de uso de metodologías de ingeniería ni reflexión sobre supuestos y limitaciones.",
+      "nivel": 2,
+      "justificacion": "El estudiante describe la implementación de técnicas de validación de datos, optimización de consultas y desarrollo de dashboards, indicando resultados tangibles aunque sin reflexión profunda.",
       "citas": [
         "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.",
-        "On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences."
+        "Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences."
       ],
       "p": [
         0.1,
-        0.7,
-        0.15,
-        0.05
+        0.2,
+        0.6,
+        0.1
       ],
       "competencia_nombre": "Aplica las técnicas y métodos de las ciencias de la ingeniería a la resolución de problemas fundamentales",
       "max_nivel": 3,
-      "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C6\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona herramientas y conceptos como data validation, query optimization y dashboard development, pero sin demostrar aplicación práctica con profundidad técnica ni resultados tangibles. No hay evidencia de uso de metodologías de ingeniería ni reflexión sobre supuestos y limitaciones.\",\n      \"citas\": [\n        \"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\",\n        \"On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\"\n      ],\n      \"p\": [0.1, 0.7, 0.15, 0.05]\n    }\n  ]\n}\n```",
+      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C6\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante describe la implementación de técnicas de validación de datos, optimización de consultas y desarrollo de dashboards, indicando resultados tangibles aunque sin reflexión profunda.\",\n      \"citas\": [\n        \"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\",\n        \"Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\"\n      ],\n      \"p\": [0.1, 0.2, 0.6, 0.1]\n    }\n  ]\n}",
       "reporte": {
         "competencia_id": "C6",
         "estado_capa_6": "OK",
@@ -49778,7 +49567,7 @@
         "proveedor": "openrouter",
         "uso_pdf": false,
         "error": null,
-        "tiempo_c6_s": 44.186
+        "tiempo_c6_s": 18.069
       },
       "evidencia_recuperada": [
         {
@@ -49821,23 +49610,24 @@
       "r_similitud": 0.5421
     },
     {
-      "competencia_id": "c061",
+      "competencia_id": "C7",
       "nivel": 2,
-      "justificacion": "Demostró aplicación práctica mediante herramientas de validación de datos y desarrollo de dashboards.",
+      "justificacion": "El estudiante describe su participación activa en equipos, validaciones de datos y mejoras de dashboards, evidenciando aplicación práctica y resultados tangibles, pero sin profundizar en la planificación de tareas ni en la reflexión sobre alternativas.",
       "citas": [
-        "Fragment 1"
+        "Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team.",
+        "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment."
       ],
       "p": [
-        0.3636,
-        0.2727,
-        0.2727,
-        0.0909
+        0.05,
+        0.1,
+        0.75,
+        0.1
       ],
-      "competencia_nombre": "Demuestra conocimientos de ciencias de la computación y la capacidad para aplica",
+      "competencia_nombre": "Integra eficazmente equipos de trabajo",
       "max_nivel": 3,
-      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"c061\",\n      \"nivel\": 2,\n      \"justificacion\": \"Demostró aplicación práctica mediante herramientas de validación de datos y desarrollo de dashboards.\",\n      \"citas\": [\"Fragment 1\"],\n      \"p\": [0.4, 0.3, 0.3, 0.1]\n    }\n  ]\n}",
+      "raw_response": "{\"evaluaciones\":[{\"competencia_id\":\"C7\",\"nivel\":2,\"justificacion\":\"El estudiante describe su participación activa en equipos, validaciones de datos y mejoras de dashboards, evidenciando aplicación práctica y resultados tangibles, pero sin profundizar en la planificación de tareas ni en la reflexión sobre alternativas.\",\"citas\":[\"Which not helped me develop technical skills but also gave me a clearer picture of how everything connects within the organization. This foundation allowed me to quickly adapt and contribute meaningfully to the team.\",\"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\"],\"p\":[0.05,0.1,0.75,0.1]}]}",
       "reporte": {
-        "competencia_id": "C10",
+        "competencia_id": "C7",
         "estado_capa_6": "OK",
         "dictamen_generado": true,
         "formato_llm_ok": true,
@@ -49846,24 +49636,15 @@
         "proveedor": "openrouter",
         "uso_pdf": false,
         "error": null,
-        "tiempo_c6_s": 18.855
+        "tiempo_c6_s": 8.29
       },
       "evidencia_recuperada": [
-        {
-          "chunk_id": "c061",
-          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
-          "seccion": "work_analysis",
-          "tipo_fuente": "principal",
-          "similitud": 0.5700499554943825,
-          "peso": 0.3,
-          "_priority": 0
-        },
         {
           "chunk_id": "c021",
           "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
           "seccion": "general_activities",
           "tipo_fuente": "principal",
-          "similitud": 0.5456638961848841,
+          "similitud": 0.6156155680858015,
           "peso": 0.3,
           "_priority": 0
         },
@@ -49872,7 +49653,16 @@
           "texto": "Additionally, opportunities for international expansion, deeper digitalization, and enhanced Business  Intelligence capabilities present new avenues for long-term growth, allowing it to strengthen its  market presence and adapt to evolving industry demands. Preunic’s commitment to customer satisfaction, technological integration, and employee development  positions it well for sustained success.",
           "seccion": "company_analysis",
           "tipo_fuente": "principal",
-          "similitud": 0.5238811000716431,
+          "similitud": 0.5888696945858892,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c061",
+          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
+          "seccion": "work_analysis",
+          "tipo_fuente": "principal",
+          "similitud": 0.5858106490832622,
           "peso": 0.3,
           "_priority": 0
         },
@@ -49881,29 +49671,29 @@
           "texto": "Abstract  Preunic, a subsidiary of Empresas SB, is a leading beauty, personal care, and household products  retailer in Chile, with a strong market presence across physical store and online platforms. The  company is committed to customer satisfaction, competitive pricing, and organizational efficiency,  leveraging Business Intelligence tools to optimize its decision-making processes.",
           "seccion": "abstract",
           "tipo_fuente": "contextual",
-          "similitud": 0.5700244483018208,
+          "similitud": 0.6172789710232764,
           "peso": 0.1,
           "_priority": 2
         }
       ],
-      "r_similitud": 0.5524
+      "r_similitud": 0.6019
     },
     {
       "competencia_id": "C8",
       "nivel": 1,
-      "justificacion": "El estudiante menciona comunicación clara y colaboración en un entorno de datos, pero no demuestra aplicación práctica ni resultados tangibles de sus habilidades de comunicación.",
+      "justificacion": "El estudiante menciona la importancia de la comunicación clara en un entorno de datos, pero no muestra evidencia concreta de comunicación escrita u oral en español o inglés.",
       "citas": [
-        "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment."
+        "Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment."
       ],
       "p": [
-        0.0,
-        0.7,
+        0.1,
+        0.6,
         0.2,
         0.1
       ],
       "competencia_nombre": "Se comunica por escrito y oralmente de forma efectiva tanto en español como en inglés",
       "max_nivel": 3,
-      "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C8\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona comunicación clara y colaboración en un entorno de datos, pero no demuestra aplicación práctica ni resultados tangibles de sus habilidades de comunicación.\",\n      \"citas\": [\"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\"],\n      \"p\": [0.0, 0.7, 0.2, 0.1]\n    }\n  ]\n}\n```",
+      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C8\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona la importancia de la comunicación clara en un entorno de datos, pero no muestra evidencia concreta de comunicación escrita u oral en español o inglés.\",\n      \"citas\": [\n        \"Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment.\"\n      ],\n      \"p\": [0.1, 0.6, 0.2, 0.1]\n    }\n  ]\n}",
       "reporte": {
         "competencia_id": "C8",
         "estado_capa_6": "OK",
@@ -49914,7 +49704,7 @@
         "proveedor": "openrouter",
         "uso_pdf": false,
         "error": null,
-        "tiempo_c6_s": 46.094
+        "tiempo_c6_s": 15.419
       },
       "evidencia_recuperada": [
         {
@@ -49957,23 +49747,91 @@
       "r_similitud": 0.5609
     },
     {
-      "competencia_id": "C11",
+      "competencia_id": "C10",
       "nivel": 2,
-      "justificacion": "El estudiante muestra implementaciones con herramientas específicas, aunque con limitaciones en profundidad técnica, lo que indica un dominio parcial con resultados tangibles.",
+      "justificacion": "El estudiante implementa soluciones con herramientas específicas y describe resultados tangibles, como validaciones de datos y análisis de tendencias, pero no hay evidencia de reflexión profunda sobre alternativas.",
       "citas": [
-        "c061",
-        "c021",
-        "c001"
+        "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.",
+        "On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences."
       ],
       "p": [
-        0.25,
-        0.25,
-        0.25,
-        0.25
+        0.0,
+        0.1,
+        0.7,
+        0.2
+      ],
+      "competencia_nombre": "Demuestra conocimientos de ciencias de la computación y la capacidad para aplica",
+      "max_nivel": 3,
+      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C10\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante implementa soluciones con herramientas específicas y describe resultados tangibles, como validaciones de datos y análisis de tendencias, pero no hay evidencia de reflexión profunda sobre alternativas.\",\n      \"citas\": [\"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\", \"On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\"],\n      \"p\": [0.0, 0.1, 0.7, 0.2]\n    }\n  ]\n}",
+      "reporte": {
+        "competencia_id": "C10",
+        "estado_capa_6": "OK",
+        "dictamen_generado": true,
+        "formato_llm_ok": true,
+        "citas_validas": true,
+        "modelo_llm": "openrouter/free",
+        "proveedor": "openrouter",
+        "uso_pdf": false,
+        "error": null,
+        "tiempo_c6_s": 3.174
+      },
+      "evidencia_recuperada": [
+        {
+          "chunk_id": "c061",
+          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
+          "seccion": "work_analysis",
+          "tipo_fuente": "principal",
+          "similitud": 0.5700499554943825,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c021",
+          "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
+          "seccion": "general_activities",
+          "tipo_fuente": "principal",
+          "similitud": 0.5456638961848841,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c041",
+          "texto": "Additionally, opportunities for international expansion, deeper digitalization, and enhanced Business  Intelligence capabilities present new avenues for long-term growth, allowing it to strengthen its  market presence and adapt to evolving industry demands. Preunic’s commitment to customer satisfaction, technological integration, and employee development  positions it well for sustained success.",
+          "seccion": "company_analysis",
+          "tipo_fuente": "principal",
+          "similitud": 0.5238811000716431,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c001",
+          "texto": "Abstract  Preunic, a subsidiary of Empresas SB, is a leading beauty, personal care, and household products  retailer in Chile, with a strong market presence across physical store and online platforms. The  company is committed to customer satisfaction, competitive pricing, and organizational efficiency,  leveraging Business Intelligence tools to optimize its decision-making processes.",
+          "seccion": "abstract",
+          "tipo_fuente": "contextual",
+          "similitud": 0.5700244483018208,
+          "peso": 0.1,
+          "_priority": 2
+        }
+      ],
+      "r_similitud": 0.5524
+    },
+    {
+      "competencia_id": "C11",
+      "nivel": 1,
+      "justificacion": "El estudiante menciona actividades como validación de datos y desarrollo de dashboards, pero no muestra evidencia concreta de implementación de software ni resultados medibles.",
+      "citas": [
+        "Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.",
+        "Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences."
+      ],
+      "p": [
+        0.1,
+        0.6,
+        0.2,
+        0.1
       ],
       "competencia_nombre": "Desarrolla software para la solución de problemas de distinta índole",
       "max_nivel": 3,
-      "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C11\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante muestra implementaciones con herramientas específicas, aunque con limitaciones en profundidad técnica, lo que indica un dominio parcial con resultados tangibles.\",\n      \"citas\": [\"c061\", \"c021\", \"c001\"],\n      \"p\": [0.3, 0.3, 0.4]\n    }\n  ]\n}\n```",
+      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C11\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona actividades como validación de datos y desarrollo de dashboards, pero no muestra evidencia concreta de implementación de software ni resultados medibles.\",\n      \"citas\": [\n        \"Through these experiences, I gained a deeper understanding of data validation, query optimization, and dashboard development, as well as the importance of clear communication and collaboration in a data driven environment.\",\n        \"Result Validations: On multiple occasions, I performed data validations, updates, and year over year comparisons to analyze trends and differences.\"\n      ],\n      \"p\": [0.1, 0.6, 0.2, 0.1]\n    }\n  ]\n}",
       "reporte": {
         "competencia_id": "C11",
         "estado_capa_6": "OK",
@@ -49984,7 +49842,7 @@
         "proveedor": "openrouter",
         "uso_pdf": false,
         "error": null,
-        "tiempo_c6_s": 31.437
+        "tiempo_c6_s": 12.924
       },
       "evidencia_recuperada": [
         {
@@ -50016,6 +49874,150 @@
         }
       ],
       "r_similitud": 0.547
+    },
+    {
+      "competencia_id": "C2",
+      "nivel": 1,
+      "justificacion": "Los fragmentos describen actividades técnicas (validación de datos, dashboards, optimización) y mencionan conceptos organizacionales como satisfacción del cliente y desarrollo de empleados, pero no demuestran explícitamente un deseo de servicio a la sociedad ni acciones con impacto social identificable.",
+      "citas": [
+        "Preunic’s commitment to customer satisfaction, technological integration, and employee development positions it well for sustained success.",
+        "I believe I can continue to contribute more effectively, delivering even higher quality work in future endeavors."
+      ],
+      "p": [
+        0.35,
+        0.45,
+        0.15,
+        0.05
+      ],
+      "competencia_nombre": "Con fuerte deseo de servicio a la sociedad",
+      "max_nivel": 3,
+      "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C2\",\n      \"nivel\": 1,\n      \"justificacion\": \"Los fragmentos describen actividades técnicas (validación de datos, dashboards, optimización) y mencionan conceptos organizacionales como satisfacción del cliente y desarrollo de empleados, pero no demuestran explícitamente un deseo de servicio a la sociedad ni acciones con impacto social identificable.\",\n      \"citas\": [\n        \"Preunic’s commitment to customer satisfaction, technological integration, and employee development positions it well for sustained success.\",\n        \"I believe I can continue to contribute more effectively, delivering even higher quality work in future endeavors.\"\n      ],\n      \"p\": [0.35, 0.45, 0.15, 0.05]\n    }\n  ]\n}\n```",
+      "reporte": {
+        "competencia_id": "C2",
+        "estado_capa_6": "OK",
+        "dictamen_generado": true,
+        "formato_llm_ok": true,
+        "citas_validas": true,
+        "modelo_llm": "openrouter/free",
+        "proveedor": "openrouter",
+        "uso_pdf": false,
+        "error": null,
+        "tiempo_c6_s": 93.51
+      },
+      "evidencia_recuperada": [
+        {
+          "chunk_id": "c061",
+          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
+          "seccion": "work_analysis",
+          "tipo_fuente": "principal",
+          "similitud": 0.4072446383898142,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c021",
+          "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
+          "seccion": "general_activities",
+          "tipo_fuente": "principal",
+          "similitud": 0.4055822511255347,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c041",
+          "texto": "Additionally, opportunities for international expansion, deeper digitalization, and enhanced Business  Intelligence capabilities present new avenues for long-term growth, allowing it to strengthen its  market presence and adapt to evolving industry demands. Preunic’s commitment to customer satisfaction, technological integration, and employee development  positions it well for sustained success.",
+          "seccion": "company_analysis",
+          "tipo_fuente": "principal",
+          "similitud": 0.404458500627465,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c001",
+          "texto": "Abstract  Preunic, a subsidiary of Empresas SB, is a leading beauty, personal care, and household products  retailer in Chile, with a strong market presence across physical store and online platforms. The  company is committed to customer satisfaction, competitive pricing, and organizational efficiency,  leveraging Business Intelligence tools to optimize its decision-making processes.",
+          "seccion": "abstract",
+          "tipo_fuente": "contextual",
+          "similitud": 0.39442338302134805,
+          "peso": 0.1,
+          "_priority": 2
+        },
+        {
+          "chunk_id": "c020",
+          "texto": "2.1 General Activities  During my internship at Preunic’s BI department, I worked on different projects, including:  Familiarization with Tools and Training: Initially, I took time to familiarize myself with the tools and  processes essential for my tasks, such as Qlik and DBeaver. Where I received training with the  guidance of experience team members, to navigate these systems and understand their impact on  daily operations.",
+          "seccion": "general_activities",
+          "tipo_fuente": "principal",
+          "similitud": 0.0,
+          "peso": 0.3,
+          "_priority": 0
+        }
+      ],
+      "r_similitud": 0.3223
+    },
+    {
+      "competencia_id": "C9",
+      "nivel": 0,
+      "justificacion": "No hay mención alguna de responsabilidades éticas, profesionales, ni consideración del impacto de las soluciones en contextos sociales, ambientales o económicos. Los fragmentos se centran únicamente en aspectos técnicos (validación de datos, optimización, dashboards) y comerciales (expansión, satisfacción del cliente, crecimiento).",
+      "citas": [],
+      "p": [
+        1.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "competencia_nombre": "Reconoce responsabilidades éticas y profesionales en problemas de ingeniería",
+      "max_nivel": 3,
+      "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C9\",\n      \"nivel\": 0,\n      \"justificacion\": \"No hay mención alguna de responsabilidades éticas, profesionales, ni consideración del impacto de las soluciones en contextos sociales, ambientales o económicos. Los fragmentos se centran únicamente en aspectos técnicos (validación de datos, optimización, dashboards) y comerciales (expansión, satisfacción del cliente, crecimiento).\",\n      \"citas\": [],\n      \"p\": [1.0, 0.0, 0.0, 0.0]\n    }\n  ]\n}\n```",
+      "reporte": {
+        "competencia_id": "C9",
+        "estado_capa_6": "OK_NIVEL0",
+        "dictamen_generado": [],
+        "formato_llm_ok": true,
+        "citas_validas": true,
+        "modelo_llm": "openrouter/free",
+        "proveedor": "openrouter",
+        "uso_pdf": false,
+        "error": null,
+        "tiempo_c6_s": 54.271
+      },
+      "evidencia_recuperada": [
+        {
+          "chunk_id": "c061",
+          "texto": "11    Through these experiences, I gained a deeper understanding of data validation, query optimization,  and dashboard development, as well as the importance of clear communication and collaboration in  a data driven environment. By implementing the solutions and improvements outlined, I believe I  can continue to contribute more effectively, delivering even higher quality work in future endeavors. 12    4.",
+          "seccion": "work_analysis",
+          "tipo_fuente": "principal",
+          "similitud": 0.5793357769532265,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c021",
+          "texto": "Which not helped me develop technical skills but also gave me a clearer picture of  how everything connects within the organization. This foundation allowed me to quickly adapt and  contribute meaningfully to the team. Result Validations: On multiple occasions, I performed data validations, updates, and year over year  comparisons to analyze trends and differences.",
+          "seccion": "general_activities",
+          "tipo_fuente": "principal",
+          "similitud": 0.5480851897156557,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c041",
+          "texto": "Additionally, opportunities for international expansion, deeper digitalization, and enhanced Business  Intelligence capabilities present new avenues for long-term growth, allowing it to strengthen its  market presence and adapt to evolving industry demands. Preunic’s commitment to customer satisfaction, technological integration, and employee development  positions it well for sustained success.",
+          "seccion": "company_analysis",
+          "tipo_fuente": "principal",
+          "similitud": 0.5420138537592142,
+          "peso": 0.3,
+          "_priority": 0
+        },
+        {
+          "chunk_id": "c001",
+          "texto": "Abstract  Preunic, a subsidiary of Empresas SB, is a leading beauty, personal care, and household products  retailer in Chile, with a strong market presence across physical store and online platforms. The  company is committed to customer satisfaction, competitive pricing, and organizational efficiency,  leveraging Business Intelligence tools to optimize its decision-making processes.",
+          "seccion": "abstract",
+          "tipo_fuente": "contextual",
+          "similitud": 0.5684634829828854,
+          "peso": 0.1,
+          "_priority": 2
+        }
+      ],
+      "r_similitud": 0.5595
     }
   ],
   "estado": {

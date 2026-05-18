@@ -28,8 +28,12 @@ def _run_competency(
     top_k: int,
     umbral: float,
     use_pdf: bool,
+    progress: dict | None = None,
+    report_id: str = "",
 ) -> dict:
     cid = comp["competencia_id"]
+    _safe_progress(progress, report_id, "current_comp_id", cid)
+    _safe_progress(progress, report_id, "current_comp_name", comp.get("nombre", cid))
     comp_vec = comp_embeddings[cid]
     sims = c42_similitud_cos.compute_similarity(
         comp_embedding=comp_vec,
@@ -109,6 +113,7 @@ def process_report(
     competencies = c1["competencias_activas"]
     n_comps = len(competencies)
     _safe_progress(progress, report_id, "total_comps", n_comps)
+    _safe_progress(progress, report_id, "comp_names", [c.get("nombre", c["competencia_id"]) for c in competencies])
 
     inner_workers = min(n_comps, batch_config.max_workers // 2 + 1)
     global_semaphore = llm_config.get("_semaphore", threading.Semaphore(batch_config.semaphore_limit))
@@ -122,6 +127,7 @@ def process_report(
             competencies[0], c1, c2, c3, chunk_embeddings, comp_embeddings,
             llm_config, global_semaphore, report_spec.get("top_k", 5),
             report_spec.get("umbral", 0.65), report_spec.get("use_pdf", False),
+            progress=progress, report_id=report_id,
         )
         results.append(res)
         _safe_progress(progress, report_id, "comps_done", 1)
@@ -133,6 +139,7 @@ def process_report(
                     _run_competency, comp, c1, c2, c3, chunk_embeddings, comp_embeddings,
                     llm_config, global_semaphore, report_spec.get("top_k", 5),
                     report_spec.get("umbral", 0.65), report_spec.get("use_pdf", False),
+                    progress=progress, report_id=report_id,
                 )
                 futures[f] = comp["competencia_id"]
 

@@ -12,13 +12,14 @@
     ]
   },
   {
-    "cohort_id": "9c0b40ed-33cb-485d-8f83-89d550edac68",
-    "name": "pre-pratica 2025",
+    "cohort_id": "c53c0dad-6b72-41d9-b44e-061abe4f3a71",
+    "name": "pre practica 2025",
     "tipo_documento": "pre_professional_practice",
-    "created_at": "2026-05-17T20:47:26.420349",
-    "updated_at": "2026-05-17T20:49:09.199134",
+    "created_at": "2026-05-17T21:20:32.530146",
+    "updated_at": "2026-05-17T21:22:37.309491",
     "report_ids": [
-      "cb0da86e-bc1e-4a27-a8e7-22494ef82a01"
+      "4f3fb891-5691-44f5-9ce9-eee6cfc622c1",
+      "b3f50022-f232-4576-b311-c6d30a0fe436"
     ]
   }
 ]
