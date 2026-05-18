@@ -1,4 +1,5 @@
 import streamlit as st
+from ui.icons import arrow_left
 
 
 def topbar_html():
@@ -52,11 +53,12 @@ def page_hero(title, subtitle=None, meta_items=None, breadcrumb=None, back_targe
         with cols[0]:
             st.markdown(html, unsafe_allow_html=True)
         with cols[1]:
-            st.markdown('<div style="margin-top:6px">', unsafe_allow_html=True)
-            if st.button("←", key="back_btn", use_container_width=True):
-                st.session_state["page"] = back_target
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown(
+                f'<a href="?page={back_target}" style="display:flex;align-items:center;justify-content:center;margin-top:6px;padding:10px 16px;border-radius:12px;border:1px solid #E2E0DC;background:#fff;text-decoration:none;min-height:38px">'
+                + arrow_left(22, 22, "#17212B") +
+                '</a>',
+                unsafe_allow_html=True
+            )
     else:
         st.markdown(html, unsafe_allow_html=True)
 
