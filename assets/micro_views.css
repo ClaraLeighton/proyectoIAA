@@ -21,7 +21,7 @@
 .micro-report-row.risk .micro-report-status { color: var(--uandes-red); }
 .micro-report-row.mid .micro-report-status { color: #f59e0b; }
 
-.micro-report-row h3 { font-size: 16px; font-weight: 700; color: var(--uandes-text); margin: 0 0 2px; }
+.micro-report-row h5 { font-size: 14px; font-weight: 700; color: var(--uandes-text); margin: 0 0 2px; }
 .micro-report-meta { font-size: 12px; color: var(--uandes-text-muted); }
 .micro-report-approved { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
 .micro-report-approved strong { font-size: 18px; color: var(--uandes-text); }

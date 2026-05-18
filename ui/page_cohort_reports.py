@@ -77,7 +77,7 @@ def _report_card_html(report, rid: str, stats: dict, cohort_id: str = "") -> str
     <div class="micro-report-row {stats["estado_cls"]}">
       <div class="micro-report-main">
         <div class="micro-report-status">{escape(stats["estado_label"])}</div>
-        <h3>{escape(report.pdf_name)}</h3>
+        <h5>{escape(report.pdf_name)}</h5>
         <div class="micro-report-meta">ID {escape(rid[:8])}{f" · {escape(timestamp)}" if timestamp else ""}</div>
       </div>
       <div class="micro-report-actions-container">
