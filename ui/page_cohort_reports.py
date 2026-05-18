@@ -3,10 +3,10 @@ from pathlib import Path
 from html import escape
 from textwrap import dedent
 import streamlit as st
-from pipeline.cohorts import get_cohort
+from pipeline.cohorts import get_cohort, remove_report_from_cohort
 from pipeline.persistence import load_report
 from ui.components import page_hero, badge
-from ui.icons import search, file_text
+from ui.icons import search, file_text, trash
 
 
 LEVEL_COLORS = {"0": "#ef4444", "1": "#f97316", "2": "#2e9cdb", "3": "#22c55e"}
@@ -86,6 +86,9 @@ def _report_card_html(report, rid: str, stats: dict, cohort_id: str = "") -> str
         </a>
         <a href="?page=cohort_reports&action=preview_pdf&selected_report_id={rid}&cid={cohort_id}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver informe PDF">
             {file_text(18, 18, "currentColor")}
+        </a>
+        <a href="?page=cohort_reports&action=delete_report&selected_report_id={rid}&cid={cohort_id}" target="_self" class="cohort-btn cohort-btn-icon cohort-btn-icon-danger" title="Eliminar informe">
+            {trash(18, 18, "#CE0019")}
         </a>
       </div>
       <div class="micro-report-approved"><strong>{stats["aprobadas"]}/{stats["total"]}</strong><span>competencias aprobadas</span></div>
@@ -249,6 +252,15 @@ def render():
             if report_to_preview:
                 st.session_state.pop("_action", None)
                 _show_pdf_preview_modal(report_to_preview, report_id_to_preview)
+
+    if st.session_state.get("_action") == "delete_report":
+        rid_to_delete = st.session_state.get("selected_report_id")
+        if rid_to_delete:
+            remove_report_from_cohort(cohort_id, rid_to_delete)
+            st.session_state.pop("_action", None)
+            st.session_state.pop("selected_report_id", None)
+            st.session_state["report_count"] = st.session_state.get("report_count", 0) - 1
+            st.rerun()
 
     if not filtered:
         st.info("No hay informes que coincidan con la búsqueda o filtro.")
