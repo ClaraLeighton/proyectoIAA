@@ -96,7 +96,7 @@ def add_reports_to_cohort(cohort_id: str, report_ids: list[str]):
 
 
 def remove_report_from_cohort(cohort_id: str, report_id: str):
-    from pipeline.persistence import delete_report
+    from pipeline.persistence import delete_report, load_index
     cohorts = _load_cohorts()
     for c in cohorts:
         if c["cohort_id"] == cohort_id:
@@ -105,7 +105,10 @@ def remove_report_from_cohort(cohort_id: str, report_id: str):
                 c["updated_at"] = datetime.now().isoformat()
             break
     _save_cohorts(cohorts)
-    delete_report(report_id)
+
+    in_other = any(report_id in c["report_ids"] for c in cohorts if c["cohort_id"] != cohort_id)
+    if not in_other:
+        delete_report(report_id)
 
 
 def compute_cohort_macro(cohort_id: str) -> dict:

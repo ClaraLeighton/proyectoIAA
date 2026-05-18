@@ -1,6 +1,8 @@
 import streamlit as st
 import base64
-from pipeline.cohorts import get_cohort, compute_cohort_macro, delete_cohort, update_cohort_name
+from pipeline.cohorts import get_cohort, compute_cohort_macro, update_cohort_name
+from pipeline.cohorts import remove_report_from_cohort
+from pipeline.persistence import load_report
 from pipeline.reportes_export import build_export_index, exportar_excel_multi_hoja
 from ui.components import page_hero, badge, metric_grid, action_tiles
 from ui.icons import chart, upload, download, trash
@@ -13,24 +15,45 @@ def _formatear_tipo(tipo: str) -> str:
     return nombre
 
 
-@st.dialog("Eliminar Cohorte")
-def confirm_delete_dialog(cohort_id, cohort_name, n_reports):
-    st.write(f"¿Estás seguro de que deseas eliminar la cohorte **'{cohort_name}'**?")
-    st.write(f"Esta acción eliminará permanentemente la cohorte y sus **{n_reports}** informes asociados. Esta acción **no se puede deshacer**.")
-    
+@st.dialog("Eliminar Informes")
+def delete_reports_dialog(cohort_id, cohort_name):
+    cohort = get_cohort(cohort_id)
+    if not cohort:
+        st.warning("No se encontró la cohorte.")
+        return
+
+    report_ids = cohort.get("report_ids", [])
+    if not report_ids:
+        st.info("No hay informes para eliminar.")
+        if st.button("Cerrar", use_container_width=True):
+            st.rerun()
+        return
+
+    st.write(f"Selecciona los informes de **'{cohort_name}'** que deseas eliminar:")
+
+    selected_rids = []
+    for rid in report_ids:
+        report = load_report(rid)
+        name = report.pdf_name if report else rid[:8]
+        if st.checkbox(name, key=f"del_check_{rid}"):
+            selected_rids.append(rid)
+
+    st.markdown("")
     col1, col2 = st.columns(2)
     with col1:
         if st.button("Cancelar", use_container_width=True, key="cancel_delete_dialog"):
+            st.session_state.pop("_delete_reports_open", None)
             st.rerun()
     with col2:
-        if st.button("Sí, eliminar", type="primary", use_container_width=True, key="confirm_delete_dialog_btn"):
-            delete_cohort(cohort_id)
-            st.session_state.pop("selected_cohort_id", None)
-            st.session_state.pop("_export_buf", None)
-            st.session_state.pop("_export_name", None)
-            st.session_state["report_count"] = max(0, st.session_state.get("report_count", 0) - n_reports)
-            st.session_state["page"] = "cohorts"
-            st.rerun()
+        if st.button("Eliminar seleccionados", type="primary", use_container_width=True, key="confirm_delete_dialog_btn"):
+            if not selected_rids:
+                st.warning("Selecciona al menos un informe para eliminar.")
+            else:
+                for rid in selected_rids:
+                    remove_report_from_cohort(cohort_id, rid)
+                st.session_state.pop("_delete_reports_open", None)
+                st.session_state["report_count"] = max(0, st.session_state.get("report_count", 0) - len(selected_rids))
+                st.rerun()
 
 
 def render():
@@ -74,7 +97,6 @@ def render():
 
     st.subheader("Acciones Rápidas")
     
-    # Preparar Excel base64 para descarga directa desde el tile
     export_index = build_export_index(cohort.get("report_ids", []))
     excel_io = exportar_excel_multi_hoja(export_index)
     excel_b64 = base64.b64encode(excel_io.getvalue()).decode()
@@ -111,16 +133,19 @@ def render():
     with col_tiles[3]:
         action_tiles([{
             "icon": trash(28, 28, "currentColor"),
-            "title": "Eliminar Cohorte",
-            "desc": "Borrar cohorte e informes",
+            "title": "Eliminar Informes",
+            "desc": "Eliminar informes de la cohorte",
             "danger": True,
             "tone": "tone-danger",
-            "url": "?page=cohort_config&action=confirm_delete"
+            "url": f"?page=cohort_config&action=delete_reports&cid={cohort_id}"
         }])
 
-    if st.session_state.get("_action") == "confirm_delete":
+    if st.session_state.get("_action") == "delete_reports":
         st.session_state.pop("_action", None)
-        confirm_delete_dialog(cohort_id, cohort["name"], n_reports)
+        st.session_state["_delete_reports_open"] = True
+
+    if st.session_state.get("_delete_reports_open"):
+        delete_reports_dialog(cohort_id, cohort["name"])
 
     st.subheader("Configuración")
     with st.container(border=True):
