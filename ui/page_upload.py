@@ -297,17 +297,30 @@ def render():
 
         if pending:
             batch_dups = find_duplicates_within_batch(pending)
-            existing_dups = find_duplicate_files(pending)
-            has_any_dups = bool(batch_dups) or bool(existing_dups)
-
-            existing_dup_ids = {d["report_id"] for d in existing_dups.values()}
 
             batch_dup_ids_to_remove = set()
             for items in batch_dups.values():
                 for item in items[1:]:
                     batch_dup_ids_to_remove.add(item["report_id"])
 
-            dup_report_ids = existing_dup_ids | batch_dup_ids_to_remove
+            batch_clean = [r for r in pending if r["report_id"] not in batch_dup_ids_to_remove]
+
+            dup_report_ids = set(batch_dup_ids_to_remove)
+            existing_dups: dict[str, dict] = {}
+            info_dups: dict[str, dict] = {}
+
+            if existing_cohort:
+                cohort_report_ids = set(existing_cohort.get("report_ids", []))
+                existing_dups = find_duplicate_files(batch_clean, cohort_report_ids)
+                existing_dup_ids = {d["report_id"] for d in existing_dups.values()}
+                dup_report_ids |= existing_dup_ids
+            else:
+                all_dups = find_duplicate_files(batch_clean)
+                for key, dup in all_dups.items():
+                    if dup["report_id"] not in dup_report_ids:
+                        info_dups[key] = dup
+
+            has_any_dups = bool(batch_dups) or bool(existing_dups) or bool(info_dups)
 
             st.markdown('<hr class="uandes-divider">', unsafe_allow_html=True)
 
@@ -324,7 +337,12 @@ def render():
 
             if has_any_dups:
                 st.markdown('<div style="margin-top:16px"></div>', unsafe_allow_html=True)
-                st.warning("Se detectaron archivos duplicados")
+
+                is_blocking = bool(batch_dups) or bool(existing_dups)
+                if is_blocking:
+                    st.warning("Se detectaron archivos duplicados")
+                else:
+                    st.info("Nota: algunos archivos ya existen en el sistema")
 
                 dup_html = '<div style="background:#FFF3CD;border:1px solid #FFC107;border-radius:8px;padding:12px 16px;margin-bottom:12px">'
 
@@ -337,8 +355,16 @@ def render():
                 if existing_dups:
                     if batch_dups:
                         dup_html += '<hr style="margin:12px 0;border-color:#FFC107">'
-                    dup_html += '<p style="font-size:14px;font-weight:600;margin:0 0 8px;color:#664D03">Archivos que ya existen en el sistema:</p>'
+                    dup_html += '<p style="font-size:14px;font-weight:600;margin:0 0 8px;color:#664D03">Archivos que ya existen en esta cohorte:</p>'
                     for key, dup in existing_dups.items():
+                        reason_label = "mismo contenido" if dup["reason"] == "hash" else "mismo nombre"
+                        dup_html += f'<p style="font-size:13px;margin:4px 0 0;color:#664D03">• {html.escape(dup["pdf_name"])} ({reason_label})</p>'
+
+                if info_dups:
+                    if batch_dups or existing_dups:
+                        dup_html += '<hr style="margin:12px 0;border-color:#FFC107">'
+                    dup_html += '<p style="font-size:14px;font-weight:600;margin:0 0 8px;color:#664D03">Archivos que ya existen en otras cohortes (informativo):</p>'
+                    for key, dup in info_dups.items():
                         reason_label = "mismo contenido" if dup["reason"] == "hash" else "mismo nombre"
                         dup_html += f'<p style="font-size:13px;margin:4px 0 0;color:#664D03">• {html.escape(dup["pdf_name"])} ({reason_label})</p>'
 
@@ -346,42 +372,66 @@ def render():
                 st.markdown(dup_html, unsafe_allow_html=True)
 
                 unique_count = len(pending) - len(dup_report_ids)
-                st.info(f"{len(dup_report_ids)} archivo{'s' if len(dup_report_ids) != 1 else ''} duplicado{'s' if len(dup_report_ids) != 1 else ''} detectado{'s' if len(dup_report_ids) != 1 else ''}. Se pueden excluir para procesar {unique_count} archivo{'s' if unique_count != 1 else ''} único{'s' if unique_count != 1 else ''}.")
+                if is_blocking:
+                    st.info(f"{len(dup_report_ids)} archivo{'s' if len(dup_report_ids) != 1 else ''} duplicado{'s' if len(dup_report_ids) != 1 else ''} detectado{'s' if len(dup_report_ids) != 1 else ''}. Se pueden excluir para procesar {unique_count} archivo{'s' if unique_count != 1 else ''} único{'s' if unique_count != 1 else ''}.")
 
                 st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Acción Final</div></div>', unsafe_allow_html=True)
-                col_err1, col_err2, col_err3 = st.columns([1, 1, 1])
-                with col_err1:
-                    if unique_count > 0:
+                if is_blocking:
+                    col_err1, col_err2, col_err3 = st.columns([1, 1, 1])
+                    with col_err1:
                         btn_label = "Crear Cohorte" if new_cohort else "Agregar a cohorte"
-                        if st.button(f"Excluir duplicados y {btn_label}", type="primary", use_container_width=True):
-                            filtered = [r for r in pending if r["report_id"] not in dup_report_ids]
+                        if unique_count > 0:
+                            if st.button(f"Excluir duplicados y {btn_label}", type="primary", use_container_width=True):
+                                filtered = [r for r in pending if r["report_id"] not in dup_report_ids]
+                                if new_cohort:
+                                    cohort = create_cohort(cohort_name.strip(), tipo_doc)
+                                    st.session_state["selected_cohort_id"] = cohort["cohort_id"]
+                                    st.session_state["current_cohort_id"] = cohort["cohort_id"]
+                                else:
+                                    st.session_state["current_cohort_id"] = cohort_id
+                                st.session_state["pending_reports"] = filtered
+                                st.session_state["pipeline_iniciado"] = False
+                                _start_processing(filtered, st.session_state["current_cohort_id"])
+                                st.rerun()
+                        else:
+                            st.button("Excluir duplicados", type="secondary", use_container_width=True, disabled=True, help="Todos los archivos subidos son duplicados. No hay archivos únicos para procesar.")
+                    with col_err2:
+                        if st.button("Continuar de todos modos", use_container_width=True):
                             if new_cohort:
                                 cohort = create_cohort(cohort_name.strip(), tipo_doc)
                                 st.session_state["selected_cohort_id"] = cohort["cohort_id"]
                                 st.session_state["current_cohort_id"] = cohort["cohort_id"]
                             else:
                                 st.session_state["current_cohort_id"] = cohort_id
-                            st.session_state["pending_reports"] = filtered
+                            st.session_state["pending_reports"] = pending
                             st.session_state["pipeline_iniciado"] = False
-                            _start_processing(filtered, st.session_state["current_cohort_id"])
+                            _start_processing(pending, st.session_state["current_cohort_id"])
                             st.rerun()
-                with col_err2:
-                    if st.button("Continuar de todos modos", use_container_width=True):
-                        if new_cohort:
-                            cohort = create_cohort(cohort_name.strip(), tipo_doc)
-                            st.session_state["selected_cohort_id"] = cohort["cohort_id"]
-                            st.session_state["current_cohort_id"] = cohort["cohort_id"]
-                        else:
-                            st.session_state["current_cohort_id"] = cohort_id
-                        st.session_state["pending_reports"] = pending
-                        st.session_state["pipeline_iniciado"] = False
-                        _start_processing(pending, st.session_state["current_cohort_id"])
-                        st.rerun()
-                with col_err3:
-                    if st.button("Cancelar", type="secondary", use_container_width=True):
-                        target = "cohort_config" if existing_cohort else "cohorts"
-                        st.session_state["page"] = target
-                        st.rerun()
+                    with col_err3:
+                        if st.button("Cancelar", type="secondary", use_container_width=True):
+                            target = "cohort_config" if existing_cohort else "cohorts"
+                            st.session_state["page"] = target
+                            st.rerun()
+                else:
+                    col_info1, col_info2 = st.columns([1, 1])
+                    with col_info1:
+                        btn_label = "Crear Cohorte" if new_cohort else "Agregar a cohorte"
+                        if st.button(btn_label, type="primary", use_container_width=True):
+                            if new_cohort:
+                                cohort = create_cohort(cohort_name.strip(), tipo_doc)
+                                st.session_state["selected_cohort_id"] = cohort["cohort_id"]
+                                st.session_state["current_cohort_id"] = cohort["cohort_id"]
+                            else:
+                                st.session_state["current_cohort_id"] = cohort_id
+                            st.session_state["pending_reports"] = pending
+                            st.session_state["pipeline_iniciado"] = False
+                            _start_processing(pending, st.session_state["current_cohort_id"])
+                            st.rerun()
+                    with col_info2:
+                        if st.button("Cancelar", type="secondary", use_container_width=True):
+                            target = "cohort_config" if existing_cohort else "cohorts"
+                            st.session_state["page"] = target
+                            st.rerun()
             else:
                 st.markdown('<div style="margin-top:20px"></div>', unsafe_allow_html=True)
                 st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Acción Final</div></div>', unsafe_allow_html=True)

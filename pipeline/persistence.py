@@ -25,8 +25,10 @@ def find_duplicates_within_batch(pending: list[dict]) -> dict[str, list[dict]]:
     return {h: items for h, items in by_hash.items() if len(items) > 1}
 
 
-def find_duplicate_files(pending: list[dict]) -> dict[str, dict]:
+def find_duplicate_files(pending: list[dict], existing_report_ids: set[str] | None = None) -> dict[str, dict]:
     index = load_index()
+    if existing_report_ids is not None:
+        index = [e for e in index if e["report_id"] in existing_report_ids]
     existing_by_name = {e["pdf_name"]: e for e in index}
     existing_by_hash = {e.get("file_hash"): e for e in index if e.get("file_hash")}
 
