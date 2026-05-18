@@ -90,8 +90,10 @@ def action_tiles(tiles):
         title = tile.get("title", "")
         desc = tile.get("desc", "")
         danger = tile.get("danger", False)
+        tone = tile.get("tone", "")
         icon_cls = "uandes-action-tile-icon" + (" danger" if danger else "")
-        html += '<div class="uandes-action-tile">'
+        tile_cls = "uandes-action-tile" + (f" {tone}" if tone else "")
+        html += f'<div class="{tile_cls}">'
         html += f'<div class="{icon_cls}">{icon_html}</div>'
         html += f'<div class="uandes-action-tile-title">{title}</div>'
         html += f'<div class="uandes-action-tile-desc">{desc}</div>'

@@ -47,68 +47,76 @@ def render():
     ])
 
     st.subheader("Acciones Rápidas")
-    action_tiles([
-        {
-            "icon": chart(28, 28, "#17212B"),
-            "title": "Resultados Macro",
-            "desc": "Ver resumen agregado de la cohorte",
-        },
-        {
-            "icon": upload(28, 28, "#17212B"),
-            "title": "Agregar Informes",
-            "desc": "Subir más informes a esta cohorte",
-        },
-        {
-            "icon": download(28, 28, "#17212B"),
-            "title": "Exportar Excel",
-            "desc": "Descargar resultados en Excel",
-        },
-        {
-            "icon": trash(28, 28, "#CE0019"),
-            "title": "Eliminar Cohorte",
-            "desc": "Borrar esta cohorte y sus informes",
-            "danger": True,
-        },
-    ])
-
     col_tiles = st.columns(4)
     with col_tiles[0]:
-        if st.button("Resultados Macro", key="tile_macro", use_container_width=True):
-            st.session_state["page"] = "cohort_macro"
-            st.rerun()
+        with st.container(border=True):
+            action_tiles([{
+                "icon": chart(28, 28, "#17212B"),
+                "title": "Resultados Macro",
+                "desc": "Ver resumen agregado de la cohorte",
+                "tone": "tone-red",
+            }])
+            if st.button("Abrir macro", key="tile_macro", use_container_width=True):
+                st.session_state["page"] = "cohort_macro"
+                st.rerun()
     with col_tiles[1]:
-        if st.button("Agregar informes", key="tile_upload", use_container_width=True):
-            st.session_state["new_cohort"] = False
-            st.session_state["page"] = "upload"
-            st.rerun()
+        with st.container(border=True):
+            action_tiles([{
+                "icon": upload(28, 28, "#17212B"),
+                "title": "Agregar Informes",
+                "desc": "Subir más informes a esta cohorte",
+                "tone": "tone-blue",
+            }])
+            if st.button("Agregar informes", key="tile_upload", use_container_width=True):
+                st.session_state["new_cohort"] = False
+                st.session_state["page"] = "upload"
+                st.rerun()
     with col_tiles[2]:
-        export_index = build_export_index(cohort.get("report_ids", []))
-        st.download_button(
-            "Exportar Excel",
-            data=exportar_excel_multi_hoja(export_index),
-            file_name=f"{cohort['name']}.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            key=f"tile_export_{cohort_id}",
-            use_container_width=True,
-        )
+        with st.container(border=True):
+            action_tiles([{
+                "icon": download(28, 28, "#17212B"),
+                "title": "Exportar Excel",
+                "desc": "Descargar resultados validados",
+                "tone": "tone-yellow",
+            }])
+            export_index = build_export_index(cohort.get("report_ids", []))
+            st.download_button(
+                "Exportar Excel",
+                data=exportar_excel_multi_hoja(export_index),
+                file_name=f"{cohort['name']}.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                key=f"tile_export_{cohort_id}",
+                use_container_width=True,
+            )
     with col_tiles[3]:
-        if st.button("Eliminar cohorte", key="tile_delete", use_container_width=True):
-            st.session_state["_show_delete"] = True
-            st.rerun()
+        with st.container(border=True):
+            action_tiles([{
+                "icon": trash(28, 28, "#CE0019"),
+                "title": "Eliminar Cohorte",
+                "desc": "Borrar cohorte e informes",
+                "danger": True,
+                "tone": "tone-danger",
+            }])
+            if st.button("Eliminar cohorte", key="tile_delete", use_container_width=True):
+                st.session_state["_show_delete"] = True
+                st.rerun()
 
     st.subheader("Configuración")
 
-    col_info1, col_info2 = st.columns(2)
-    with col_info1:
-        new_name = st.text_input("Nombre de la cohorte", value=cohort["name"], key="edit_cohort_name")
-        if new_name != cohort["name"]:
-            if update_cohort_name(cohort_id, new_name):
-                st.success("Nombre actualizado.")
-                st.rerun()
-    with col_info2:
-        st.markdown(f'<p style="font-size:14px;color:var(--uandes-text-secondary);margin-bottom:4px"><strong>Creada:</strong> {cohort.get("created_at", "")[:19]}</p>', unsafe_allow_html=True)
-        st.markdown(f'<p style="font-size:14px;color:var(--uandes-text-secondary);margin-bottom:4px"><strong>Tipo:</strong> {tipo_label}</p>', unsafe_allow_html=True)
-        st.markdown(f'<p style="font-size:14px;color:var(--uandes-text-secondary);margin-bottom:4px"><strong>Informes:</strong> {n_reports}</p>', unsafe_allow_html=True)
+    with st.container(border=True):
+        col_info1, col_info2 = st.columns(2)
+        with col_info1:
+            new_name = st.text_input("Nombre de la cohorte", value=cohort["name"], key="edit_cohort_name")
+            if new_name != cohort["name"]:
+                if update_cohort_name(cohort_id, new_name):
+                    st.success("Nombre actualizado.")
+                    st.rerun()
+        with col_info2:
+            st.markdown('<div class="config-meta-card">', unsafe_allow_html=True)
+            st.markdown(f'<p><strong>Creada:</strong> {cohort.get("created_at", "")[:19]}</p>', unsafe_allow_html=True)
+            st.markdown(f'<p><strong>Tipo:</strong> {tipo_label}</p>', unsafe_allow_html=True)
+            st.markdown(f'<p><strong>Informes:</strong> {n_reports}</p>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
     if st.session_state.get("_show_delete"):
         st.subheader("Eliminar cohorte")
