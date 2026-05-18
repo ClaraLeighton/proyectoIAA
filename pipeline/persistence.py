@@ -18,10 +18,16 @@ def _report_dir(report_id: str) -> str:
     return os.path.join(REPORTS_DIR, report_id)
 
 
-def save_report(result: ReportResult):
+def save_report(result: ReportResult, pdf_bytes: bytes | None = None):
     _ensure_dirs()
     rdir = _report_dir(result.report_id)
     os.makedirs(rdir, exist_ok=True)
+
+    if pdf_bytes is not None:
+        pdf_path = os.path.join(rdir, "report.pdf")
+        with open(pdf_path, "wb") as f:
+            f.write(pdf_bytes)
+
     state_path = os.path.join(rdir, "state.json")
     state_copy = dict(result.pipeline_state)
     state_copy.pop("c6_api_key", None)

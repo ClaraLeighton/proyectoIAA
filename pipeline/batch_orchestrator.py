@@ -76,9 +76,12 @@ def run_batch(
                             progress["_errors"] = progress.get("_errors", 0) + 1
                             progress["_done"] = progress.get("_done", 0) + 1
 
+    pending_map = {r["report_id"]: r for r in pending_reports}
+
     for result in all_results:
         try:
-            save_report(result)
+            pdf_bytes = pending_map.get(result.report_id, {}).get("pdf_bytes")
+            save_report(result, pdf_bytes=pdf_bytes)
         except Exception:
             pass
 

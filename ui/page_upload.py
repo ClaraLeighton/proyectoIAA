@@ -1,12 +1,18 @@
 import json
 import os
 import io
+import threading
+import time
 import zipfile
 import uuid
 import streamlit as st
 
-from pipeline.cohorts import create_cohort, get_cohort
-from ui.components import page_hero
+from pipeline.batch_orchestrator import run_batch
+from pipeline.cohorts import create_cohort, get_cohort, add_reports_to_cohort
+from pipeline.models import BatchConfig
+from pipeline.persistence import load_index
+from ui.components import page_hero, processing_panel
+from ui.icons import spinner, check, search, cut, brain, clip, cpu, chart, xmark, clock, doc
 
 
 def _cargar_tipos_rubrica() -> list[str]:
@@ -47,7 +53,144 @@ def _build_pending_report(pdf_bytes: bytes, pdf_name: str, tipo_doc: str) -> dic
         "use_pdf": False,
     }
 
+
+STAGE_LABELS = {
+    "esperando": (clock, "En espera"),
+    "c1_ingesta": (doc, "Extrayendo texto..."),
+    "c2_parser": (search, "Analizando secciones..."),
+    "c3_chunker": (cut, "Fragmentando..."),
+    "c4_embeddings": (brain, "Generando embeddings..."),
+    "c5_retrieval": (clip, "Recuperando evidencia..."),
+    "c6_evaluacion": (cpu, "Evaluando con IA..."),
+    "c7_agregacion": (chart, "Agregando resultados..."),
+    "completado": (check, "Completado"),
+    "error": (xmark, "Error"),
+}
+
+
+def _stage_html(stage: str, comps_done: int, comps_total) -> str:
+    icon_fn, label = STAGE_LABELS.get(stage, (doc, stage))
+    icon_svg = icon_fn(14, 14, "#5F6B76")
+    return f'{icon_svg} {label} ({comps_done}/{comps_total})'
+
+
+def _render_processing():
+    pending = st.session_state.get("pending_reports", [])
+    cohort_id = st.session_state.get("current_cohort_id")
+    total = len(pending)
+
+    progress = st.session_state.get("batch_progress", {})
+    thread = st.session_state.get("batch_thread")
+    done = progress.get("_done", 0)
+    errors = progress.get("_errors", 0)
+
+    sp = spinner(40, 40)
+    spinner_html = f'<div class="uandes-processing-spinner">{sp}</div>'
+
+    metrics_html = (
+        f'<div style="text-align:center;display:flex;gap:24px;justify-content:center">'
+        f'<div><div style="font-size:28px;font-weight:700;color:var(--uandes-text)">{done}</div>'
+        f'<div style="font-size:12px;color:var(--uandes-text-muted);text-transform:uppercase;letter-spacing:0.5px">Completados</div></div>'
+        f'<div><div style="font-size:28px;font-weight:700;color:var(--uandes-text)">{errors}</div>'
+        f'<div style="font-size:12px;color:var(--uandes-text-muted);text-transform:uppercase;letter-spacing:0.5px">Errores</div></div>'
+        f'</div>'
+    )
+
+    pct = done / total if total > 0 else 0
+    page_hero(
+        "Procesando Informes",
+        subtitle="Los informes se están procesando con IA.",
+        meta_items=[f"{done} de {total} informes procesados"],
+    )
+
+    processing_panel(
+        "Procesando informes",
+        f"{done} de {total} informes procesados",
+        pct,
+        metrics_html,
+        None,
+    )
+    st.markdown(spinner_html, unsafe_allow_html=True)
+
+    is_alive = thread and thread.is_alive() if thread else False
+    if is_alive:
+        detail_parts = []
+        for r in pending:
+            rid = r["report_id"]
+            pdata = progress.get(rid, {})
+            stage = pdata.get("stage", "esperando")
+            comps_done = pdata.get("comps_done", 0)
+            comps_total = pdata.get("total_comps", "?")
+            name = r.get("pdf_name", rid[:8])
+            stage_markup = _stage_html(stage, comps_done, comps_total)
+            detail_parts.append(
+                f'<div style="padding:10px 0;border-bottom:1px solid var(--uandes-border-light);display:flex;justify-content:space-between;align-items:center">'
+                f'<span style="font-weight:600;font-size:14px">{name}</span>'
+                f'<span style="font-size:13px;color:var(--uandes-text-secondary)">{stage_markup}</span>'
+                f"</div>"
+            )
+
+        if detail_parts:
+            st.subheader("Detalle por Informe")
+            for part in detail_parts:
+                st.markdown(part, unsafe_allow_html=True)
+
+        time.sleep(0.3)
+        st.rerun()
+    else:
+        if thread is not None:
+            st.session_state["batch_thread"] = None
+            st.session_state["batch_running"] = False
+            st.session_state["pending_reports"] = []
+            st.session_state["report_count"] = len(load_index())
+            st.session_state["page"] = "cohort_macro"
+            st.rerun()
+
+
+def _start_processing(pending, cohort_id):
+    api_key = st.session_state.get("api_key", "")
+    c6_provider = st.session_state.get("c6_provider", "gemini")
+    c6_api_key = api_key
+    if c6_provider == "openrouter":
+        c6_api_key = os.getenv("OPENROUTER_API_KEY", "")
+    provider = st.session_state.get("provider", "gemini")
+
+    for r in pending:
+        r["use_pdf"] = (c6_provider == "gemini")
+        r["top_k"] = r.get("top_k", 5)
+        r["umbral"] = r.get("umbral", 0.65)
+
+    llm_config = {
+        "api_key": api_key,
+        "provider": provider,
+        "c6_provider": c6_provider,
+        "c6_api_key": c6_api_key,
+    }
+    batch_config = BatchConfig(max_workers=5, max_reports_per_batch=10, semaphore_limit=5)
+
+    progress = {}
+    st.session_state["batch_progress"] = progress
+    st.session_state["batch_running"] = True
+
+    def _run_and_save():
+        try:
+            results = run_batch(pending, llm_config, batch_config, progress)
+            report_ids = [r.report_id for r in results if r.estado != "error"]
+            if report_ids and cohort_id:
+                add_reports_to_cohort(cohort_id, report_ids)
+        except Exception:
+            pass
+
+    thread = threading.Thread(target=_run_and_save, daemon=True)
+    st.session_state["batch_thread"] = thread
+    thread.start()
+
+
 def render():
+    if st.session_state.get("batch_running"):
+        _render_processing()
+        return
+
     st.session_state.pop("upload_submitted", None)
     new_cohort = st.session_state.get("new_cohort", True)
     cohort_id = st.session_state.get("selected_cohort_id")
@@ -151,5 +294,5 @@ def render():
 
                         st.session_state["pending_reports"] = pending
                         st.session_state["pipeline_iniciado"] = False
-                        st.session_state["page"] = "processing"
+                        _start_processing(pending, st.session_state["current_cohort_id"])
                         st.rerun()

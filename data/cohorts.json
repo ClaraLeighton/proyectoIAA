@@ -10,5 +10,15 @@
       "77d10fce-9c7c-460a-8db0-e876a9ea1cab",
       "5903f683-efe1-4ec2-b937-249b8153826d"
     ]
+  },
+  {
+    "cohort_id": "9c0b40ed-33cb-485d-8f83-89d550edac68",
+    "name": "pre-pratica 2025",
+    "tipo_documento": "pre_professional_practice",
+    "created_at": "2026-05-17T20:47:26.420349",
+    "updated_at": "2026-05-17T20:49:09.199134",
+    "report_ids": [
+      "cb0da86e-bc1e-4a27-a8e7-22494ef82a01"
+    ]
   }
 ]
