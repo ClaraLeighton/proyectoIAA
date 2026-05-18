@@ -15,7 +15,7 @@ load_dotenv()
 
 
 def _inject_css():
-    css_files = [Path("assets/style.css"), Path("assets/micro_views.css")]
+    css_files = [Path("assets/style.css"), Path("assets/micro_views.css"), Path("assets/grid_fixes.css")]
     for path in css_files:
         if path.exists():
             with open(path) as f:

@@ -60,11 +60,16 @@ def render():
         back_target="cohorts",
     )
 
+    def get_status_class(val):
+        if isinstance(val, float):
+            if val >= 0.70: return "ok"
+            if val >= 0.50: return "mid"
+            return "risk"
+        return ""
+
     metric_grid([
-        ("Score Global", f'{g["score_pct"]:.1%}' if g["total_reportes"] > 0 else "—", True, f'{g["score_actual"]}/{g["score_max"]}' if g["total_reportes"] > 0 else ""),
-        ("Nivel Promedio", f'{g["nivel_promedio_global"]:.2f}' if g["total_reportes"] > 0 else "—"),
-        ("Total Informes", g["total_reportes"]),
-        ("Tipo", tipo_label),
+        {"label": "Score Global", "value": f'{g["score_pct"]:.1%}' if g["total_reportes"] > 0 else "—", "status": get_status_class(g["score_pct"]), "sub": "Promedio ponderado según desempeño"},
+        {"label": "Nivel Promedio", "value": f'{g["nivel_promedio_global"]:.2f}' if g["total_reportes"] > 0 else "—", "status": get_status_class(g["nivel_promedio_global"] / 3), "sub": "Escala de 0 a 3 (Sin evidencia a Dominio técnico)"},
     ])
 
     st.subheader("Acciones Rápidas")
@@ -77,7 +82,7 @@ def render():
     col_tiles = st.columns(4)
     with col_tiles[0]:
         action_tiles([{
-            "icon": chart(28, 28, "#17212B"),
+            "icon": chart(28, 28, "currentColor"),
             "title": "Resultados Macro",
             "desc": "Ver resumen agregado de la cohorte",
             "tone": "tone-red",
@@ -86,7 +91,7 @@ def render():
         
     with col_tiles[1]:
         action_tiles([{
-            "icon": upload(28, 28, "#17212B"),
+            "icon": upload(28, 28, "currentColor"),
             "title": "Agregar Informes",
             "desc": "Subir más informes a esta cohorte",
             "tone": "tone-blue",
@@ -95,7 +100,7 @@ def render():
 
     with col_tiles[2]:
         action_tiles([{
-            "icon": download(28, 28, "#17212B"),
+            "icon": download(28, 28, "currentColor"),
             "title": "Exportar Excel",
             "desc": "Descargar resultados validados",
             "tone": "tone-yellow",
@@ -104,9 +109,8 @@ def render():
         }])
 
     with col_tiles[3]:
-        # El tile de eliminar ahora activa el modal vía query param detectado por app.py o interceptado aquí
         action_tiles([{
-            "icon": trash(28, 28, "#CE0019"),
+            "icon": trash(28, 28, "currentColor"),
             "title": "Eliminar Cohorte",
             "desc": "Borrar cohorte e informes",
             "danger": True,
@@ -114,24 +118,24 @@ def render():
             "url": "?page=cohort_config&action=confirm_delete"
         }])
 
-    # Interceptar la acción de confirmación de eliminación
     if st.session_state.get("_action") == "confirm_delete":
         st.session_state.pop("_action", None)
         confirm_delete_dialog(cohort_id, cohort["name"], n_reports)
 
     st.subheader("Configuración")
-
     with st.container(border=True):
-        col_info1, col_info2 = st.columns(2)
-        with col_info1:
+        st.markdown('<div class="uandes-form-section">Edición de datos</div>', unsafe_allow_html=True)
+        col_name, col_meta = st.columns([2, 1])
+        with col_name:
             new_name = st.text_input("Nombre de la cohorte", value=cohort["name"], key="edit_cohort_name")
             if new_name != cohort["name"]:
                 if update_cohort_name(cohort_id, new_name):
                     st.success("Nombre actualizado.")
                     st.rerun()
-        with col_info2:
-            st.markdown('<div class="config-meta-card">', unsafe_allow_html=True)
-            st.markdown(f'<p><strong>Creada:</strong> {cohort.get("created_at", "")[:19]}</p>', unsafe_allow_html=True)
-            st.markdown(f'<p><strong>Tipo:</strong> {tipo_label}</p>', unsafe_allow_html=True)
-            st.markdown(f'<p><strong>Informes:</strong> {n_reports}</p>', unsafe_allow_html=True)
-            st.markdown('</div>', unsafe_allow_html=True)
+        with col_meta:
+             st.markdown(f'''
+             <div class="config-meta-card">
+               <p><strong>Tipo:</strong> {tipo_label}</p>
+               <p><strong>Creada:</strong> {cohort.get("created_at", "")[:10]}</p>
+             </div>
+             ''', unsafe_allow_html=True)

@@ -68,12 +68,11 @@ def page_hero(title, subtitle=None, meta_items=None, breadcrumb=None, back_targe
 def metric_grid(items):
     html = '<div class="uandes-metrics-grid">'
     for item in items:
-        label = item[0]
-        value = item[1]
-        accent = item[2] if len(item) > 2 else False
-        sub = item[3] if len(item) > 3 else None
-        extra_cls = " accent" if accent else ""
-        html += f'<div class="uandes-metric-card{extra_cls}">'
+        label = item.get("label", "")
+        value = item.get("value", "")
+        status = item.get("status", "")
+        sub = item.get("sub", "")
+        html += f'<div class="uandes-metric-card {status}">'
         html += f'<div class="uandes-metric-label">{label}</div>'
         html += f'<div class="uandes-metric-value">{value}</div>'
         if sub:
