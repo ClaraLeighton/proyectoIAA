@@ -234,19 +234,19 @@ def render():
     )
     st.markdown('<p style="font-size:13px;color:var(--uandes-text-muted);margin-top:-6px">Máximo 200MB por archivo. Se aceptan PDF y ZIP con múltiples PDFs.</p>', unsafe_allow_html=True)
 
-    st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Configuración Avanzada (opcional)</div></div>', unsafe_allow_html=True)
-    csv_file = st.file_uploader(
-        "Matriz de competencias (CSV)",
-        type=["csv"],
-        key="csv_upload",
-        help="Si no se provee, se usará la matriz por defecto (config/matriz.csv).",
-    )
-    json_file = st.file_uploader(
-        "Rúbrica de evaluación (JSON)",
-        type=["json"],
-        key="json_upload",
-        help="Si no se provee, se usará la rúbrica por defecto (config/rubrica.json).",
-    )
+    with st.expander("Configuración Avanzada"):
+        csv_file = st.file_uploader(
+            "Matriz de competencias (CSV)",
+            type=["csv"],
+            key="csv_upload",
+            help="Si no se provee, se usará la matriz por defecto (config/matriz.csv).",
+        )
+        json_file = st.file_uploader(
+            "Rúbrica de evaluación (JSON)",
+            type=["json"],
+            key="json_upload",
+            help="Si no se provee, se usará la rúbrica por defecto (config/rubrica.json).",
+        )
 
     csv_bytes = csv_file.getvalue() if csv_file else None
     json_bytes = json_file.getvalue() if json_file else None
