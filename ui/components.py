@@ -49,12 +49,14 @@ def page_hero(title, subtitle=None, meta_items=None, breadcrumb=None, back_targe
     html += '</div></div>'
 
     if back_target:
+        cid = st.session_state.get("selected_cohort_id", "")
+        cid_param = f"&cid={cid}" if cid else ""
         cols = st.columns([5, 1])
         with cols[0]:
             st.markdown(html, unsafe_allow_html=True)
         with cols[1]:
             st.markdown(
-                f'<a href="?page={back_target}" style="display:flex;align-items:center;justify-content:center;margin-top:6px;padding:10px 16px;border-radius:12px;border:1px solid #E2E0DC;background:#fff;text-decoration:none;min-height:38px">'
+                f'<a href="?page={back_target}{cid_param}" style="display:flex;align-items:center;justify-content:center;margin-top:6px;padding:10px 16px;border-radius:12px;border:1px solid #E2E0DC;background:#fff;text-decoration:none;min-height:38px">'
                 + arrow_left(22, 22, "#17212B") +
                 '</a>',
                 unsafe_allow_html=True

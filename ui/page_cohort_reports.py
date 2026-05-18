@@ -70,7 +70,7 @@ def _level_strip(dist: dict, total: int) -> str:
     return f'<div class="micro-level-strip">{"".join(parts)}</div>'
 
 
-def _report_card_html(report, rid: str, stats: dict) -> str:
+def _report_card_html(report, rid: str, stats: dict, cohort_id: str = "") -> str:
     timestamp = getattr(report, "timestamp", "")[:10]
     return _html_block(f"""
     <div class="micro-report-row {stats["estado_cls"]}">
@@ -80,10 +80,10 @@ def _report_card_html(report, rid: str, stats: dict) -> str:
         <div class="micro-report-meta">ID {escape(rid[:8])}{f" · {escape(timestamp)}" if timestamp else ""}</div>
       </div>
       <div class="micro-report-actions-container">
-        <a href="?page=report_detail&selected_report_id={rid}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver detalle de {escape(report.pdf_name)}">
+        <a href="?page=report_detail&selected_report_id={rid}&cid={cohort_id}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver detalle de {escape(report.pdf_name)}">
             {search(18, 18, "currentColor")}
         </a>
-        <a href="?page=cohort_reports&action=preview_pdf&selected_report_id={rid}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver informe PDF de {escape(report.pdf_name)}">
+        <a href="?page=cohort_reports&action=preview_pdf&selected_report_id={rid}&cid={cohort_id}" target="_self" class="cohort-btn cohort-btn-icon" title="Ver informe PDF de {escape(report.pdf_name)}">
             {file_text(18, 18, "currentColor")}
         </a>
       </div>
@@ -152,7 +152,7 @@ def _show_pdf_preview_modal(report, rid: str):
 
 
 def render():
-    cohort_id = st.session_state.get("selected_cohort_id")
+    cohort_id = st.session_state.get("selected_cohort_id") or ""
     cohort = get_cohort(cohort_id) if cohort_id else None
 
     if not cohort:
@@ -169,7 +169,7 @@ def render():
             badge(tipo_label, "outline"),
             f"{n_reports} informe{'s' if n_reports != 1 else ''}",
         ],
-        back_target="cohort_macro",
+        back_target="cohort_config",
     )
 
     report_ids = cohort.get("report_ids", [])
@@ -241,6 +241,14 @@ def render():
     else:
         filtered.sort(key=lambda item: item["report"].pdf_name.lower())
 
+    if st.session_state.get("_action") == "preview_pdf":
+        report_id_to_preview = st.session_state.get("selected_report_id")
+        if report_id_to_preview:
+            report_to_preview = load_report(report_id_to_preview)
+            if report_to_preview:
+                st.session_state.pop("_action", None)
+                _show_pdf_preview_modal(report_to_preview, report_id_to_preview)
+
     if not filtered:
         st.info("No hay informes que coincidan con la búsqueda o filtro.")
         return
@@ -251,16 +259,7 @@ def render():
         stats = item["stats"]
         name = report.pdf_name or "Informe"
 
-        st.markdown(_report_card_html(report, rid, stats), unsafe_allow_html=True)
-
-        # Row for icon-only action buttons
-    if st.session_state.get("_action") == "preview_pdf":
-        report_id_to_preview = st.session_state.get("selected_report_id")
-        if report_id_to_preview:
-            report_to_preview = load_report(report_id_to_preview)
-            if report_to_preview:
-                st.session_state.pop("_action", None)
-                _show_pdf_preview_modal(report_to_preview, report_id_to_preview)
+        st.markdown(_report_card_html(report, rid, stats, cohort_id), unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
     with col1:

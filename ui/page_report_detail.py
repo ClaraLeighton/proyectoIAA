@@ -214,5 +214,5 @@ def render():
     with col4:
         if st.button("Volver a cohorte", use_container_width=True):
             st.session_state.pop("selected_report_id", None)
-            st.session_state["page"] = "cohort_macro"
+            st.session_state["page"] = "cohort_config"
             st.rerun()
