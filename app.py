@@ -179,7 +179,9 @@ def main():
     if "action" in params:
         st.session_state["_action"] = params["action"]
         st.session_state["_action_cid"] = params.get("cid", "")
-    if "page" in params or "cid" in params or "action" in params:
+    if "new" in params:
+        st.session_state["new_cohort"] = params["new"] == "1"
+    if "page" in params or "cid" in params or "action" in params or "new" in params:
         st.query_params.clear()
 
     _init_session()

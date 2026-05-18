@@ -13,6 +13,27 @@ def _formatear_tipo(tipo: str) -> str:
     return nombre
 
 
+@st.dialog("Eliminar Cohorte")
+def confirm_delete_dialog(cohort_id, cohort_name, n_reports):
+    st.warning(f"¿Estás seguro de que deseas eliminar la cohorte **'{cohort_name}'**?")
+    st.write(f"Esta acción eliminará permanentemente la cohorte y sus **{n_reports}** informes asociados. Esta acción **no se puede deshacer**.")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Cancelar", use_container_width=True, key="cancel_delete_list"):
+            st.session_state.pop("_delete_cohort_id", None)
+            st.rerun()
+    with col2:
+        if st.button("Sí, eliminar", type="primary", use_container_width=True, key="confirm_delete_list_btn"):
+            delete_cohort(cohort_id)
+            if st.session_state.get("selected_cohort_id") == cohort_id:
+                st.session_state.pop("selected_cohort_id", None)
+            st.session_state.pop("_delete_cohort_id", None)
+            st.session_state["report_count"] = max(0, st.session_state.get("report_count", 0) - n_reports)
+            st.success("Cohorte eliminada.")
+            st.rerun()
+
+
 def render():
     if st.session_state.pop("_action", None) == "delete_cohort":
         st.session_state["_delete_cohort_id"] = st.session_state.pop("_action_cid", "")
@@ -22,23 +43,7 @@ def render():
         all_cohorts = list_cohorts()
         target = next((c for c in all_cohorts if c["cohort_id"] == cid_to_delete), None)
         if target:
-            n = len(target.get("report_ids", []))
-            st.warning(f"¿Eliminar la cohorte **'{target['name']}'** y sus **{n}** informe{'s' if n != 1 else ''}? Esta acción no se puede deshacer.")
-            col1, col2, _ = st.columns([1, 1, 4])
-            with col1:
-                if st.button("Sí, eliminar", type="primary", key="confirm_del"):
-                    delete_cohort(cid_to_delete)
-                    if st.session_state.get("selected_cohort_id") == cid_to_delete:
-                        st.session_state.pop("selected_cohort_id", None)
-                    st.session_state.pop("_delete_cohort_id", None)
-                    st.session_state["report_count"] = max(0, st.session_state.get("report_count", 0) - n)
-                    st.success("Cohorte eliminada.")
-                    st.rerun()
-            with col2:
-                if st.button("Cancelar", key="cancel_del"):
-                    st.session_state.pop("_delete_cohort_id", None)
-                    st.rerun()
-            st.markdown("---")
+            confirm_delete_dialog(cid_to_delete, target['name'], len(target.get("report_ids", [])))
         else:
             st.session_state.pop("_delete_cohort_id", None)
 
@@ -85,7 +90,7 @@ def render():
         score_str = f'{g["score_pct"]:.0%}' if g["total_reportes"] > 0 else "—"
         nivel_str = f'{g["nivel_promedio_global"]:.2f}' if g["total_reportes"] > 0 else "—"
 
-        eye_svg = eye(18, 18)
+        eye_svg = eye(18, 18, "#fff")
         chart_svg = chart(18, 18, "#fff")
         trash_svg = trash(18, 18, "#CE0019")
 
@@ -106,7 +111,7 @@ def render():
             </div>
           </div>
           <div class="cohort-card-actions">
-            <a class="cohort-btn cohort-btn-icon" href="?page=cohort_config&cid={cid}" target="_self" title="Configuración">{eye_svg}</a>
+            <a class="cohort-btn cohort-btn-icon cohort-btn-icon-primary" href="?page=cohort_config&cid={cid}" target="_self" title="Configuración">{eye_svg}</a>
             <a class="cohort-btn cohort-btn-icon cohort-btn-icon-primary" href="?page=cohort_macro&cid={cid}" target="_self" title="Resultados">{chart_svg}</a>
             <a class="cohort-btn cohort-btn-icon cohort-btn-icon-danger" href="?page=cohorts&cid={cid}&action=delete_cohort" target="_self" title="Eliminar cohorte">{trash_svg}</a>
           </div>

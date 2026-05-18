@@ -93,13 +93,26 @@ def action_tiles(tiles):
         desc = tile.get("desc", "")
         danger = tile.get("danger", False)
         tone = tile.get("tone", "")
+        url = tile.get("url", None)
+        download = tile.get("download", None)
+        filename = tile.get("filename", "download")
+        
         icon_cls = "uandes-action-tile-icon" + (" danger" if danger else "")
         tile_cls = "uandes-action-tile" + (f" {tone}" if tone else "")
-        html += f'<div class="{tile_cls}">'
-        html += f'<div class="{icon_cls}">{icon_html}</div>'
-        html += f'<div class="uandes-action-tile-title">{title}</div>'
-        html += f'<div class="uandes-action-tile-desc">{desc}</div>'
-        html += '</div>'
+        
+        tile_content = f'<div class="{tile_cls}">'
+        tile_content += f'<div class="{icon_cls}">{icon_html}</div>'
+        tile_content += f'<div class="uandes-action-tile-title">{title}</div>'
+        tile_content += f'<div class="uandes-action-tile-desc">{desc}</div>'
+        tile_content += '</div>'
+        
+        if download:
+            html += f'<a href="data:application/octet-stream;base64,{download}" download="{filename}" style="text-decoration:none;color:inherit">{tile_content}</a>'
+        elif url:
+            html += f'<a href="{url}" target="_self" style="text-decoration:none;color:inherit">{tile_content}</a>'
+        else:
+            html += tile_content
+            
     html += '</div>'
     st.markdown(html, unsafe_allow_html=True)
 

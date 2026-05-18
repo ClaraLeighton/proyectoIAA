@@ -1,4 +1,5 @@
 import streamlit as st
+import base64
 from pipeline.cohorts import get_cohort, compute_cohort_macro, delete_cohort, update_cohort_name
 from pipeline.reportes_export import build_export_index, exportar_excel_multi_hoja
 from ui.components import page_hero, badge, metric_grid, action_tiles
@@ -10,6 +11,26 @@ def _formatear_tipo(tipo: str) -> str:
     nombre = nombre.replace("Pre ", "Pre-")
     nombre = nombre.replace("Practica", "Práctica")
     return nombre
+
+
+@st.dialog("Eliminar Cohorte")
+def confirm_delete_dialog(cohort_id, cohort_name, n_reports):
+    st.warning(f"¿Estás seguro de que deseas eliminar la cohorte **'{cohort_name}'**?")
+    st.write(f"Esta acción eliminará permanentemente la cohorte y sus **{n_reports}** informes asociados. Esta acción **no se puede deshacer**.")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Cancelar", use_container_width=True, key="cancel_delete_dialog"):
+            st.rerun()
+    with col2:
+        if st.button("Sí, eliminar", type="primary", use_container_width=True, key="confirm_delete_dialog_btn"):
+            delete_cohort(cohort_id)
+            st.session_state.pop("selected_cohort_id", None)
+            st.session_state.pop("_export_buf", None)
+            st.session_state.pop("_export_name", None)
+            st.session_state["report_count"] = max(0, st.session_state.get("report_count", 0) - n_reports)
+            st.session_state["page"] = "cohorts"
+            st.rerun()
 
 
 def render():
@@ -33,8 +54,8 @@ def render():
         meta_items.append(f'Creada: {cohort["created_at"][:10]}')
 
     page_hero(
-        cohort["name"],
-        subtitle="Configuración, acciones rápidas y gestión de la cohorte.",
+        "Configuración: " + cohort["name"],
+        subtitle="Acciones rápidas y gestión de la cohorte.",
         meta_items=meta_items,
         back_target="cohorts",
     )
@@ -47,59 +68,56 @@ def render():
     ])
 
     st.subheader("Acciones Rápidas")
+    
+    # Preparar Excel base64 para descarga directa desde el tile
+    export_index = build_export_index(cohort.get("report_ids", []))
+    excel_io = exportar_excel_multi_hoja(export_index)
+    excel_b64 = base64.b64encode(excel_io.getvalue()).decode()
+    
     col_tiles = st.columns(4)
     with col_tiles[0]:
-        with st.container(border=True):
-            action_tiles([{
-                "icon": chart(28, 28, "#17212B"),
-                "title": "Resultados Macro",
-                "desc": "Ver resumen agregado de la cohorte",
-                "tone": "tone-red",
-            }])
-            if st.button("Abrir macro", key="tile_macro", use_container_width=True):
-                st.session_state["page"] = "cohort_macro"
-                st.rerun()
+        action_tiles([{
+            "icon": chart(28, 28, "#17212B"),
+            "title": "Resultados Macro",
+            "desc": "Ver resumen agregado de la cohorte",
+            "tone": "tone-red",
+            "url": f"?page=cohort_macro&cid={cohort_id}"
+        }])
+        
     with col_tiles[1]:
-        with st.container(border=True):
-            action_tiles([{
-                "icon": upload(28, 28, "#17212B"),
-                "title": "Agregar Informes",
-                "desc": "Subir más informes a esta cohorte",
-                "tone": "tone-blue",
-            }])
-            if st.button("Agregar informes", key="tile_upload", use_container_width=True):
-                st.session_state["new_cohort"] = False
-                st.session_state["page"] = "upload"
-                st.rerun()
+        action_tiles([{
+            "icon": upload(28, 28, "#17212B"),
+            "title": "Agregar Informes",
+            "desc": "Subir más informes a esta cohorte",
+            "tone": "tone-blue",
+            "url": f"?page=upload&cid={cohort_id}&new=0"
+        }])
+
     with col_tiles[2]:
-        with st.container(border=True):
-            action_tiles([{
-                "icon": download(28, 28, "#17212B"),
-                "title": "Exportar Excel",
-                "desc": "Descargar resultados validados",
-                "tone": "tone-yellow",
-            }])
-            export_index = build_export_index(cohort.get("report_ids", []))
-            st.download_button(
-                "Exportar Excel",
-                data=exportar_excel_multi_hoja(export_index),
-                file_name=f"{cohort['name']}.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                key=f"tile_export_{cohort_id}",
-                use_container_width=True,
-            )
+        action_tiles([{
+            "icon": download(28, 28, "#17212B"),
+            "title": "Exportar Excel",
+            "desc": "Descargar resultados validados",
+            "tone": "tone-yellow",
+            "download": excel_b64,
+            "filename": f"{cohort['name']}.xlsx"
+        }])
+
     with col_tiles[3]:
-        with st.container(border=True):
-            action_tiles([{
-                "icon": trash(28, 28, "#CE0019"),
-                "title": "Eliminar Cohorte",
-                "desc": "Borrar cohorte e informes",
-                "danger": True,
-                "tone": "tone-danger",
-            }])
-            if st.button("Eliminar cohorte", key="tile_delete", use_container_width=True):
-                st.session_state["_show_delete"] = True
-                st.rerun()
+        # El tile de eliminar ahora activa el modal vía query param detectado por app.py o interceptado aquí
+        action_tiles([{
+            "icon": trash(28, 28, "#CE0019"),
+            "title": "Eliminar Cohorte",
+            "desc": "Borrar cohorte e informes",
+            "danger": True,
+            "tone": "tone-danger",
+            "url": "?page=cohort_config&action=confirm_delete"
+        }])
+
+    # Interceptar la acción de confirmación de eliminación
+    if st.session_state.get("_action") == "confirm_delete":
+        st.session_state.pop("_action", None)
+        confirm_delete_dialog(cohort_id, cohort["name"], n_reports)
 
     st.subheader("Configuración")
 
@@ -117,18 +135,3 @@ def render():
             st.markdown(f'<p><strong>Tipo:</strong> {tipo_label}</p>', unsafe_allow_html=True)
             st.markdown(f'<p><strong>Informes:</strong> {n_reports}</p>', unsafe_allow_html=True)
             st.markdown('</div>', unsafe_allow_html=True)
-
-    if st.session_state.get("_show_delete"):
-        st.subheader("Eliminar cohorte")
-        st.warning(f"¿Eliminar toda la cohorte **'{cohort['name']}'** y sus **{n_reports}** informes? Esta acción no se puede deshacer.")
-        confirm = st.text_input("Escribe 'ELIMINAR' para confirmar:", key="del_confirm")
-        if confirm == "ELIMINAR":
-            if st.button("Sí, eliminar", type="primary", key=f"confirm_delete_{cohort_id}"):
-                delete_cohort(cohort_id)
-                st.session_state.pop("selected_cohort_id", None)
-                st.session_state.pop("_export_buf", None)
-                st.session_state.pop("_export_name", None)
-                st.session_state.pop("_show_delete", None)
-                st.session_state["report_count"] = max(0, st.session_state.get("report_count", 0) - n_reports)
-                st.session_state["page"] = "cohorts"
-                st.rerun()
