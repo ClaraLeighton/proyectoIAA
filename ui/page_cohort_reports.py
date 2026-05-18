@@ -209,7 +209,7 @@ def render():
         )
     sort = st.radio(
         "Orden",
-        ["Más recientes", "Más sobresalientes", "Más revisión", "Nombre"],
+        ["Más recientes", "Más sobresalientes", "Requieren revisión", "Nombre"],
         horizontal=True,
         label_visibility="collapsed",
     )
@@ -237,7 +237,7 @@ def render():
         filtered.sort(key=lambda item: getattr(item["report"], "timestamp", ""), reverse=True)
     elif sort == "Más sobresalientes":
         filtered.sort(key=lambda item: (item["stats"]["aprob_pct"], item["stats"]["nivel_prom"], item["stats"]["confianza"]), reverse=True)
-    elif sort == "Más revisión":
+    elif sort == "Requieren revisión":
         filtered.sort(key=lambda item: (item["stats"]["aprob_pct"], item["stats"]["confianza"], item["stats"]["nivel_prom"]))
     else:
         filtered.sort(key=lambda item: item["report"].pdf_name.lower())

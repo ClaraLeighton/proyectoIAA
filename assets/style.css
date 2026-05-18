@@ -732,14 +732,14 @@ h1 *, h2 *, h3 *, .uandes-hero-title * {
   border-radius: var(--uandes-radius-lg);
   padding: 20px 24px;
   margin-bottom: 10px;
-  box-shadow: var(--uandes-shadow-sm);
+  box-shadow: none;
   transition: all var(--uandes-transition);
   display: flex;
   align-items: center;
   gap: 20px;
 }
 .uandes-report-card:hover {
-  box-shadow: var(--uandes-shadow-md);
+  box-shadow: none;
   border-color: var(--uandes-red);
 }
 .uandes-report-left {
@@ -1101,17 +1101,111 @@ div[data-baseweb="notification"] {
 }
 
 /* ─── PROGRESS ─── */
+.stProgress [data-baseweb="progress-bar"] > div,
+.stProgress [data-baseweb="progress-bar"] > div > div {
+  background-color: rgba(206, 0, 25, 0.08) !important;
+  border-radius: 6px !important;
+}
+.stProgress [data-baseweb="progress-bar"] > div > div > div {
+  background-color: var(--uandes-red) !important;
+  border-radius: 6px !important;
+}
 .stProgress > div > div > div {
   background-color: var(--uandes-red) !important;
   border-radius: 4px;
 }
 .stProgress > div {
-  background-color: var(--uandes-red-lighter) !important;
+  background-color: rgba(206, 0, 25, 0.08) !important;
   border-radius: 6px;
   height: 8px !important;
 }
 .stProgress > div > div {
   border-radius: 6px !important;
+}
+
+.uandes-processing-report-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--uandes-card-bg);
+  border: 1px solid var(--uandes-border);
+  border-radius: var(--uandes-radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: none;
+  transition: box-shadow var(--uandes-transition), border-color var(--uandes-transition);
+}
+.uandes-processing-report-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: auto;
+  bottom: 0;
+  width: var(--progress);
+  height: 100%;
+  background: linear-gradient(90deg, rgba(206, 0, 25, 0.16), rgba(206, 0, 25, 0.04));
+  filter: blur(18px);
+  opacity: 0.8;
+  pointer-events: none;
+  transition: width 0.25s ease;
+}
+.uandes-processing-report-card.complete {
+  border-color: rgba(206, 0, 25, 0.36);
+  box-shadow: 0 0 0 1px rgba(206, 0, 25, 0.18), 0 10px 28px rgba(206, 0, 25, 0.18);
+}
+.uandes-processing-report-card.complete::before {
+  width: 100%;
+  background: rgba(206, 0, 25, 0.12);
+  filter: blur(20px);
+}
+.uandes-processing-report-header,
+.uandes-processing-report-detail,
+.uandes-processing-report-progress {
+  position: relative;
+  z-index: 1;
+}
+.uandes-processing-report-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.uandes-processing-report-name {
+  color: var(--uandes-text);
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.uandes-processing-report-stage {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--uandes-text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.uandes-processing-report-detail {
+  color: var(--uandes-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.uandes-processing-report-progress {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: rgba(206, 0, 25, 0.08);
+}
+.uandes-processing-report-progress-fill {
+  width: var(--progress);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--uandes-red);
+  transition: width 0.25s ease;
 }
 
 /* ─── EMPTY STATE ─── */

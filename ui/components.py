@@ -196,7 +196,7 @@ def processing_panel(title, count_text, progress_pct, metrics_html, detail_html)
     html += f'<div class="uandes-processing-count">{count_text}</div>'
     if progress_pct is not None:
         html += '<div class="uandes-processing-progress">'
-        html += f'<div class="stProgress"><div style="background:rgba(206,0,25,0.08);border-radius:6px;height:8px"><div style="width:{progress_pct*100:.1f}%;background:#CE0019;border-radius:6px;height:8px"></div></div></div>'
+        html += f'<div class="stProgress"><div style="background:rgba(206,0,25,0.06);border-radius:6px;height:8px"><div style="width:{progress_pct*100:.1f}%;background:#CE0019;border-radius:6px;height:8px"></div></div></div>'
         html += '</div>'
     if metrics_html:
         html += f'<div class="uandes-processing-metrics">{metrics_html}</div>'

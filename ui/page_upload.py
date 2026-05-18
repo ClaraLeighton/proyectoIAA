@@ -1,5 +1,6 @@
 import json
 import os
+import html
 import io
 import threading
 import time
@@ -114,29 +115,44 @@ def _render_processing():
         icon_fn, stage_label = STAGE_LABELS.get(stage, (doc, stage))
         icon_svg = icon_fn(16, 16, "#5F6B76")
 
-        if stage == "C42_C5_C6" and isinstance(comps_total, int) and comps_total > 0:
+        is_complete = stage in ("done", "completado") or (
+            isinstance(comps_total, int) and comps_total > 0 and comps_done >= comps_total
+        )
+
+        if is_complete:
+            comp_pct = 1
+            remaining = 0
+            stage_label = "Completado"
+        elif stage == "C42_C5_C6" and isinstance(comps_total, int) and comps_total > 0:
             comp_pct = comps_done / comps_total
             remaining = comps_total - comps_done
         else:
             comp_pct = 0
             remaining = 0
 
-        st.markdown(f'<div class="uandes-report-card" style="display:block;padding:16px 20px;margin-bottom:10px">', unsafe_allow_html=True)
-
-        header_col, stage_col = st.columns([3, 2])
-        with header_col:
-            st.markdown(f'<div style="font-weight:600;font-size:15px">{name}</div>', unsafe_allow_html=True)
-        with stage_col:
-            st.markdown(f'<div style="text-align:right;font-size:13px;color:#6B7280">{icon_svg} {stage_label}</div>', unsafe_allow_html=True)
-
         if stage == "C42_C5_C6" and isinstance(comps_total, int) and comps_total > 0:
-            st.markdown(f'<div style="margin:6px 0 2px;font-size:13px;color:#4B5563">Competencia: {current_comp} ({remaining} restantes)</div>', unsafe_allow_html=True)
-            st.progress(comp_pct)
+            detail_text = f"Competencia: {current_comp} ({remaining} restantes)"
+        elif is_complete:
+            detail_text = "Informe procesado correctamente"
+        else:
+            detail_text = "Preparando competencias..."
 
-        elif stage in ("C1", "C2", "C3", "C41"):
-            st.markdown(f'<div style="margin:6px 0 2px;font-size:13px;color:#9CA3AF">Preparando competencias…</div>', unsafe_allow_html=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
+        card_class = "uandes-processing-report-card complete" if is_complete else "uandes-processing-report-card loading"
+        st.markdown(
+            f"""
+            <div class="{card_class}" style="--progress:{comp_pct * 100:.1f}%">
+                <div class="uandes-processing-report-header">
+                    <div class="uandes-processing-report-name">{html.escape(name)}</div>
+                    <div class="uandes-processing-report-stage">{icon_svg} {html.escape(stage_label)}</div>
+                </div>
+                <div class="uandes-processing-report-detail">{html.escape(detail_text)}</div>
+                <div class="uandes-processing-report-progress">
+                    <div class="uandes-processing-report-progress-fill"></div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     # Overall progress bar at the bottom
     pct = done / total if total > 0 else 0
