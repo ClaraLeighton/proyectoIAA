@@ -1,10 +1,15 @@
 import base64
 from pathlib import Path
+from html import escape
+from textwrap import dedent
 import streamlit as st
-from pipeline.cohorts import get_cohort, compute_cohort_macro
+from pipeline.cohorts import get_cohort
 from pipeline.persistence import load_report
 from ui.components import page_hero, badge
-from ui.icons import circle_green, circle_yellow, circle_red
+
+
+LEVEL_COLORS = {"0": "#ef4444", "1": "#f97316", "2": "#2e9cdb", "3": "#22c55e"}
+LEVEL_LABELS = {"0": "Sin evidencia", "1": "No aplica", "2": "Uso concreto", "3": "Dominio técnico"}
 
 
 def _formatear_tipo(tipo: str) -> str:
@@ -14,12 +19,68 @@ def _formatear_tipo(tipo: str) -> str:
     return nombre
 
 
-def _nivel_icon(nivel: float) -> str:
-    if nivel >= 2.5:
-        return circle_green(14, 14)
-    elif nivel >= 1.5:
-        return circle_yellow(14, 14)
-    return circle_red(14, 14)
+def _html_block(template: str) -> str:
+    return "".join(line.strip() for line in dedent(template).splitlines())
+
+
+def _report_stats(report) -> dict:
+    preview = report.vista_preliminar or []
+    total = len(preview)
+    aprobadas = sum(1 for r in preview if r.get("nivel", 0) >= 2)
+    nivel_prom = sum(r.get("nivel", 0) for r in preview) / total if total else 0
+    confianza = sum(r.get("confianza", 0) for r in preview) / total if total else 0
+    aprob_pct = aprobadas / total if total else 0
+    dist = {"0": 0, "1": 0, "2": 0, "3": 0}
+    for r in preview:
+        dist[str(int(r.get("nivel", 0)))] = dist.get(str(int(r.get("nivel", 0))), 0) + 1
+    if report.estado != "completado":
+        estado = ("Error", "risk")
+    elif aprob_pct >= 0.70 and nivel_prom >= 1.8:
+        estado = ("Sobresaliente", "ok")
+    elif aprob_pct < 0.50 or confianza < 0.50:
+        estado = ("Requiere revisión", "risk")
+    else:
+        estado = ("En rango", "mid")
+    return {
+        "total": total,
+        "aprobadas": aprobadas,
+        "nivel_prom": nivel_prom,
+        "confianza": confianza,
+        "aprob_pct": aprob_pct,
+        "dist": dist,
+        "estado_label": estado[0],
+        "estado_cls": estado[1],
+    }
+
+
+def _level_strip(dist: dict, total: int) -> str:
+    if total == 0:
+        return '<div class="micro-level-strip empty"></div>'
+    parts = []
+    for lvl in ["0", "1", "2", "3"]:
+        count = dist.get(lvl, 0)
+        if not count:
+            continue
+        pct = count / total * 100
+        parts.append(
+            f'<span style="width:{pct:.1f}%;background:{LEVEL_COLORS[lvl]}" '
+            f'title="{LEVEL_LABELS[lvl]}: {count}">{count}</span>'
+        )
+    return f'<div class="micro-level-strip">{"".join(parts)}</div>'
+
+
+def _report_card_html(report, rid: str, stats: dict) -> str:
+    timestamp = getattr(report, "timestamp", "")[:10]
+    return _html_block(f"""
+    <div class="micro-report-row {stats["estado_cls"]}">
+      <div class="micro-report-main">
+        <div class="micro-report-status">{escape(stats["estado_label"])}</div>
+        <h3>{escape(report.pdf_name)}</h3>
+        <div class="micro-report-meta">ID {escape(rid[:8])}{f" · {escape(timestamp)}" if timestamp else ""}</div>
+      </div>
+      <div class="micro-report-approved"><strong>{stats["aprobadas"]}/{stats["total"]}</strong><span>competencias aprobadas</span></div>
+    </div>
+    """)
 
 
 # Helper to get PDF path for a report
@@ -102,114 +163,106 @@ def render():
         back_target="cohort_macro",
     )
 
-    st.subheader("Informes")
-
-    search = st.text_input("", placeholder="Buscar informe por nombre...", label_visibility="collapsed")
-    q = search.lower().strip() if search else ""
-
     report_ids = cohort.get("report_ids", [])
 
     if not report_ids:
         st.info("Esta cohorte no tiene informes aún.")
         return
 
-    macro = compute_cohort_macro(cohort_id)
-
-    st.markdown(
-        """
-        <style>
-        .report-card-inner {
-            padding: 6px 0;
-        }
-        .report-card-title {
-            font-size: 20px;
-            font-weight: 750;
-            color: #1F2937;
-            line-height: 1.25;
-            margin-bottom: 6px;
-        }
-        .report-card-id {
-            font-size: 14px;
-            font-weight: 600;
-            color: #9CA3AF;
-        }
-        div[data-testid="stVerticalBlockBorderWrapper"] {
-            border-radius: 28px !important;
-            border: 1px solid #E2E2E2 !important;
-            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
-            background: #FFFFFF !important;
-            padding: 18px 22px !important;
-            margin-bottom: 18px !important;
-        }
-        div[data-testid="stButton"] > button {
-            min-height: 42px;
-            border-radius: 14px;
-            font-weight: 650;
-            white-space: nowrap;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    for rid in reversed(report_ids):
+    reports = []
+    for rid in report_ids:
         report = load_report(rid)
         if not report:
             continue
-        name = report.pdf_name
+        stats = _report_stats(report)
+        reports.append({"rid": rid, "report": report, "stats": stats})
+
+    st.markdown(
+        _html_block(f"""
+        <div class="micro-list-intro">
+          <span>{escape(cohort["name"])}</span>
+          <h2>Informes individuales</h2>
+          <p>Listado simple de informes. Usa búsqueda y filtros para encontrar entregas que requieren revisión.</p>
+        </div>
+        """),
+        unsafe_allow_html=True,
+    )
+
+    filter_col, sort_col = st.columns([1, 1])
+    with filter_col:
+        search = st.text_input("Buscar informe", placeholder="Buscar informe por nombre o ID...", label_visibility="collapsed")
+    with sort_col:
+        view_filter = st.selectbox(
+            "Filtro",
+            ["Todos", "Requieren revisión", "Sobresalientes", "Completados", "Errores"],
+            label_visibility="collapsed",
+        )
+    sort = st.radio(
+        "Orden",
+        ["Más recientes", "Más sobresalientes", "Más revisión", "Nombre"],
+        horizontal=True,
+        label_visibility="collapsed",
+    )
+    q = search.lower().strip() if search else ""
+
+    filtered = []
+    for item in reports:
+        rid = item["rid"]
+        report = item["report"]
+        stats = item["stats"]
+        name = report.pdf_name or ""
         if q and q not in name.lower() and q not in rid.lower():
             continue
-        preview = report.vista_preliminar
-        nivel = sum(r.get("nivel", 0) for r in preview) / len(preview) if preview else 0
-        n_comps = len(preview)
+        if view_filter == "Requieren revisión" and stats["estado_cls"] != "risk":
+            continue
+        if view_filter == "Sobresalientes" and stats["estado_label"] != "Sobresaliente":
+            continue
+        if view_filter == "Completados" and report.estado != "completado":
+            continue
+        if view_filter == "Errores" and report.estado != "error":
+            continue
+        filtered.append(item)
 
-        nivel_html = f'{_nivel_icon(nivel)} {nivel:.1f}'
-        comps_bdg = badge(f"{n_comps} competencias", "blue")
-        estado_bdg = badge("Completado", "green") if report.estado == "completado" else badge("Error", "red")
+    if sort == "Más recientes":
+        filtered.sort(key=lambda item: getattr(item["report"], "timestamp", ""), reverse=True)
+    elif sort == "Más sobresalientes":
+        filtered.sort(key=lambda item: (item["stats"]["aprob_pct"], item["stats"]["nivel_prom"], item["stats"]["confianza"]), reverse=True)
+    elif sort == "Más revisión":
+        filtered.sort(key=lambda item: (item["stats"]["aprob_pct"], item["stats"]["confianza"], item["stats"]["nivel_prom"]))
+    else:
+        filtered.sort(key=lambda item: item["report"].pdf_name.lower())
 
-        with st.container(border=True):
-            info_col, nivel_col, comps_col, estado_col, preview_col, detail_col = st.columns(
-                [3.2, 0.75, 1.35, 1.15, 1.05, 1.05],
-                vertical_alignment="center",
-            )
+    if not filtered:
+        st.info("No hay informes que coincidan con la búsqueda o filtro.")
+        return
 
-            with info_col:
-                st.markdown(
-                    f"""
-                    <div class="report-card-inner">
-                        <div class="report-card-title">{name}</div>
-                        <div class="report-card-id">ID: {rid[:8]}</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True,
-                )
-            with nivel_col:
-                st.markdown(
-                    f'<span style="display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700">{nivel_html}</span>',
-                    unsafe_allow_html=True,
-                )
-            with comps_col:
-                st.markdown(comps_bdg, unsafe_allow_html=True)
-            with estado_col:
-                st.markdown(estado_bdg, unsafe_allow_html=True)
-            with preview_col:
-                if st.button(
-                    "Ver informe",
-                    key=f"preview_report_{rid}",
-                    help="Abrir previsualización del PDF",
-                    use_container_width=True,
-                ):
-                    _show_pdf_preview_modal(report, rid)
-            with detail_col:
-                if st.button(
-                    "Ver detalle",
-                    key=f"view_report_{rid}",
-                    help=name,
-                    use_container_width=True,
-                ):
-                    st.session_state["selected_report_id"] = rid
-                    st.session_state["page"] = "report_detail"
-                    st.rerun()
+    for item in filtered:
+        rid = item["rid"]
+        report = item["report"]
+        stats = item["stats"]
+        name = report.pdf_name or "Informe"
+
+        row_col, detail_col, preview_col = st.columns([7, 0.7, 0.7], vertical_alignment="center")
+        with row_col:
+            st.markdown(_report_card_html(report, rid, stats), unsafe_allow_html=True)
+        with detail_col:
+            if st.button(
+                "🔎",
+                key=f"view_report_{rid}",
+                help=f"Ver detalle de {name}",
+                use_container_width=True,
+            ):
+                st.session_state["selected_report_id"] = rid
+                st.session_state["page"] = "report_detail"
+                st.rerun()
+        with preview_col:
+            if st.button(
+                "📄",
+                key=f"preview_report_{rid}",
+                help=f"Ver informe PDF de {name}",
+                use_container_width=True,
+            ):
+                _show_pdf_preview_modal(report, rid)
 
     col1, col2 = st.columns(2)
     with col1:

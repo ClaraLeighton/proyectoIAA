@@ -289,7 +289,12 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
           <div class="macro-panel-head">
             <div>
               <div class="macro-panel-title">Qué tan bien se cumple cada competencia</div>
-              <p>Azul = cuántos informes cumplen la competencia. Rojo = qué tan alto fue el nivel logrado. Si ambas líneas están altas, la competencia está fuerte; si azul alta y roja más baja, se cumple pero con menor profundidad.</p>
+                <p>
+                  <b>Azul</b> = porcentaje de informes donde la competencia aparece evidenciada. Mientras más alta la línea azul, más frecuente es esa competencia en la cohorte.
+                </p>
+                <p>
+                  <b>Rojo</b> = nivel promedio de logro alcanzado en esa competencia. Mientras más alta la línea roja, mayor profundidad o dominio demostraron los estudiantes.
+                </p>
             </div>
             <div class="macro-chart-legend">
               <span><i class="score"></i>Nivel logrado</span>
