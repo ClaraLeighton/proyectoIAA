@@ -233,6 +233,7 @@ def process_report(
     return ReportResult(
         report_id=report_id,
         pdf_name=report_spec.get("pdf_name", ""),
+        file_hash=report_spec.get("file_hash", ""),
         tipo_documento=report_spec.get("tipo_documento", ""),
         pipeline_state=pipeline_state,
         estado="completado",

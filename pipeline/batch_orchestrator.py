@@ -67,6 +67,10 @@ def run_batch(
                     error_result = ReportResult(
                         report_id=report_id,
                         pdf_name=pdf_name or report_id,
+                        file_hash=next(
+                            (r.get("file_hash", "") for r in pending_reports if r["report_id"] == report_id),
+                            "",
+                        ),
                         estado="error",
                         error=str(e),
                     )

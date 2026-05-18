@@ -15,6 +15,7 @@ class BatchConfig:
 class ReportResult:
     report_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     pdf_name: str = ""
+    file_hash: str = ""
     tipo_documento: str = ""
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
     pipeline_state: dict[str, Any] = field(default_factory=dict)
@@ -48,6 +49,7 @@ class ReportResult:
         return {
             "report_id": self.report_id,
             "pdf_name": self.pdf_name,
+            "file_hash": self.file_hash,
             "tipo_documento": self.tipo_documento,
             "timestamp": self.timestamp,
             "total_competencias": len(preview),

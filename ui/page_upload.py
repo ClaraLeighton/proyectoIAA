@@ -11,7 +11,7 @@ import streamlit as st
 from pipeline.batch_orchestrator import run_batch
 from pipeline.cohorts import create_cohort, get_cohort, add_reports_to_cohort
 from pipeline.models import BatchConfig
-from pipeline.persistence import load_index
+from pipeline.persistence import load_index, compute_file_hash, find_duplicate_files, find_duplicates_within_batch
 from ui.components import page_hero, processing_panel
 from ui.icons import spinner, check, search, cut, brain, clip, cpu, chart, xmark, clock, doc
 
@@ -52,6 +52,7 @@ def _build_pending_report(
         "report_id": str(uuid.uuid4()),
         "pdf_bytes": pdf_bytes,
         "pdf_name": pdf_name,
+        "file_hash": compute_file_hash(pdf_bytes),
         "tipo_documento": tipo_doc,
         "csv_bytes": csv_bytes,
         "json_bytes": json_bytes,
@@ -295,6 +296,19 @@ def render():
                 pending.append(_build_pending_report(f.getvalue(), f.name, tipo_doc, csv_bytes, json_bytes))
 
         if pending:
+            batch_dups = find_duplicates_within_batch(pending)
+            existing_dups = find_duplicate_files(pending)
+            has_any_dups = bool(batch_dups) or bool(existing_dups)
+
+            existing_dup_ids = {d["report_id"] for d in existing_dups.values()}
+
+            batch_dup_ids_to_remove = set()
+            for items in batch_dups.values():
+                for item in items[1:]:
+                    batch_dup_ids_to_remove.add(item["report_id"])
+
+            dup_report_ids = existing_dup_ids | batch_dup_ids_to_remove
+
             st.markdown('<hr class="uandes-divider">', unsafe_allow_html=True)
 
             chip_html = '<div class="uandes-file-chips">'
@@ -308,28 +322,89 @@ def render():
             )
             st.markdown(chip_html, unsafe_allow_html=True)
 
-            st.markdown('<div style="margin-top:20px"></div>', unsafe_allow_html=True)
-            st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Acción Final</div></div>', unsafe_allow_html=True)
-            col_p1, col_p2 = st.columns([1, 1])
-            with col_p1:
-                if st.button("Cancelar", type="secondary", use_container_width=True):
-                    target = "cohort_config" if existing_cohort else "cohorts"
-                    st.session_state["page"] = target
-                    st.rerun()
-            with col_p2:
-                btn_label = "Crear Cohorte" if new_cohort else "Agregar a cohorte"
-                if st.button(btn_label, type="primary", use_container_width=True):
-                    if new_cohort and not cohort_name.strip():
-                        st.error("Debes ingresar un nombre para la cohorte.")
-                    else:
+            if has_any_dups:
+                st.markdown('<div style="margin-top:16px"></div>', unsafe_allow_html=True)
+                st.warning("Se detectaron archivos duplicados")
+
+                dup_html = '<div style="background:#FFF3CD;border:1px solid #FFC107;border-radius:8px;padding:12px 16px;margin-bottom:12px">'
+
+                if batch_dups:
+                    dup_html += '<p style="font-size:14px;font-weight:600;margin:0 0 8px;color:#664D03">Archivos duplicados dentro de la subida actual:</p>'
+                    for file_hash, items in batch_dups.items():
+                        names = ", ".join(f'<code>{html.escape(it["pdf_name"])}</code>' for it in items)
+                        dup_html += f'<p style="font-size:13px;margin:4px 0 0;color:#664D03">• Contenido idéntico: {names}</p>'
+
+                if existing_dups:
+                    if batch_dups:
+                        dup_html += '<hr style="margin:12px 0;border-color:#FFC107">'
+                    dup_html += '<p style="font-size:14px;font-weight:600;margin:0 0 8px;color:#664D03">Archivos que ya existen en el sistema:</p>'
+                    for key, dup in existing_dups.items():
+                        reason_label = "mismo contenido" if dup["reason"] == "hash" else "mismo nombre"
+                        dup_html += f'<p style="font-size:13px;margin:4px 0 0;color:#664D03">• {html.escape(dup["pdf_name"])} ({reason_label})</p>'
+
+                dup_html += "</div>"
+                st.markdown(dup_html, unsafe_allow_html=True)
+
+                unique_count = len(pending) - len(dup_report_ids)
+                st.info(f"{len(dup_report_ids)} archivo{'s' if len(dup_report_ids) != 1 else ''} duplicado{'s' if len(dup_report_ids) != 1 else ''} detectado{'s' if len(dup_report_ids) != 1 else ''}. Se pueden excluir para procesar {unique_count} archivo{'s' if unique_count != 1 else ''} único{'s' if unique_count != 1 else ''}.")
+
+                st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Acción Final</div></div>', unsafe_allow_html=True)
+                col_err1, col_err2, col_err3 = st.columns([1, 1, 1])
+                with col_err1:
+                    if unique_count > 0:
+                        btn_label = "Crear Cohorte" if new_cohort else "Agregar a cohorte"
+                        if st.button(f"Excluir duplicados y {btn_label}", type="primary", use_container_width=True):
+                            filtered = [r for r in pending if r["report_id"] not in dup_report_ids]
+                            if new_cohort:
+                                cohort = create_cohort(cohort_name.strip(), tipo_doc)
+                                st.session_state["selected_cohort_id"] = cohort["cohort_id"]
+                                st.session_state["current_cohort_id"] = cohort["cohort_id"]
+                            else:
+                                st.session_state["current_cohort_id"] = cohort_id
+                            st.session_state["pending_reports"] = filtered
+                            st.session_state["pipeline_iniciado"] = False
+                            _start_processing(filtered, st.session_state["current_cohort_id"])
+                            st.rerun()
+                with col_err2:
+                    if st.button("Continuar de todos modos", use_container_width=True):
                         if new_cohort:
                             cohort = create_cohort(cohort_name.strip(), tipo_doc)
                             st.session_state["selected_cohort_id"] = cohort["cohort_id"]
                             st.session_state["current_cohort_id"] = cohort["cohort_id"]
                         else:
                             st.session_state["current_cohort_id"] = cohort_id
-
                         st.session_state["pending_reports"] = pending
                         st.session_state["pipeline_iniciado"] = False
                         _start_processing(pending, st.session_state["current_cohort_id"])
                         st.rerun()
+                with col_err3:
+                    if st.button("Cancelar", type="secondary", use_container_width=True):
+                        target = "cohort_config" if existing_cohort else "cohorts"
+                        st.session_state["page"] = target
+                        st.rerun()
+            else:
+                st.markdown('<div style="margin-top:20px"></div>', unsafe_allow_html=True)
+                st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Acción Final</div></div>', unsafe_allow_html=True)
+                col_p1, col_p2 = st.columns([1, 1])
+                with col_p1:
+                    if st.button("Cancelar", type="secondary", use_container_width=True):
+                        target = "cohort_config" if existing_cohort else "cohorts"
+                        st.session_state["page"] = target
+                        st.rerun()
+                with col_p2:
+                    btn_label = "Crear Cohorte" if new_cohort else "Agregar a cohorte"
+                    if st.button(btn_label, type="primary", use_container_width=True):
+                        if new_cohort and not cohort_name.strip():
+                            st.error("Debes ingresar un nombre para la cohorte.")
+                        else:
+                            if new_cohort:
+                                cohort = create_cohort(cohort_name.strip(), tipo_doc)
+                                st.session_state["selected_cohort_id"] = cohort["cohort_id"]
+                                st.session_state["current_cohort_id"] = cohort["cohort_id"]
+                            else:
+                                st.session_state["current_cohort_id"] = cohort_id
+
+                            st.session_state["pending_reports"] = pending
+                            st.session_state["pipeline_iniciado"] = False
+                            _start_processing(pending, st.session_state["current_cohort_id"])
+                            st.rerun()

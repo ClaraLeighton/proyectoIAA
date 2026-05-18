@@ -1,5 +1,6 @@
 import json
 import os
+import hashlib
 import shutil
 import tempfile
 from typing import Any
@@ -8,6 +9,52 @@ from pipeline.models import ReportResult
 DATA_DIR = "data"
 REPORTS_DIR = os.path.join(DATA_DIR, "reports")
 INDEX_PATH = os.path.join(DATA_DIR, "index.json")
+
+
+def compute_file_hash(pdf_bytes: bytes) -> str:
+    return hashlib.sha256(pdf_bytes).hexdigest()
+
+
+def find_duplicates_within_batch(pending: list[dict]) -> dict[str, list[dict]]:
+    by_hash: dict[str, list[dict]] = {}
+    for p in pending:
+        file_hash = p.get("file_hash", "")
+        if not file_hash:
+            continue
+        by_hash.setdefault(file_hash, []).append(p)
+    return {h: items for h, items in by_hash.items() if len(items) > 1}
+
+
+def find_duplicate_files(pending: list[dict]) -> dict[str, dict]:
+    index = load_index()
+    existing_by_name = {e["pdf_name"]: e for e in index}
+    existing_by_hash = {e.get("file_hash"): e for e in index if e.get("file_hash")}
+
+    duplicates = {}
+    for p in pending:
+        pdf_name = p.get("pdf_name", "")
+        file_hash = p.get("file_hash", "")
+
+        if file_hash and file_hash in existing_by_hash:
+            existing = existing_by_hash[file_hash]
+            key = f"{file_hash}:{pdf_name}"
+            duplicates[key] = {
+                "pdf_name": pdf_name,
+                "report_id": existing["report_id"],
+                "reason": "hash",
+                "existing_name": existing["pdf_name"],
+            }
+        elif pdf_name in existing_by_name:
+            existing = existing_by_name[pdf_name]
+            key = f"name:{pdf_name}"
+            duplicates[key] = {
+                "pdf_name": pdf_name,
+                "report_id": existing["report_id"],
+                "reason": "name",
+                "existing_name": existing["pdf_name"],
+            }
+
+    return duplicates
 
 
 def _ensure_dirs():
