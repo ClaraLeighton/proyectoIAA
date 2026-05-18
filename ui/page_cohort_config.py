@@ -15,7 +15,7 @@ def _formatear_tipo(tipo: str) -> str:
 
 @st.dialog("Eliminar Cohorte")
 def confirm_delete_dialog(cohort_id, cohort_name, n_reports):
-    st.warning(f"¿Estás seguro de que deseas eliminar la cohorte **'{cohort_name}'**?")
+    st.write(f"¿Estás seguro de que deseas eliminar la cohorte **'{cohort_name}'**?")
     st.write(f"Esta acción eliminará permanentemente la cohorte y sus **{n_reports}** informes asociados. Esta acción **no se puede deshacer**.")
     
     col1, col2 = st.columns(2)
