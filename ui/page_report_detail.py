@@ -4,7 +4,7 @@ from textwrap import dedent
 from pipeline.persistence import load_report
 from pipeline.reportes_export import exportar_reporte_individual
 from ui.components import page_hero, badge
-from ui.page_cohort_reports import _show_pdf_preview_modal
+from ui.icons import search, file_text
 
 
 LEVEL_LABELS = {0: "Sin evidencia", 1: "No aplica", 2: "Uso concreto", 3: "Dominio técnico"}
@@ -71,7 +71,7 @@ def _micro_detail_html(report, preview: list[dict], total: int, aprobadas: int, 
     <div class="micro-detail-dashboard">
       <section class="micro-detail-hero">
         <div>
-          <span>Informe individual</span>
+          <span class="uandes-badge-tipo">Informe individual</span>
           <h2>{escape(report.pdf_name)}</h2>
           <p>Lectura micro del perfil de egreso: nivel alcanzado por competencia, evidencia usada y confianza del evaluador.</p>
         </div>
@@ -120,14 +120,18 @@ def _competency_summary_html(r: dict) -> str:
     secciones = r.get("secciones_fuente", [])
     citas = r.get("citas", [])
     estado, cls = _estado_comp(nivel, confianza)
+    
+    # Mapeo de estado a clases para badges
+    badge_variant = "green" if cls == "ok" else ("yellow" if cls == "mid" else "red")
     citas_html = "".join(f"<li>{escape(cita)}</li>" for cita in citas[:5]) if citas else "<li>Sin citas detectadas.</li>"
+    
     return _html_block(f"""
     <div class="micro-comp-tile-detail {cls}">
       <div class="micro-comp-tile-top">
-        <strong>{escape(cid)}</strong>
-        <em>{escape(estado)}</em>
+        <strong class="comp-id">{escape(cid)}</strong>
+        <span class="comp-status-badge">{badge(escape(estado), badge_variant)}</span>
       </div>
-      <h3>{escape(nombre)}</h3>
+      <h5>{escape(nombre)}</h5>
       <div class="micro-comp-tile-meter"><i style="width:{min(100, max(0, nivel / 3 * 100)):.1f}%"></i></div>
       <div class="micro-comp-tile-foot">
         <span>Nivel {nivel}</span>
@@ -159,9 +163,7 @@ def render():
     tipo = report.tipo_documento.replace("_", " ").title()
     timestamp = report.timestamp[:19] if hasattr(report, "timestamp") and report.timestamp else ""
 
-    meta_items = [tipo]
-    if timestamp:
-        meta_items.append(timestamp)
+    meta_items = [badge(tipo, "outline"), timestamp]
 
     page_hero(
         report.pdf_name,
@@ -186,15 +188,17 @@ def render():
     )
 
     ordered_preview = sorted(preview, key=lambda item: _sort_competencia_id(item.get("competencia_id", "")))
-    for start in range(0, len(ordered_preview), 4):
+    for i in range(0, len(ordered_preview), 4):
+        row = ordered_preview[i:i + 4]
         cols = st.columns(4)
-        for col, r in zip(cols, ordered_preview[start:start + 4]):
-            with col:
+        for j, r in enumerate(row):
+            with cols[j]:
                 st.markdown(_competency_summary_html(r), unsafe_allow_html=True)
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         if st.button("Ver informe", use_container_width=True):
+            from ui.page_cohort_reports import _show_pdf_preview_modal
             _show_pdf_preview_modal(report, report_id)
     with col2:
         buf = exportar_reporte_individual(report_id)

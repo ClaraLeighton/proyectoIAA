@@ -1139,45 +1139,129 @@ div[data-baseweb="notification"] {
   line-height: 1.5;
 }
 
-/* ─── MICRO REPORT LIST ─── */
-.micro-report-row {
+/* ─── MICRO DETAIL VIEW ─── */
+.micro-detail-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.micro-detail-hero {
   background: var(--uandes-card-bg);
   border: 1px solid var(--uandes-border);
-  border-radius: var(--uandes-radius-md);
-  padding: 16px 20px;
-  margin-bottom: 12px;
+  border-radius: var(--uandes-radius-lg);
+  padding: 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 24px;
   box-shadow: var(--uandes-shadow-sm);
 }
-.micro-report-row.risk { border-left: 5px solid var(--uandes-red); }
-.micro-report-row.ok { border-left: 5px solid #22c55e; }
-.micro-report-row.mid { border-left: 5px solid #f59e0b; }
-
-.micro-report-main { flex: 1; min-width: 0; }
-.micro-report-status { font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; color: var(--uandes-text-secondary); }
-.micro-report-row.ok .micro-report-status { color: #22c55e; }
-.micro-report-row.risk .micro-report-status { color: var(--uandes-red); }
-.micro-report-row.mid .micro-report-status { color: #f59e0b; }
-
-.micro-report-row h3 { font-size: 16px; font-weight: 700; color: var(--uandes-text); margin: 0 0 2px; }
-.micro-report-meta { font-size: 12px; color: var(--uandes-text-muted); }
-.micro-report-approved { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
-.micro-report-approved strong { font-size: 18px; color: var(--uandes-text); }
-.micro-report-approved span { font-size: 11px; color: var(--uandes-text-secondary); }
-
-.micro-report-actions-container {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-shrink: 0;
-  margin: 0 16px;
-}
-.micro-report-actions-container a {
+.micro-detail-hero h2 {
   color: var(--uandes-text) !important;
+  margin: 0 0 8px !important;
 }
+.micro-detail-hero span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--uandes-red);
+  text-transform: uppercase;
+}
+.micro-detail-score {
+  background: var(--uandes-red-light);
+  padding: 16px 24px;
+  border-radius: 16px;
+  text-align: center;
+}
+.micro-detail-score strong {
+  display: block;
+  font-size: 32px;
+  color: var(--uandes-red);
+}
+.micro-detail-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+.micro-detail-metrics div {
+  background: var(--uandes-card-bg);
+  border: 1px solid var(--uandes-border);
+  padding: 20px;
+  border-radius: var(--uandes-radius-md);
+  text-align: center;
+}
+.micro-detail-metrics strong {
+  display: block;
+  font-size: 24px;
+  color: var(--uandes-text);
+}
+.micro-detail-metrics span {
+  font-size: 12px;
+  color: var(--uandes-text-secondary);
+}
+.micro-detail-analytics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.micro-panel {
+  background: var(--uandes-card-bg);
+  border: 1px solid var(--uandes-border);
+  padding: 24px;
+  border-radius: var(--uandes-radius-lg);
+}
+.micro-panel h3 {
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--uandes-text);
+}
+.micro-detail-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 160px;
+}
+.micro-detail-bar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.micro-detail-bar i {
+  width: 100%;
+  border-radius: 4px;
+}
+.micro-detail-legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 16px;
+}
+.micro-detail-legend span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--uandes-text);
+}
+.micro-comp-tile-detail {
+  background: var(--uandes-card-bg);
+  border: 1px solid var(--uandes-border);
+  padding: 16px;
+  border-radius: var(--uandes-radius-md);
+  margin-bottom: 12px;
+}
+.micro-comp-inline-detail {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--uandes-text-secondary);
+}
+.micro-comp-tile-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.micro-comp-tile-top strong { color: var(--uandes-red); }
 .uandes-level-bar-title {
   font-size: 20px;
   font-weight: 600;

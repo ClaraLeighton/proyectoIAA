@@ -15,10 +15,11 @@ load_dotenv()
 
 
 def _inject_css():
-    css_path = Path("assets/style.css")
-    if css_path.exists():
-        with open(css_path) as f:
-            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+    css_files = [Path("assets/style.css"), Path("assets/micro_views.css")]
+    for path in css_files:
+        if path.exists():
+            with open(path) as f:
+                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 
 def _init_session():

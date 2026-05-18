@@ -72,6 +72,7 @@ def _level_strip(dist: dict, total: int) -> str:
 
 def _report_card_html(report, rid: str, stats: dict, cohort_id: str = "") -> str:
     timestamp = getattr(report, "timestamp", "")[:10]
+    cid_param = f"&cid={cohort_id}" if cohort_id else ""
     return _html_block(f"""
     <div class="micro-report-row {stats["estado_cls"]}">
       <div class="micro-report-main">
@@ -257,9 +258,17 @@ def render():
         rid = item["rid"]
         report = item["report"]
         stats = item["stats"]
-        name = report.pdf_name or "Informe"
-
+        
         st.markdown(_report_card_html(report, rid, stats, cohort_id), unsafe_allow_html=True)
+
+    # Interceptar acción de preview PDF
+    if st.session_state.get("_action") == "preview_pdf":
+        report_id_to_preview = st.session_state.get("selected_report_id")
+        if report_id_to_preview:
+            report_to_preview = load_report(report_id_to_preview)
+            if report_to_preview:
+                st.session_state.pop("_action", None)
+                _show_pdf_preview_modal(report_to_preview, report_id_to_preview)
 
     col1, col2 = st.columns(2)
     with col1:
