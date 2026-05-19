@@ -8,8 +8,8 @@ from ui.components import page_hero, empty_state, badge
 
 
 LEVEL_COLORS = {"0": "#ef4444", "1": "#f97316", "2": "#2e9cdb", "3": "#22c55e"}
-LEVEL_LABELS = {"0": "Sin evidencia", "1": "No aplica", "2": "Uso concreto", "3": "Dominio técnico"}
-LEVEL_SHORT = {"0": "SE", "1": "NA", "2": "UC", "3": "DT"}
+LEVEL_LABELS = {"0": "Sin evidencia", "1": "Solo teoría", "2": "Uso concreto", "3": "Dominio técnico"}
+LEVEL_SHORT = {"0": "SE", "1": "TE", "2": "UC", "3": "DT"}
 
 
 def _formatear_tipo(tipo: str) -> str:
@@ -351,10 +351,10 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
         <div class="macro-panel-head">
           <div>
             <div class="macro-panel-title">Matriz cohortal de perfil de egreso</div>
-            <p>Tabla interpretativa por competencia. Las columnas SE, NA, UC y DT muestran conteos por nivel; barras y colores explican cumplimiento.</p>
+            <p>Tabla interpretativa por competencia. Las columnas SE, TE, UC y DT muestran conteos por nivel; barras y colores explican cumplimiento.</p>
           </div>
           <div class="macro-level-codes">
-            <span>SE: sin evidencia</span><span>NA: no aplica</span><span>UC: uso concreto</span><span>DT: dominio técnico</span>
+            <span>SE: sin evidencia</span><span>TE: solo teoría</span><span>UC: uso concreto</span><span>DT: dominio técnico</span>
           </div>
         </div>
         <div class="macro-table-scroll">

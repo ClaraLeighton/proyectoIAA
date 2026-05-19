@@ -10,7 +10,7 @@ from ui.icons import search, file_text, trash
 
 
 LEVEL_COLORS = {"0": "#ef4444", "1": "#f97316", "2": "#2e9cdb", "3": "#22c55e"}
-LEVEL_LABELS = {"0": "Sin evidencia", "1": "No aplica", "2": "Uso concreto", "3": "Dominio técnico"}
+LEVEL_LABELS = {"0": "Sin evidencia", "1": "Solo teoría", "2": "Uso concreto", "3": "Dominio técnico"}
 
 
 def _formatear_tipo(tipo: str) -> str:
