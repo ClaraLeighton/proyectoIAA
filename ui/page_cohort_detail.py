@@ -32,7 +32,7 @@ def _estado_competencia(tasa_aprobacion: float) -> tuple[str, str, str]:
     if tasa_aprobacion >= 0.70:
         return "Consolidada", "ok", ">= 70% de evaluaciones en nivel 2 o 3"
     if tasa_aprobacion >= 0.50:
-        return "En desarrollo", "mid", "50% a 69% de evaluaciones en nivel 2 o 3"
+        return "Cumplimiento parcial", "mid", "50% a 69% de evaluaciones en nivel 2 o 3"
     return "Brecha prioritaria", "risk", "< 50% de evaluaciones en nivel 2 o 3"
 
 
@@ -260,7 +260,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
           <span>Perfil de egreso</span>
           <strong>{perfil_pct:.0f}%</strong>
           <div class="macro-mini-track"><div style="width:{perfil_pct:.1f}%"></div></div>
-          <small>{cumplidas} consolidadas · {desarrollo} en desarrollo · {brecha} brecha</small>
+          <small>{cumplidas} consolidadas · {desarrollo} cumplimiento parcial · {brecha} brecha</small>
         </div>
         <div class="macro-color-card blue">
           <span>Nivel promedio</span>
@@ -327,7 +327,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
           </div>
           <div class="macro-status-legend">
             <span><i class="ok"></i>Consolidada: >= 70%</span>
-            <span><i class="mid"></i>En desarrollo: 50-69%</span>
+            <span><i class="mid"></i>Cumplimiento parcial: 50-69%</span>
             <span><i class="risk"></i>Brecha: < 50%</span>
           </div>
         </div>

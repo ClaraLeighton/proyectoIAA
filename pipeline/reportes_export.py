@@ -512,7 +512,7 @@ def _macro_competency_rows(reports) -> list[list]:
         if tasa_aprob >= 0.70:
             estado = "Consolidada"
         elif tasa_aprob >= 0.50:
-            estado = "En desarrollo"
+            estado = "Cumplimiento parcial"
         else:
             estado = "Brecha prioritaria"
 
@@ -577,7 +577,7 @@ def _write_macro_sheet(ws, rows: list[list]):
             val = row[estado_col - 1].value
             if val == "Consolidada":
                 row[estado_col - 1].fill = green
-            elif val == "En desarrollo":
+            elif val == "Cumplimiento parcial":
                 row[estado_col - 1].fill = yellow
             elif val == "Brecha prioritaria":
                 row[estado_col - 1].fill = red
