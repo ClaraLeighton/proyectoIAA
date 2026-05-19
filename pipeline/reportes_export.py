@@ -390,6 +390,10 @@ def _compute_macro_data(reports) -> tuple[list[dict], dict]:
                 "competencia_nombre": r.get("competencia_nombre", ""),
                 "nivel": r.get("nivel", 0),
                 "jpc": _num(traza.get("JPC", 0)),
+                "c_cobertura": _num(traza.get("C_cobertura_citas", 0)),
+                "s_pertinencia": _num(traza.get("S_pertinencia_seccion", 0)),
+                "r_similitud": _num(traza.get("R_similitud_promedio", 0)),
+                "f_confianza": _num(traza.get("F_confianza", 0)),
                 "report_id": report.report_id,
             })
 
@@ -401,13 +405,22 @@ def _compute_macro_data(reports) -> tuple[list[dict], dict]:
                 "nombre": rc["competencia_nombre"],
                 "niveles": [],
                 "jpcs": [],
+                "jpcs_all": [],
             }
         comp_data[cid]["niveles"].append(rc["nivel"])
-        comp_data[cid]["jpcs"].append(rc["jpc"])
+        comp_data[cid]["jpcs_all"].append(rc["jpc"])
+        if rc["nivel"] >= 2:
+            comp_data[cid]["jpcs"].append(rc["jpc"])
 
     global_total = len(reports)
     global_niveles = sum(len(d["niveles"]) for d in comp_data.values())
-    global_jpcs = [j for d in comp_data.values() for j in d["jpcs"]]
+    aprobados = [d for d in all_rc if d["nivel"] >= 2]
+    global_aprobadas = len(aprobados)
+    global_jpcs = [d["jpc"] for d in aprobados]
+    global_cs = [d["c_cobertura"] for d in aprobados]
+    global_ss = [d["s_pertinencia"] for d in aprobados]
+    global_rs = [d["r_similitud"] for d in aprobados]
+    global_fs = [d["f_confianza"] for d in aprobados]
 
     expected_comps = 0
     comps_per_report = []
@@ -426,6 +439,11 @@ def _compute_macro_data(reports) -> tuple[list[dict], dict]:
     g = {
         "total_reportes": global_total,
         "total_evaluaciones": global_niveles,
+        "competencias_aprobadas": global_aprobadas,
+        "c_promedio": round(sum(global_cs) / len(global_cs), 4) if global_cs else 0,
+        "s_promedio": round(sum(global_ss) / len(global_ss), 4) if global_ss else 0,
+        "r_promedio": round(sum(global_rs) / len(global_rs), 4) if global_rs else 0,
+        "f_promedio": round(sum(global_fs) / len(global_fs), 4) if global_fs else 0,
         "jpc_promedio": round(sum(global_jpcs) / len(global_jpcs), 4) if global_jpcs else 0,
         "tiempo_total_min": round(max(tiempos_auto), 2) if tiempos_auto else 0,
         "tiempo_promedio_min": round(sum(tiempos_auto) / len(tiempos_auto), 2) if tiempos_auto else 0,
@@ -449,8 +467,16 @@ def _macro_competency_rows(reports) -> list[list]:
         [],
         ["Total Informes Completados", g["total_reportes"]],
         ["Total Evaluaciones", g["total_evaluaciones"]],
-        ["JPC Promedio Cohorte", g["jpc_promedio"]],
+        ["Competencias Aprobadas (N2+N3)", g["competencias_aprobadas"]],
         ["Competencias por Informe (promedio)", comps_label],
+        [],
+        ["DESGLOSE JPC (solo competencias aprobadas N2+N3)", ""],
+        ["C: Cobertura de evidencia textual", g["c_promedio"]],
+        ["S: Pertinencia estructural de la sección", g["s_promedio"]],
+        ["R: Relevancia semántica de fragmentos", g["r_promedio"]],
+        ["F: Confianza del modelo en la clasificación", g["f_promedio"]],
+        ["JPC Promedio", g["jpc_promedio"]],
+        [],
         ["Tiempo de Procesamiento del Lote (min)", _format_minutes(g["tiempo_total_min"])],
         ["Tiempo Promedio por Informe (min)", _format_minutes(g["tiempo_promedio_min"])],
         [],
@@ -534,7 +560,11 @@ def _write_macro_sheet(ws, rows: list[list]):
         cell.fill = header_fill
         cell.alignment = Alignment(horizontal="center", vertical="center")
 
-    table_header_row = 10
+    table_header_row = 18
+
+    for cell in ws[table_header_row]:
+        cell.font = Font(bold=True)
+
     estado_col = None
     if ws.max_row >= table_header_row:
         for idx, cell in enumerate(ws[table_header_row], start=1):
@@ -554,9 +584,9 @@ def _write_macro_sheet(ws, rows: list[list]):
         for cell in row:
             cell.alignment = Alignment(vertical="top", wrap_text=True)
 
-    ws.freeze_panes = "A11"
+    ws.freeze_panes = "A19"
     col_widths = {
-        "A": 14, "B": 36, "C": 16, "D": 18, "E": 16,
+        "A": 52, "B": 36, "C": 16, "D": 18, "E": 16,
         "F": 16, "G": 16, "H": 16, "I": 16, "J": 20, "K": 12,
     }
     for col_letter, width in col_widths.items():
