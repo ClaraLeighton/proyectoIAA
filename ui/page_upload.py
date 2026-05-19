@@ -9,7 +9,7 @@ import uuid
 import streamlit as st
 
 from pipeline.batch_orchestrator import run_batch
-from pipeline.cohorts import create_cohort, get_cohort, add_reports_to_cohort
+from pipeline.cohorts import create_cohort, get_cohort, add_reports_to_cohort, get_cohort_csv_bytes, get_cohort_json_bytes
 from pipeline.models import BatchConfig
 from pipeline.persistence import load_index, compute_file_hash, find_duplicate_files, find_duplicates_within_batch
 from ui.components import page_hero, processing_panel
@@ -269,6 +269,12 @@ def render():
     csv_bytes = csv_file.getvalue() if csv_file else None
     json_bytes = json_file.getvalue() if json_file else None
 
+    if existing_cohort:
+        if csv_bytes is None:
+            csv_bytes = get_cohort_csv_bytes(existing_cohort)
+        if json_bytes is None:
+            json_bytes = get_cohort_json_bytes(existing_cohort)
+
     st.markdown('<div class="uandes-form-section"><div class="uandes-form-section-title">Tipo de Práctica</div></div>', unsafe_allow_html=True)
     tipos_disponibles = _cargar_tipos_rubrica()
     tipo_doc = st.radio(
@@ -385,7 +391,7 @@ def render():
                             if st.button(f"Excluir duplicados y {btn_label}", type="primary", use_container_width=True):
                                 filtered = [r for r in pending if r["report_id"] not in dup_report_ids]
                                 if new_cohort:
-                                    cohort = create_cohort(cohort_name.strip(), tipo_doc)
+                                    cohort = create_cohort(cohort_name.strip(), tipo_doc, csv_bytes, json_bytes)
                                     st.session_state["selected_cohort_id"] = cohort["cohort_id"]
                                     st.session_state["current_cohort_id"] = cohort["cohort_id"]
                                 else:
@@ -399,7 +405,7 @@ def render():
                     with col_err2:
                         if st.button("Continuar de todos modos", use_container_width=True):
                             if new_cohort:
-                                cohort = create_cohort(cohort_name.strip(), tipo_doc)
+                                cohort = create_cohort(cohort_name.strip(), tipo_doc, csv_bytes, json_bytes)
                                 st.session_state["selected_cohort_id"] = cohort["cohort_id"]
                                 st.session_state["current_cohort_id"] = cohort["cohort_id"]
                             else:
@@ -419,7 +425,7 @@ def render():
                         btn_label = "Crear Cohorte" if new_cohort else "Agregar a cohorte"
                         if st.button(btn_label, type="primary", use_container_width=True):
                             if new_cohort:
-                                cohort = create_cohort(cohort_name.strip(), tipo_doc)
+                                cohort = create_cohort(cohort_name.strip(), tipo_doc, csv_bytes, json_bytes)
                                 st.session_state["selected_cohort_id"] = cohort["cohort_id"]
                                 st.session_state["current_cohort_id"] = cohort["cohort_id"]
                             else:
@@ -449,7 +455,7 @@ def render():
                             st.error("Debes ingresar un nombre para la cohorte.")
                         else:
                             if new_cohort:
-                                cohort = create_cohort(cohort_name.strip(), tipo_doc)
+                                cohort = create_cohort(cohort_name.strip(), tipo_doc, csv_bytes, json_bytes)
                                 st.session_state["selected_cohort_id"] = cohort["cohort_id"]
                                 st.session_state["current_cohort_id"] = cohort["cohort_id"]
                             else:

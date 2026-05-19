@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import uuid
@@ -43,7 +44,27 @@ def get_cohort(cohort_id: str) -> dict | None:
     return None
 
 
-def create_cohort(name: str, tipo_documento: str) -> dict:
+def _bytes_to_base64(data: bytes | None) -> str | None:
+    if data is None:
+        return None
+    return base64.b64encode(data).decode("utf-8")
+
+
+def _base64_to_bytes(data: str | None) -> bytes | None:
+    if data is None:
+        return None
+    return base64.b64decode(data.encode("utf-8"))
+
+
+def get_cohort_csv_bytes(cohort: dict) -> bytes | None:
+    return _base64_to_bytes(cohort.get("csv_base64"))
+
+
+def get_cohort_json_bytes(cohort: dict) -> bytes | None:
+    return _base64_to_bytes(cohort.get("json_base64"))
+
+
+def create_cohort(name: str, tipo_documento: str, csv_bytes: bytes | None = None, json_bytes: bytes | None = None) -> dict:
     cohort = {
         "cohort_id": str(uuid.uuid4()),
         "name": name,
@@ -51,6 +72,8 @@ def create_cohort(name: str, tipo_documento: str) -> dict:
         "created_at": datetime.now().isoformat(),
         "updated_at": datetime.now().isoformat(),
         "report_ids": [],
+        "csv_base64": _bytes_to_base64(csv_bytes),
+        "json_base64": _bytes_to_base64(json_bytes),
     }
     cohorts = _load_cohorts()
     cohorts.append(cohort)
