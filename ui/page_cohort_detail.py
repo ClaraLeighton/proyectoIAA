@@ -354,7 +354,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
             <p>Tabla interpretativa por competencia. Las columnas SE, TE, UC y DT muestran conteos por nivel; barras y colores explican cumplimiento.</p>
           </div>
           <div class="macro-level-codes">
-            <span>SE: sin evidencia</span><span>TE: solo teoría</span><span>UC: uso concreto</span><span>DT: dominio técnico</span>
+            <span data-tooltip="No hay mención de la competencia en el informe">SE: sin evidencia</span><span data-tooltip="Menciona herramientas, lenguajes o conceptos relacionados, pero sin demostrar aplicación práctica">TE: solo teoría</span><span data-tooltip="Aplica conocimientos para resolver problemas y obtiene resultados descritos, pero sin profundizar en la justificación técnica">UC: uso concreto</span><span data-tooltip="Demuestra un dominio experto: evalúa alternativas, justifica decisiones técnicas y refleja sobre el impacto de su trabajo">DT: dominio técnico</span>
           </div>
         </div>
         <div class="macro-table-scroll">
