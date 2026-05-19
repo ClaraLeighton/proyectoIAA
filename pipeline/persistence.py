@@ -136,6 +136,25 @@ def delete_report(report_id: str):
         json.dump(index, f, ensure_ascii=False, indent=2)
 
 
+def cleanup_orphans() -> int:
+    from pipeline.cohorts import list_cohorts
+    cohorts = list_cohorts()
+    all_cohort_ids = set()
+    for c in cohorts:
+        all_cohort_ids.update(c.get("report_ids", []))
+    index = load_index()
+    orphans = [e for e in index if e["report_id"] not in all_cohort_ids]
+    for e in orphans:
+        delete_report(e["report_id"])
+    orphan_dirs = 0
+    for entry in os.listdir(REPORTS_DIR):
+        rdir = os.path.join(REPORTS_DIR, entry)
+        if os.path.isdir(rdir) and entry not in {e["report_id"] for e in load_index()}:
+            shutil.rmtree(rdir)
+            orphan_dirs += 1
+    return len(orphans) + orphan_dirs
+
+
 def get_report_count_by_status() -> dict[str, int]:
     index = load_index()
     counts = {}

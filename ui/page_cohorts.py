@@ -1,5 +1,6 @@
 import streamlit as st
 from pipeline.cohorts import list_cohorts, compute_cohort_macro, delete_cohort
+from pipeline.persistence import load_index, cleanup_orphans
 from ui.components import page_hero, badge, empty_state
 
 
@@ -70,6 +71,15 @@ def render():
     st.markdown('</div>', unsafe_allow_html=True)
 
     if not cohorts:
+        orphans_count = len(load_index())
+        if orphans_count > 0:
+            st.warning(f"**{orphans_count} informe{'s' if orphans_count != 1 else ''} huérfano{'s' if orphans_count != 1 else ''}** encontrado{'s' if orphans_count != 1 else ''} en el sistema sin cohorte asociada.")
+            if st.button("Limpiar informes huérfanos", type="primary", use_container_width=True):
+                deleted = cleanup_orphans()
+                st.session_state["report_count"] = len(load_index())
+                st.success(f"{deleted} informe{'s' if deleted != 1 else ''} eliminado{'s' if deleted != 1 else ''}.")
+                st.rerun()
+
         empty_state(
             "No hay cohortes aún",
             "Crea tu primera cohorte para comenzar a evaluar informes de práctica.",

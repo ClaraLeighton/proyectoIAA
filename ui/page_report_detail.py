@@ -39,19 +39,21 @@ def _estado_comp(nivel: int, confianza: float) -> tuple[str, str]:
 
 def _micro_detail_chart(preview: list[dict]) -> str:
     ordered = sorted(preview, key=lambda r: _sort_competencia_id(r.get("competencia_id", "")))
+    max_nivel = max((int(r.get("nivel", 0)) for r in preview), default=3)
+    max_nivel = max(max_nivel, 1)
     bars = []
     for r in ordered:
         cid = r.get("competencia_id", "")
         nivel = int(r.get("nivel", 0))
         confianza = r.get("confianza", 0)
         estado, cls = _estado_comp(nivel, confianza)
-        height = 24 + (nivel / 3) * 108
+        height = 22 + (nivel / max_nivel) * 92
         bars.append(
-            f'<div class="micro-detail-bar {cls}" title="{escape(cid)} · Nivel {nivel} · {estado}">'
+            f'<div class="macro-mini-bar {cls}" title="{escape(cid)} · Nivel {nivel} · {estado}">'
             f'<i style="height:{height:.1f}px;background:{LEVEL_COLORS.get(nivel, "#8E98A3")}"></i>'
             f'<strong>N{nivel}</strong><span>{escape(cid)}</span></div>'
         )
-    return f'<div class="micro-detail-bars">{"".join(bars)}</div>'
+    return f'<div class="macro-mini-bars">{"".join(bars)}</div>'
 
 
 def _micro_detail_html(report, preview: list[dict], total: int, aprobadas: int, no_aprobadas: int, nivel_prom: float) -> str:
@@ -63,7 +65,8 @@ def _micro_detail_html(report, preview: list[dict], total: int, aprobadas: int, 
 
     pie_vars = ";".join(f"--n{k}:{(dist.get(k, 0) / total * 100 if total else 0):.1f}" for k in [0, 1, 2, 3])
     legend = "".join(
-        f'<span><i style="background:{LEVEL_COLORS[lvl]}"></i>Nivel {lvl}: {escape(label)} · {dist.get(lvl, 0)}</span>'
+        f'<span><i style="background:{LEVEL_COLORS[lvl]}"></i>'
+        f'{LEVEL_LABELS[lvl]} <strong>{dist.get(lvl, 0)}</strong></span>'
         for lvl, label in LEVEL_LABELS.items()
     )
 
@@ -88,18 +91,18 @@ def _micro_detail_html(report, preview: list[dict], total: int, aprobadas: int, 
         <div><strong>{confianza_prom * 100:.0f}%</strong><span>confianza promedio</span></div>
       </section>
       <section class="micro-detail-analytics compact">
-        <div class="micro-panel micro-bars-panel">
-          <div class="micro-panel-head">
+        <div class="macro-panel macro-bars-card">
+          <div class="macro-panel-head">
             <div><h3>Resumen por competencia</h3><p>Cada barra es una competencia. Más alta significa mayor nivel logrado.</p></div>
           </div>
           {_micro_detail_chart(preview)}
         </div>
-        <div class="micro-panel micro-pie-panel">
+        <div class="macro-panel macro-distribution-card">
           <h3>Distribución por niveles</h3>
           <div class="macro-ring" style="{pie_vars}">
             <div><strong>{total}</strong><span>competencias</span></div>
           </div>
-          <div class="micro-detail-legend">{legend}</div>
+          <div class="macro-legend">{legend}</div>
         </div>
       </section>
       <section class="micro-comp-section">

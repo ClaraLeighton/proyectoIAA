@@ -8,6 +8,7 @@ from openpyxl.utils import get_column_letter
 from pipeline.persistence import load_report
 
 
+RESUMEN_MACRO_SHEET = "Resumen Macro de Competencias"
 RESULTADOS_SHEET = "Resultados de Evaluación"
 PROCESAMIENTO_SHEET = "Reporte de Procesamiento"
 JPC_APROBACION_MIN = 0.60
@@ -303,19 +304,287 @@ def _write_processing_sheet(ws, reports):
             row[1].number_format = "0.00%"
 
 
+def _cohort_summary_rows(reports) -> list[list]:
+    if not reports:
+        return [["No hay informes completados."]]
+
+    all_jpc = []
+    all_tiempos = []
+    all_comp_counts = []
+    total_reportes = len(reports)
+    total_errores = 0
+
+    for report in reports:
+        rp = report.reporte_procesamiento
+        trazabilidad = rp.get("trazabilidad_competencias", [])
+        tiempos = rp.get("tiempos", {})
+
+        jpc_values = [_num(t.get("JPC")) for t in trazabilidad if t.get("JPC") is not None]
+        all_jpc.extend(jpc_values)
+        all_comp_counts.append(len(trazabilidad))
+
+        t_auto = tiempos.get("T_procesamiento_automatico_min")
+        t_revision = tiempos.get("T_revision_humana_min")
+        t_ajustes = tiempos.get("T_ajustes_min")
+        t_total = tiempos.get("T_IA_total_min")
+        if t_total is None:
+            t_total = sum(_num(t) for t in [t_auto, t_revision, t_ajustes])
+        if t_total:
+            all_tiempos.append(t_total)
+
+    jpc_promedio_cohorte = round(sum(all_jpc) / len(all_jpc), 4) if all_jpc else 0
+    comp_promedio = round(sum(all_comp_counts) / len(all_comp_counts), 1) if all_comp_counts else 0
+    tiempo_total_cohorte = round(sum(all_tiempos), 2) if all_tiempos else 0
+    jpc_min = round(min(all_jpc), 4) if all_jpc else 0
+    jpc_max = round(max(all_jpc), 4) if all_jpc else 0
+    comp_min = min(all_comp_counts) if all_comp_counts else 0
+    comp_max = max(all_comp_counts) if all_comp_counts else 0
+    comp_global = sum(all_comp_counts)
+
+    rows = [
+        ["RESUMEN DE COHORTE", ""],
+        [],
+        ["Información General", ""],
+        ["Total Informes Completados", total_reportes],
+        ["Total Competencias Evaluadas (global)", comp_global],
+        [],
+        ["JPC (Índice de Calidad de Procesamiento)", ""],
+        ["JPC Promedio Cohorte", jpc_promedio_cohorte],
+        ["JPC Mínimo", jpc_min],
+        ["JPC Máximo", jpc_max],
+        [],
+        ["Competencias por Informe", ""],
+        ["Promedio Competencias por Informe", comp_promedio],
+        ["Mínimo Competencias por Informe", comp_min],
+        ["Máximo Competencias por Informe", comp_max],
+        [],
+        ["Tiempo de Procesamiento", ""],
+        ["Tiempo Total Cohorte (min)", _format_minutes(tiempo_total_cohorte)],
+        ["Tiempo Promedio por Informe (min)", round(tiempo_total_cohorte / total_reportes, 2) if total_reportes else 0],
+        [],
+    ]
+    for report in reports:
+        rows.append([
+            report.pdf_name,
+            f'{report.timestamp[:19] if hasattr(report, "timestamp") else ""}',
+        ])
+        rp = report.reporte_procesamiento
+        trazabilidad = rp.get("trazabilidad_competencias", [])
+        jpc_vals = [_num(t.get("JPC")) for t in trazabilidad if t.get("JPC") is not None]
+        tiempos = rp.get("tiempos", {})
+        t_total = tiempos.get("T_IA_total_min") or sum(_num(t) for t in [tiempos.get("T_procesamiento_automatico_min"), tiempos.get("T_revision_humana_min"), tiempos.get("T_ajustes_min")])
+        rows.append([f"  JPC prom: {round(sum(jpc_vals)/len(jpc_vals),4) if jpc_vals else 0}", f"  Tiempo: {_format_minutes(t_total)}", f"  Comps: {len(trazabilidad)}"])
+    return rows
+
+
+def _compute_macro_data(reports) -> tuple[list[dict], dict]:
+    all_rc = []
+    for report in reports:
+        rp = report.reporte_procesamiento
+        trazas = {t.get("competencia_id", ""): t for t in rp.get("trazabilidad_competencias", [])}
+        for r in report.vista_preliminar:
+            cid = r.get("competencia_id", "")
+            traza = trazas.get(cid, {})
+            all_rc.append({
+                "competencia_id": cid,
+                "competencia_nombre": r.get("competencia_nombre", ""),
+                "nivel": r.get("nivel", 0),
+                "jpc": _num(traza.get("JPC", 0)),
+                "report_id": report.report_id,
+            })
+
+    comp_data: dict[str, dict] = {}
+    for rc in all_rc:
+        cid = rc["competencia_id"]
+        if cid not in comp_data:
+            comp_data[cid] = {
+                "nombre": rc["competencia_nombre"],
+                "niveles": [],
+                "jpcs": [],
+            }
+        comp_data[cid]["niveles"].append(rc["nivel"])
+        comp_data[cid]["jpcs"].append(rc["jpc"])
+
+    global_total = len(reports)
+    global_niveles = sum(len(d["niveles"]) for d in comp_data.values())
+    global_jpcs = [j for d in comp_data.values() for j in d["jpcs"]]
+
+    expected_comps = 0
+    comps_per_report = []
+    tiempos_auto = []
+    for report in reports:
+        cs = report.pipeline_state.get("c1", {}).get("competencias_activas", [])
+        if cs and expected_comps == 0:
+            expected_comps = len(cs)
+        prev = report.vista_preliminar
+        comps_per_report.append(len(prev))
+        t = report.reporte_procesamiento.get("tiempos", {}).get("T_procesamiento_automatico_min")
+        if t:
+            tiempos_auto.append(t)
+
+    avg_comps = round(sum(comps_per_report) / len(comps_per_report), 1) if comps_per_report else 0
+    g = {
+        "total_reportes": global_total,
+        "total_evaluaciones": global_niveles,
+        "jpc_promedio": round(sum(global_jpcs) / len(global_jpcs), 4) if global_jpcs else 0,
+        "tiempo_total_min": round(max(tiempos_auto), 2) if tiempos_auto else 0,
+        "tiempo_promedio_min": round(sum(tiempos_auto) / len(tiempos_auto), 2) if tiempos_auto else 0,
+        "comps_promedio": avg_comps,
+        "comps_esperadas": expected_comps,
+    }
+
+    return comp_data, g
+
+
+def _macro_competency_rows(reports) -> list[list]:
+    if not reports:
+        return [["No hay informes completados."]]
+
+    comp_data, g = _compute_macro_data(reports)
+
+    comps_label = f'{g["comps_promedio"]} de {g["comps_esperadas"]}' if g["comps_esperadas"] else f'{g["comps_promedio"]}'
+
+    rows = [
+        ["RESUMEN MACRO DE COMPETENCIAS", ""],
+        [],
+        ["Total Informes Completados", g["total_reportes"]],
+        ["Total Evaluaciones", g["total_evaluaciones"]],
+        ["JPC Promedio Cohorte", g["jpc_promedio"]],
+        ["Competencias por Informe (promedio)", comps_label],
+        ["Tiempo de Procesamiento del Lote (min)", _format_minutes(g["tiempo_total_min"])],
+        ["Tiempo Promedio por Informe (min)", _format_minutes(g["tiempo_promedio_min"])],
+        [],
+        [
+            "Competencia",
+            "Nombre",
+            "Nivel Promedio",
+            "Tasa Aprobación",
+            "JPC Promedio",
+            "Dist. SE (N0)",
+            "Dist. NA (N1)",
+            "Dist. UC (N2)",
+            "Dist. DT (N3)",
+            "Estado",
+            "Score %",
+        ],
+    ]
+
+    for cid in sorted(comp_data.keys(), key=lambda x: int("".join(ch for ch in x if ch.isdigit()) or 0) if any(ch.isdigit() for ch in x) else x):
+        d = comp_data[cid]
+        niveles = d["niveles"]
+        jpcs = [j for j in d["jpcs"] if isinstance(j, (int, float))]
+        n_total = len(niveles)
+        nivel_prom = round(sum(niveles) / n_total, 2) if n_total else 0
+        aprobadas = sum(1 for n in niveles if n >= 2)
+        tasa_aprob = round(aprobadas / n_total, 4) if n_total else 0
+        jpc_prom = round(sum(jpcs) / len(jpcs), 4) if jpcs else 0
+
+        dist = {"0": 0, "1": 0, "2": 0, "3": 0}
+        for n in niveles:
+            dist[str(int(n))] = dist.get(str(int(n)), 0) + 1
+
+        if tasa_aprob >= 0.70:
+            estado = "Consolidada"
+        elif tasa_aprob >= 0.50:
+            estado = "En desarrollo"
+        else:
+            estado = "Brecha prioritaria"
+
+        score_pct = round(nivel_prom / 3 * 100, 1) if n_total else 0
+
+        rows.append([
+            cid,
+            d["nombre"],
+            nivel_prom,
+            tasa_aprob,
+            jpc_prom,
+            dist["0"],
+            dist["1"],
+            dist["2"],
+            dist["3"],
+            estado,
+            f"{score_pct:.1f}%",
+        ])
+
+    rows.extend([
+        [],
+        ["Nota sobre tiempos de procesamiento"],
+        [
+            "Los tiempos de procesamiento individuales (T_procesamiento_automatico_min) reflejan el tiempo real "
+            "transcurrido desde el inicio hasta la finalización de cada informe. Debido a que los informes se "
+            "procesan en paralelo con hasta 5 llamadas LLM concurrentes a nivel global, la suma de los tiempos "
+            "individuales puede superar el tiempo real de procesamiento del lote completo."
+        ],
+    ])
+
+    return rows
+
+
+def _write_macro_sheet(ws, rows: list[list]):
+    header_fill = PatternFill("solid", fgColor="E7E5E4")
+    green = PatternFill("solid", fgColor="C6E0B4")
+    yellow = PatternFill("solid", fgColor="FFE699")
+    red = PatternFill("solid", fgColor="F4CCCC")
+
+    for row in rows:
+        ws.append(row)
+
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+        cell.fill = header_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    table_header_row = 10
+    estado_col = None
+    if ws.max_row >= table_header_row:
+        for idx, cell in enumerate(ws[table_header_row], start=1):
+            if cell.value == "Estado":
+                estado_col = idx
+                break
+
+    for row in ws.iter_rows(min_row=table_header_row + 1, max_row=ws.max_row):
+        if estado_col and len(row) >= estado_col:
+            val = row[estado_col - 1].value
+            if val == "Consolidada":
+                row[estado_col - 1].fill = green
+            elif val == "En desarrollo":
+                row[estado_col - 1].fill = yellow
+            elif val == "Brecha prioritaria":
+                row[estado_col - 1].fill = red
+        for cell in row:
+            cell.alignment = Alignment(vertical="top", wrap_text=True)
+
+    ws.freeze_panes = "A11"
+    col_widths = {
+        "A": 14, "B": 36, "C": 16, "D": 18, "E": 16,
+        "F": 16, "G": 16, "H": 16, "I": 16, "J": 20, "K": 12,
+    }
+    for col_letter, width in col_widths.items():
+        ws.column_dimensions[col_letter].width = width
+
+    for row in ws.iter_rows(min_row=2, max_row=table_header_row - 1):
+        for cell in row:
+            if isinstance(cell.value, str) and cell.value.isupper() and cell.value:
+                cell.font = Font(bold=True)
+
+
 def exportar_excel_multi_hoja(index: list[dict]) -> io.BytesIO:
     output = io.BytesIO()
     wb = Workbook()
-    ws_resultados = wb.active
-    ws_resultados.title = RESULTADOS_SHEET
+    ws_macro = wb.active
+    ws_macro.title = RESUMEN_MACRO_SHEET
+    ws_resultados = wb.create_sheet(RESULTADOS_SHEET)
     ws_procesamiento = wb.create_sheet(PROCESAMIENTO_SHEET)
 
     reports = _completed_reports(index)
     if reports:
+        macro_rows = _macro_competency_rows(reports)
+        _write_macro_sheet(ws_macro, macro_rows)
         headers, rows = _resultados_rows(reports)
         _write_resultados_sheet(ws_resultados, headers, rows)
         _write_processing_sheet(ws_procesamiento, reports)
     else:
+        ws_macro.append(["Mensaje", "No hay informes completados disponibles para exportar."])
         _write_resultados_sheet(ws_resultados, ["Mensaje"], [["No hay informes completados disponibles para exportar."]])
         ws_procesamiento.append(["Mensaje", "No hay informes completados disponibles para exportar."])
 

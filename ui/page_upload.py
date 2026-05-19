@@ -192,12 +192,13 @@ def _start_processing(pending, cohort_id):
     st.session_state["batch_progress"] = progress
     st.session_state["batch_running"] = True
 
+    report_ids = [r["report_id"] for r in pending]
+    if report_ids and cohort_id:
+        add_reports_to_cohort(cohort_id, report_ids)
+
     def _run_and_save():
         try:
-            results = run_batch(pending, llm_config, batch_config, progress)
-            report_ids = [r.report_id for r in results if r.estado != "error"]
-            if report_ids and cohort_id:
-                add_reports_to_cohort(cohort_id, report_ids)
+            run_batch(pending, llm_config, batch_config, progress)
         except Exception:
             pass
 
@@ -213,7 +214,7 @@ def render():
 
     st.session_state.pop("upload_submitted", None)
     new_cohort = st.session_state.get("new_cohort", True)
-    cohort_id = st.session_state.get("selected_cohort_id")
+    cohort_id = st.session_state.get("selected_cohort_id") if not new_cohort else None
     existing_cohort = get_cohort(cohort_id) if cohort_id else None
 
     if new_cohort:
@@ -315,7 +316,7 @@ def render():
                 existing_dup_ids = {d["report_id"] for d in existing_dups.values()}
                 dup_report_ids |= existing_dup_ids
             else:
-                all_dups = find_duplicate_files(batch_clean)
+                all_dups = find_duplicate_files(batch_clean, set())
                 for key, dup in all_dups.items():
                     if dup["report_id"] not in dup_report_ids:
                         info_dups[key] = dup

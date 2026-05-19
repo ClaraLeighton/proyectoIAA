@@ -96,7 +96,7 @@ def add_reports_to_cohort(cohort_id: str, report_ids: list[str]):
 
 
 def remove_report_from_cohort(cohort_id: str, report_id: str):
-    from pipeline.persistence import delete_report, load_index
+    from pipeline.persistence import delete_report
     cohorts = _load_cohorts()
     for c in cohorts:
         if c["cohort_id"] == cohort_id:
@@ -105,10 +105,7 @@ def remove_report_from_cohort(cohort_id: str, report_id: str):
                 c["updated_at"] = datetime.now().isoformat()
             break
     _save_cohorts(cohorts)
-
-    in_other = any(report_id in c["report_ids"] for c in cohorts if c["cohort_id"] != cohort_id)
-    if not in_other:
-        delete_report(report_id)
+    delete_report(report_id)
 
 
 def compute_cohort_macro(cohort_id: str) -> dict:
@@ -118,11 +115,20 @@ def compute_cohort_macro(cohort_id: str) -> dict:
 
     tipo = cohort["tipo_documento"]
     all_results = []
+    expected_ids: list[str] = []
+    seen_expected = False
 
     for rid in cohort["report_ids"]:
         report = load_report(rid)
         if not report or report.estado != "completado":
             continue
+
+        if not seen_expected:
+            comps = report.pipeline_state.get("c1", {}).get("competencias_activas", [])
+            if comps:
+                expected_ids = [c["competencia_id"] for c in comps]
+                seen_expected = True
+
         preview = report.vista_preliminar
         if not preview:
             continue
@@ -143,7 +149,7 @@ def compute_cohort_macro(cohort_id: str) -> dict:
             report_entry["resultados_competencias"].append(entry)
         all_results.append(report_entry)
 
-    return _aggregate_macro(all_results, tipo)
+    return _aggregate_macro(all_results, tipo, expected_ids)
 
 
 def _empty_macro() -> dict:
@@ -161,7 +167,7 @@ def _empty_macro() -> dict:
     }
 
 
-def _aggregate_macro(resultados: list[dict], tipo: str) -> dict:
+def _aggregate_macro(resultados: list[dict], tipo: str, expected_ids: list[str] | None = None) -> dict:
     resultados_competencias = []
     for r in resultados:
         rc = r.get("resultados_competencias", [])
@@ -171,10 +177,13 @@ def _aggregate_macro(resultados: list[dict], tipo: str) -> dict:
     if not resultados_competencias:
         return _empty_macro()
 
-    comp_ids = sorted(set(
-        rc["competencia_id"] for rc in resultados_competencias
-        if isinstance(rc, dict) and "competencia_id" in rc
-    ))
+    if expected_ids:
+        comp_ids = expected_ids
+    else:
+        comp_ids = sorted(set(
+            rc["competencia_id"] for rc in resultados_competencias
+            if isinstance(rc, dict) and "competencia_id" in rc
+        ))
 
     competencias = {}
     score_total = 0
@@ -208,13 +217,10 @@ def _aggregate_macro(resultados: list[dict], tipo: str) -> dict:
                 if rc.get("competencia_nombre"):
                     nombres.add(rc["competencia_nombre"])
 
-        if not niveles:
-            continue
-
         n_total = len(niveles)
         score_actual = sum(niveles)
         score_max = n_total * NIVEL_MAX
-        nivel_promedio = round(score_actual / n_total, 2)
+        nivel_promedio = round(score_actual / n_total, 2) if n_total else 0.0
         score_pct = round(score_actual / score_max, 4) if score_max > 0 else 0.0
         aprobadas = sum(1 for n in niveles if n >= 2)
         tasa_aprobacion = round(aprobadas / n_total, 4) if n_total > 0 else 0.0

@@ -1,267 +1,286 @@
 [
   {
-    "report_id": "4f73859a-bde4-4a8e-858c-8bca633c01f3",
-    "pdf_name": "Informe pre-practica.pdf",
+    "report_id": "00816879-41a8-4914-8cff-500821b97903",
+    "pdf_name": "Informe de Práctica Pre-Profesional844802025_12_23_20_43_44.pdf",
+    "file_hash": "aa8a99e4b8216289e4ee7ce0a484a1300eee855407a980059ec399aae1347663",
     "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-13T15:14:19.112437",
+    "timestamp": "2026-05-18T20:09:26.280119",
     "total_competencias": 11,
-    "avg_jpc": 0.6316,
-    "avg_confianza": 0.6836,
-    "nivel_promedio": 0.6,
+    "avg_jpc": 0.6636,
+    "avg_confianza": 0.7664,
+    "nivel_promedio": 0.7,
     "nivel_distribucion": {
-      "0": 6,
-      "2": 2,
+      "0": 7,
+      "2": 4
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "1d019190-e38c-4ffa-b005-6fb08458a37f",
+    "pdf_name": "Informe Practica Pre-Profesional Estefania Sandoval.docx.pdf",
+    "file_hash": "cbcf34aa754bfb7e1a4f2e61691809c5e2e732b9bbfccd67812f57fa23133e97",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-18T20:09:43.730158",
+    "total_competencias": 11,
+    "avg_jpc": 0.7129,
+    "avg_confianza": 0.7282,
+    "nivel_promedio": 1.1,
+    "nivel_distribucion": {
+      "0": 5,
+      "2": 6
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "6bbcaf38-9993-4f48-81b2-08a74b6f363a",
+    "pdf_name": "Informe_Practica_Pocuro_v4938342026_03_13_15_38_38.pdf",
+    "file_hash": "a08619cd38594d95ae583729d282a4ccd5d8fb57c0772e79baa2768d0c3ea9b9",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-18T20:09:52.015073",
+    "total_competencias": 11,
+    "avg_jpc": 0.6362,
+    "avg_confianza": 0.6545,
+    "nivel_promedio": 1.1,
+    "nivel_distribucion": {
+      "0": 4,
+      "2": 5,
+      "1": 2
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "35bf27f9-f2a3-4137-86f1-1665ae0891de",
+    "pdf_name": "PreProfessional Practice Report - Carolina Hong.pdf",
+    "file_hash": "ed6f2aa83bb224972eaf6f9996d34c67bb730863cd6d172b778ff55ea26dbb69",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-18T20:09:58.393957",
+    "total_competencias": 11,
+    "avg_jpc": 0.6905,
+    "avg_confianza": 0.5891,
+    "nivel_promedio": 1.8,
+    "nivel_distribucion": {
+      "3": 1,
+      "2": 7,
       "1": 3
     },
     "estado": "completado",
     "error": null
   },
   {
-    "report_id": "c8fc51e5-c686-414b-a073-51111210a025",
-    "pdf_name": "Report Pre Professional Practice.pdf",
+    "report_id": "4a67965f-b2d7-4c8d-9334-0f34c9cd356f",
+    "pdf_name": "Informe_PrePractica_Castelli.pdf",
+    "file_hash": "215a3dd9045f806af5fb5a146c2adf2813e72b5b4eb8ffa6a21551cee431d85c",
     "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-13T15:14:22.700852",
+    "timestamp": "2026-05-18T20:10:03.345893",
     "total_competencias": 11,
-    "avg_jpc": 0.6419,
-    "avg_confianza": 0.4636,
-    "nivel_promedio": 0.5,
+    "avg_jpc": 0.6863,
+    "avg_confianza": 0.7818,
+    "nivel_promedio": 0.6,
     "nivel_distribucion": {
       "0": 6,
-      "1": 5
+      "1": 3,
+      "2": 2
     },
     "estado": "completado",
     "error": null
   },
   {
-    "report_id": "86f06909-13c8-4ef9-816b-243e769ec420",
-    "pdf_name": "Informe pre-practica.pdf",
-    "tipo_documento": "",
-    "timestamp": "2026-05-13T16:06:01.566690",
-    "total_competencias": 0,
-    "avg_jpc": 0.0,
-    "avg_confianza": 0.0,
-    "nivel_promedio": 0.0,
-    "nivel_distribucion": {},
-    "estado": "error",
-    "error": "No module named 'typing_inspection'"
-  },
-  {
-    "report_id": "86a719d9-76b2-402b-9067-3b6c1a16b925",
-    "pdf_name": "Informe_PrePractica_Castelli.pdf",
-    "tipo_documento": "",
-    "timestamp": "2026-05-13T16:13:58.580940",
-    "total_competencias": 0,
-    "avg_jpc": 0.0,
-    "avg_confianza": 0.0,
-    "nivel_promedio": 0.0,
-    "nivel_distribucion": {},
-    "estado": "error",
-    "error": "No module named 'httpx'"
-  },
-  {
-    "report_id": "a9f0badb-1336-4958-9637-b3212df2705f",
-    "pdf_name": "Informe pre-practica.pdf",
+    "report_id": "00e0370b-49cb-4dbc-9615-89d52fc8c487",
+    "pdf_name": "Report_ PreProfessional_Practice_Miguel_Aguillon877262026_03_12_21_03_42.pdf",
+    "file_hash": "10f5e158389c6ec7a5611928024350889b23a4839628c961cad9a8b17e3e6a1b",
     "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-13T16:40:30.232659",
+    "timestamp": "2026-05-18T20:27:58.930369",
     "total_competencias": 11,
-    "avg_jpc": 0.5779,
-    "avg_confianza": 0.47,
-    "nivel_promedio": 0.1,
+    "avg_jpc": 0.71,
+    "avg_confianza": 0.5555,
+    "nivel_promedio": 0.3,
     "nivel_distribucion": {
-      "0": 10,
+      "0": 8,
+      "1": 3
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "9406767e-7317-40b3-bbb9-52292c7736df",
+    "pdf_name": "Report Pre Professional Practice.pdf",
+    "file_hash": "b60b8a3db7a6929af537fcdaa30acc2de62e05a3b83e46a397d6fdc52da3ac12",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-18T20:30:57.506288",
+    "total_competencias": 11,
+    "avg_jpc": 0.6009,
+    "avg_confianza": 0.6636,
+    "nivel_promedio": 0.9,
+    "nivel_distribucion": {
+      "2": 1,
+      "0": 2,
+      "1": 8
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "924f2538-b16b-4f13-a030-92b2818f09ef",
+    "pdf_name": "Informe pre-practica.pdf",
+    "file_hash": "46804af3e303e740868ad023e6a59ad1f27b41bc792fb9babeec8f8334f0dae6",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-18T20:35:32.169230",
+    "total_competencias": 11,
+    "avg_jpc": 0.6259,
+    "avg_confianza": 0.5564,
+    "nivel_promedio": 0.7,
+    "nivel_distribucion": {
+      "1": 6,
+      "0": 4,
+      "2": 1
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "41b60504-759c-4085-9165-9f26670ce751",
+    "pdf_name": "Report Pre Professional Practice998422025_11_09_19_51_13.pdf",
+    "file_hash": "aeffdfbb886f8cb84a635030f4c1a0b45d2cb30be58db4e63a2a69b1dd017f9c",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-18T20:36:31.259580",
+    "total_competencias": 11,
+    "avg_jpc": 0.6996,
+    "avg_confianza": 0.6782,
+    "nivel_promedio": 1.3,
+    "nivel_distribucion": {
+      "2": 5,
+      "3": 1,
+      "0": 4,
       "1": 1
     },
     "estado": "completado",
     "error": null
   },
   {
-    "report_id": "77d10fce-9c7c-460a-8db0-e876a9ea1cab",
-    "pdf_name": "Report Pre Professional Practice.pdf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-13T16:40:59.835104",
-    "total_competencias": 11,
-    "avg_jpc": 0.6335,
-    "avg_confianza": 0.5655,
-    "nivel_promedio": 1.0,
-    "nivel_distribucion": {
-      "2": 2,
-      "0": 4,
-      "3": 1,
-      "1": 4
-    },
-    "estado": "completado",
-    "error": null
-  },
-  {
-    "report_id": "36f0bd56-e566-46cd-8337-c81d5a4f8e03",
-    "pdf_name": "Informe_PrePractica_Castelli.pdf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-17T20:43:53.384177",
-    "total_competencias": 11,
-    "avg_jpc": 0.6895,
-    "avg_confianza": 0.6955,
-    "nivel_promedio": 1.1,
-    "nivel_distribucion": {
-      "2": 4,
-      "0": 3,
-      "1": 4
-    },
-    "estado": "completado",
-    "error": null
-  },
-  {
-    "report_id": "e910e904-aa57-4778-9c45-96d1df8a878e",
-    "pdf_name": "Informe Practica Pre-Profesional Estefania Sandoval.docx.pdf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-17T21:46:13.779043",
-    "total_competencias": 11,
-    "avg_jpc": 0.6807,
-    "avg_confianza": 0.6909,
-    "nivel_promedio": 1.5,
-    "nivel_distribucion": {
-      "0": 2,
-      "2": 7,
-      "1": 2
-    },
-    "estado": "completado",
-    "error": null
-  },
-  {
-    "report_id": "7ec24d43-a266-4b95-b7cf-d3caaf0b9f42",
-    "pdf_name": "Informe_PrePractica_Castelli.pdf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-17T21:48:05.537943",
-    "total_competencias": 11,
-    "avg_jpc": 0.6791,
-    "avg_confianza": 0.7345,
-    "nivel_promedio": 0.6,
-    "nivel_distribucion": {
-      "0": 5,
-      "2": 1,
-      "1": 5
-    },
-    "estado": "completado",
-    "error": null
-  },
-  {
-    "report_id": "47eea54b-75bc-4c2b-9af3-3ca53de3bd90",
-    "pdf_name": "Informe Practica Pre-Profesional Estefania Sandoval.docx.pdf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-18T00:23:17.715601",
-    "total_competencias": 11,
-    "avg_jpc": 0.6581,
-    "avg_confianza": 0.6991,
-    "nivel_promedio": 1.4,
-    "nivel_distribucion": {
-      "1": 1,
-      "2": 7,
-      "0": 3
-    },
-    "estado": "completado",
-    "error": null
-  },
-  {
-    "report_id": "00ceb0d9-cd65-47f9-9deb-e86a35c91a39",
-    "pdf_name": "Informe_PrePractica_Castelli.pdf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-18T00:38:29.436782",
-    "total_competencias": 11,
-    "avg_jpc": 0.6915,
-    "avg_confianza": 0.7191,
-    "nivel_promedio": 0.6,
-    "nivel_distribucion": {
-      "1": 7,
-      "0": 4
-    },
-    "estado": "completado",
-    "error": null
-  },
-  {
-    "report_id": "69d8332c-dba9-4511-bdd9-60223f7669b2",
-    "pdf_name": "Informe_PrePractica_Castelli.pdf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-18T00:36:23.143513",
-    "total_competencias": 11,
-    "avg_jpc": 0.6778,
-    "avg_confianza": 0.6927,
-    "nivel_promedio": 0.7,
-    "nivel_distribucion": {
-      "2": 1,
-      "0": 4,
-      "1": 6
-    },
-    "estado": "completado",
-    "error": null
-  },
-  {
-    "report_id": "c1fa6304-c271-4af4-8123-84466fff5312",
-    "pdf_name": "Informe Practica Pre-Profesional Estefania Sandoval.docx.pdf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-18T00:47:47.569106",
-    "total_competencias": 11,
-    "avg_jpc": 0.6953,
-    "avg_confianza": 0.7018,
-    "nivel_promedio": 1.3,
-    "nivel_distribucion": {
-      "0": 3,
-      "2": 6,
-      "1": 2
-    },
-    "estado": "completado",
-    "error": null
-  },
-  {
-    "report_id": "6eaf1fe3-6834-4ca1-918e-25b905fa5d8e",
+    "report_id": "51f7bcdf-62d7-4328-b3b4-daccce107bd2",
     "pdf_name": "ClaraLeighton.docx.pdf",
     "file_hash": "3defbfb0257f9403b9c6967d856ec0953df60ad2a4f4dbb3da4f9953fd592755",
     "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-18T01:09:13.409433",
+    "timestamp": "2026-05-18T20:47:06.892163",
     "total_competencias": 11,
-    "avg_jpc": 0.6303,
-    "avg_confianza": 0.7409,
+    "avg_jpc": 0.6496,
+    "avg_confianza": 0.7791,
+    "nivel_promedio": 0.9,
+    "nivel_distribucion": {
+      "2": 4,
+      "0": 5,
+      "1": 2
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "8f960872-0273-40c3-936f-f9622d76956f",
+    "pdf_name": "Report pre practice892592026_03_13_21_16_50.pdf",
+    "file_hash": "db03ac60bb2ce0926a1ccfc900b2277c261e2ef09bd172f0e858745f5055b3cf",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-18T20:49:37.759756",
+    "total_competencias": 11,
+    "avg_jpc": 0.639,
+    "avg_confianza": 0.5882,
+    "nivel_promedio": 0.8,
+    "nivel_distribucion": {
+      "0": 5,
+      "1": 3,
+      "2": 3
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "1a58f22f-94ca-4c9d-89e3-c2477e0ca0f4",
+    "pdf_name": "Informe_Practica_Pocuro_v4938342026_03_13_15_38_38.pdf",
+    "file_hash": "a08619cd38594d95ae583729d282a4ccd5d8fb57c0772e79baa2768d0c3ea9b9",
+    "tipo_documento": "pre_professional_practice",
+    "timestamp": "2026-05-18T20:55:44.851708",
+    "total_competencias": 11,
+    "avg_jpc": 0.7102,
+    "avg_confianza": 0.6364,
+    "nivel_promedio": 0.9,
+    "nivel_distribucion": {
+      "0": 4,
+      "2": 3,
+      "1": 4
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "0bdff5d9-e7ba-41e1-8ccf-4bd1b29b948c",
+    "pdf_name": "Report Pre Professional Practice.pdf",
+    "file_hash": "b60b8a3db7a6929af537fcdaa30acc2de62e05a3b83e46a397d6fdc52da3ac12",
+    "tipo_documento": "professional_practice",
+    "timestamp": "2026-05-18T21:47:46.449630",
+    "total_competencias": 19,
+    "avg_jpc": 0.603,
+    "avg_confianza": 0.3684,
+    "nivel_promedio": 0.2,
+    "nivel_distribucion": {
+      "0": 15,
+      "1": 4
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "ecdeb7d4-870a-461d-9300-662d1faa03d7",
+    "pdf_name": "Report_ PreProfessional_Practice_Miguel_Aguillon877262026_03_12_21_03_42.pdf",
+    "file_hash": "10f5e158389c6ec7a5611928024350889b23a4839628c961cad9a8b17e3e6a1b",
+    "tipo_documento": "professional_practice",
+    "timestamp": "2026-05-18T21:48:12.266536",
+    "total_competencias": 19,
+    "avg_jpc": 0.6823,
+    "avg_confianza": 0.5189,
+    "nivel_promedio": 0.4,
+    "nivel_distribucion": {
+      "1": 4,
+      "0": 13,
+      "2": 2
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "0ef54e90-c00a-47e8-a7ff-dfe0a64d8528",
+    "pdf_name": "PreProfessional Practice Report - Carolina Hong.pdf",
+    "file_hash": "ed6f2aa83bb224972eaf6f9996d34c67bb730863cd6d172b778ff55ea26dbb69",
+    "tipo_documento": "professional_practice",
+    "timestamp": "2026-05-18T21:49:57.885279",
+    "total_competencias": 19,
+    "avg_jpc": 0.6938,
+    "avg_confianza": 0.4789,
+    "nivel_promedio": 0.9,
+    "nivel_distribucion": {
+      "0": 9,
+      "1": 5,
+      "2": 3,
+      "3": 2
+    },
+    "estado": "completado",
+    "error": null
+  },
+  {
+    "report_id": "7fb0b1a8-5da8-4bfb-9be3-c4cf46bfcdfa",
+    "pdf_name": "Informe Practica Pre-Profesional Estefania Sandoval.docx.pdf",
+    "file_hash": "cbcf34aa754bfb7e1a4f2e61691809c5e2e732b9bbfccd67812f57fa23133e97",
+    "tipo_documento": "professional_practice",
+    "timestamp": "2026-05-18T22:03:53.500265",
+    "total_competencias": 19,
+    "avg_jpc": 0.6757,
+    "avg_confianza": 0.6605,
     "nivel_promedio": 1.2,
     "nivel_distribucion": {
-      "1": 3,
-      "2": 5,
-      "0": 3
-    },
-    "estado": "completado",
-    "error": null
-  },
-  {
-    "report_id": "3d905d87-04f3-4fff-ac5f-380c1d366cb5",
-    "pdf_name": "Informe Professional Practice705862026_03_08_13_43_00.pdf",
-    "file_hash": "0268c5ae2aa7a92071830d74dc9866e710199296afdf51d4556e9e605c2e8dbf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-18T01:37:23.164108",
-    "total_competencias": 11,
-    "avg_jpc": 0.6725,
-    "avg_confianza": 0.65,
-    "nivel_promedio": 1.3,
-    "nivel_distribucion": {
-      "3": 1,
-      "0": 4,
-      "1": 1,
-      "2": 5
-    },
-    "estado": "completado",
-    "error": null
-  },
-  {
-    "report_id": "35aef007-7378-4337-9c03-b39f4844823b",
-    "pdf_name": "Informe Professional Practice705862026_03_08_13_43_00.pdf",
-    "file_hash": "0268c5ae2aa7a92071830d74dc9866e710199296afdf51d4556e9e605c2e8dbf",
-    "tipo_documento": "pre_professional_practice",
-    "timestamp": "2026-05-18T01:37:48.496743",
-    "total_competencias": 11,
-    "avg_jpc": 0.713,
-    "avg_confianza": 0.7745,
-    "nivel_promedio": 1.5,
-    "nivel_distribucion": {
-      "0": 3,
-      "3": 2,
-      "1": 1,
-      "2": 5
+      "2": 9,
+      "0": 6,
+      "1": 4
     },
     "estado": "completado",
     "error": null

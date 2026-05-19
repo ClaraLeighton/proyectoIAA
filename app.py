@@ -71,6 +71,7 @@ def _nav_button(label, page_key, icon_svg):
                 st.session_state.pop("selected_cohort_id", None)
             if page_key in ("upload",):
                 st.session_state["new_cohort"] = True
+                st.session_state.pop("selected_cohort_id", None)
             st.rerun()
 
 
