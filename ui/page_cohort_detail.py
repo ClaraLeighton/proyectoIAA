@@ -264,7 +264,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
         </div>
         <div class="macro-color-card blue">
           <span>Nivel promedio</span>
-          <strong>{g["nivel_promedio_global"]:.2f}/3</strong>
+          <strong data-tooltip="0: Sin mención de la competencia en el informe&#10;1: Menciona herramientas, lenguajes o conceptos relacionados, pero sin demostrar aplicación práctica&#10;2: Aplica conocimientos para resolver problemas, pero sin profundizar en la justificación técnica&#10;3: Demuestra dominio experto: evalúa alternativas, justifica decisiones técnicas y reflexiona sobre el impacto de su trabajo">{g["nivel_promedio_global"]:.2f}/3</strong>
           <div class="macro-mini-track"><div style="width:{nivel_pct:.1f}%"></div></div>
           <small>Escala 0: sin evidencia a 3: dominio técnico.</small>
         </div>
