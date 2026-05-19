@@ -1,0 +1,45 @@
+[
+  {
+    "cohort_id": "a051c30b-9d82-429f-be02-a567a11f0782",
+    "name": "Prácticas PreProfesional 2024",
+    "tipo_documento": "pre_professional_practice",
+    "created_at": "2026-05-18T20:05:37.985558",
+    "updated_at": "2026-05-18T20:05:37.987227",
+    "report_ids": [
+      "4a67965f-b2d7-4c8d-9334-0f34c9cd356f",
+      "35bf27f9-f2a3-4137-86f1-1665ae0891de",
+      "1d019190-e38c-4ffa-b005-6fb08458a37f",
+      "6bbcaf38-9993-4f48-81b2-08a74b6f363a",
+      "00816879-41a8-4914-8cff-500821b97903"
+    ]
+  },
+  {
+    "cohort_id": "29dd445c-9d0f-42ab-9d8c-89079e8396db",
+    "name": "Práctica  Pre Profesional 2025",
+    "tipo_documento": "pre_professional_practice",
+    "created_at": "2026-05-18T20:25:10.955519",
+    "updated_at": "2026-05-18T21:09:37.181414",
+    "report_ids": [
+      "8f960872-0273-40c3-936f-f9622d76956f",
+      "1a58f22f-94ca-4c9d-89e3-c2477e0ca0f4",
+      "9406767e-7317-40b3-bbb9-52292c7736df",
+      "00e0370b-49cb-4dbc-9615-89d52fc8c487",
+      "51f7bcdf-62d7-4328-b3b4-daccce107bd2",
+      "924f2538-b16b-4f13-a030-92b2818f09ef",
+      "41b60504-759c-4085-9165-9f26670ce751"
+    ]
+  },
+  {
+    "cohort_id": "a83a82ad-71b2-496d-a26d-eca57ae0b788",
+    "name": "Practica Profesional 2024",
+    "tipo_documento": "professional_practice",
+    "created_at": "2026-05-18T21:42:16.437446",
+    "updated_at": "2026-05-18T21:42:16.439732",
+    "report_ids": [
+      "0ef54e90-c00a-47e8-a7ff-dfe0a64d8528",
+      "7fb0b1a8-5da8-4bfb-9be3-c4cf46bfcdfa",
+      "0bdff5d9-e7ba-41e1-8ccf-4bd1b29b948c",
+      "ecdeb7d4-870a-461d-9300-662d1faa03d7"
+    ]
+  }
+]

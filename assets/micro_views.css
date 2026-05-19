@@ -1,0 +1,88 @@
+/* ─── MICRO REPORT LIST ─── */
+.micro-report-row {
+  background: var(--uandes-card-bg);
+  border: 1px solid var(--uandes-border);
+  border-radius: var(--uandes-radius-md);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--uandes-shadow-sm);
+}
+.micro-report-row.risk { border-left: 5px solid var(--uandes-red); }
+.micro-report-row.ok { border-left: 5px solid #22c55e; }
+.micro-report-row.mid { border-left: 5px solid #f59e0b; }
+
+.micro-report-main { min-width: 0; }
+.micro-report-status { font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; color: var(--uandes-text-secondary); }
+.micro-report-row.ok .micro-report-status { color: #22c55e; }
+.micro-report-row.risk .micro-report-status { color: var(--uandes-red); }
+.micro-report-row.mid .micro-report-status { color: #f59e0b; }
+
+.micro-report-row h5 { font-size: 14px; font-weight: 700; color: var(--uandes-text); margin: 0 0 2px; }
+.micro-report-meta { font-size: 12px; color: var(--uandes-text-muted); }
+.micro-report-approved { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+.micro-report-approved strong { font-size: 18px; color: var(--uandes-text); }
+.micro-report-approved span { font-size: 11px; color: var(--uandes-text-secondary); }
+
+.micro-report-actions-container {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.micro-report-actions-container a {
+  color: var(--uandes-text) !important;
+}
+
+/* ─── COMPETENCY CARDS ─── */
+.micro-comp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: start;
+  width: 100% !important;
+}
+.micro-comp-tile-detail {
+  background: var(--uandes-card-bg);
+  border: 1px solid var(--uandes-border);
+  padding: 20px;
+  border-radius: var(--uandes-radius-md);
+  display: flex;
+  flex-direction: column;
+  transition: all var(--uandes-transition);
+}
+.micro-comp-tile-detail.risk { border-left: 5px solid var(--uandes-red); background: rgba(239, 68, 68, 0.05); }
+.micro-comp-tile-detail.ok { border-left: 5px solid #22c55e; background: rgba(34, 197, 94, 0.05); }
+.micro-comp-tile-detail.mid { border-left: 5px solid #f59e0b; background: rgba(245, 158, 11, 0.05); }
+
+.micro-comp-tile-detail .comp-id { color: var(--uandes-text-secondary); font-size: 14px; }
+.micro-comp-tile-detail.risk .comp-id { color: var(--uandes-red); }
+.micro-comp-tile-detail.ok .comp-id { color: #16A34A; }
+.micro-comp-tile-detail.mid .comp-id { color: #D97706; }
+
+.micro-comp-tile-meter { 
+  height: 6px; 
+  background: var(--uandes-border-light); 
+  border-radius: 3px; 
+  margin: 16px 0;
+  display: block; 
+  width: 100%;
+}
+.micro-comp-tile-meter i { 
+  display: block; 
+  height: 100%; 
+  border-radius: 3px; 
+  background: var(--uandes-red); 
+}
+
+.micro-comp-tile-detail.risk .micro-comp-tile-meter i { background: var(--uandes-red); }
+.micro-comp-tile-detail.ok .micro-comp-tile-meter i { background: #16A34A; }
+.micro-comp-tile-detail.mid .micro-comp-tile-meter i { background: #D97706; }
+
+.comp-status-badge .uandes-badge { padding: 2px 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+.micro-comp-tile-foot { display: flex; justify-content: space-between; font-size: 11px; color: var(--uandes-text-secondary); margin-bottom: 12px; }
+.micro-comp-inline-detail { font-size: 12px; color: var(--uandes-text-secondary); padding-top: 8px; border-top: 1px solid var(--uandes-border-light); }
+
+.micro-comp-tile-detail h5 { font-size: 16px; font-weight: 700; color: var(--uandes-text); margin: 8px 0; line-height: 1.4; }

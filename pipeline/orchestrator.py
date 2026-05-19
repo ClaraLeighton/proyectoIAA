@@ -16,7 +16,7 @@ def ejecutar_pipeline_completo(
     embedding_model: str | None = None,
     llm_model: str | None = None,
     provider: str = "gemini",
-    c6_provider: str | None = None,
+    c6_provider: str | None = "openrouter",
     c6_api_key: str | None = None,
     use_pdf: bool = False,
     top_k: int = 5,
@@ -69,7 +69,7 @@ def ejecutar_pipeline_completo(
     similarities_by_comp = {}
     trazabilidad_c42 = []
     n_comps = len(c1["competencias_activas"])
-    c6_prov = c6_provider or provider
+    c6_prov = c6_provider or "openrouter"
     for i, comp in enumerate(c1["competencias_activas"]):
         cid = comp["competencia_id"]
 
@@ -156,7 +156,7 @@ def ejecutar_pipeline_completo(
         "resultados_competencias": resultados_competencias,
         "estado": estado,
         "provider": provider,
-        "c6_provider": c6_provider or provider,
+        "c6_provider": c6_prov,
         "c6_api_key": c6_api_key,
     }
     return pipeline_state
@@ -197,11 +197,11 @@ def procesar_ajuste(
     if capa == "C6" or (capa == "C5" and capas_reprocesadas):
         comp = next(c for c in pipeline_state["c1"]["competencias_activas"] if c["competencia_id"] == competencia_id)
         evidencia = pipeline_state["resultados_competencias"][idx].get("evidencia_recuperada", [])
-        c6_provider = pipeline_state.get("c6_provider") or pipeline_state.get("provider", "gemini")
+        c6_provider = "openrouter"
         c6_api_key = pipeline_state.get("c6_api_key") or api_key
         if llm_model is None:
-            llm_model = SUPPORTED_PROVIDERS.get(c6_provider, {}).get("llm_model", "models/gemini-2.5-flash")
-        if c6_provider == "openrouter" and not c6_api_key:
+            llm_model = SUPPORTED_PROVIDERS["openrouter"]["llm_model"]
+        if not c6_api_key:
             import os as _os
             c6_api_key = _os.getenv("OPENROUTER_API_KEY", "")
         c6_result = c6_evaluador.run(
