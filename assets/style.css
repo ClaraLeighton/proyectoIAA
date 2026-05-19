@@ -944,8 +944,7 @@ div[data-testid="column"]:last-of-type .stButton button:hover {
   background: var(--uandes-card-bg) !important;
   color: var(--uandes-text) !important;
   font-size: 15px;
-  padding: 11px 16px;
-  min-height: 46px;
+  padding: 10px 16px;
   transition: all var(--uandes-transition);
 }
 .stTextInput input:focus,
