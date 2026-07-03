@@ -13,7 +13,7 @@ C1 (Ingesta) → C2 (Parser) → C3 (Chunker) → C4 (Embeddings) → C5 (Retrie
 ## Requisitos
 
 - Python 3.10+
-- OpenAI API Key
+- Al menos una clave API de OpenAI, Google Gemini u OpenRouter (ver sección de configuración)
 
 ## Instalación
 
@@ -24,10 +24,38 @@ cd evaluador-informes
 # Instalar dependencias
 pip install -r requirements.txt
 
-# Configurar API key
+# Configurar API keys
 cp .env.example .env
-# Editar .env con tu OPENAI_API_KEY
+# Editar .env con tus claves (ver sección siguiente)
 ```
+
+## Configuración de API Keys
+
+El sistema necesita al menos un proveedor para embeddings (Gemini u OpenAI) y uno para evaluación por LLM (OpenRouter, Gemini u OpenAI). Copia las claves en el archivo `.env` o ingrésalas desde la barra lateral de la aplicación.
+
+### 1. OpenAI
+
+Consigue una clave en [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+
+En el archivo `.env`, pégala en `OPENAI_API_KEY`. El modelo usado es `text-embedding-3-small` para embeddings y `gpt-4o-mini` para evaluación por LLM.
+
+OpenAI opera con créditos prepagos; la facturación es por uso (tokens). Revisa sus [políticas de uso de datos](https://openai.com/policies/api-data-usage) para conocer cómo se manejan los datos enviados.
+
+### 2. OpenRouter
+
+Consigue una clave en [openrouter.ai/keys](https://openrouter.ai/keys).
+
+En el archivo `.env`, pégala en `OPENROUTER_API_KEY`. OpenRouter permite usar múltiples modelos de distintos proveedores desde una sola API. El modelo por defecto es `openrouter/free`.
+
+Puedes explorar [todos los modelos disponibles](https://openrouter.ai/models) o los [modelos gratuitos](https://openrouter.ai/collections/free-models).
+
+### 3. Google AI Studio (Gemini)
+
+Consigue una clave de Gemini API en [Google AI Studio](https://aistudio.google.com/apikey).
+
+En el archivo `.env`, pégala en `GEMINI_API_KEY`. El modelo usado es `models/gemini-embedding-2` para embeddings.
+
+La API de Gemini expone un endpoint compatible con OpenAI en `https://generativelanguage.googleapis.com/v1beta/openai/`. Los límites de la capa gratuita varían por modelo. Revisa los [términos de Google](https://ai.google.dev/gemini-api/docs/terms) para conocer cómo se manejan los datos.
 
 ## Ejecución
 
