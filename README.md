@@ -1,6 +1,6 @@
 # Evaluador de Perfil de Egreso
 
-Sistema automatizado de evaluación de informes de práctica profesional/pre-profesional mediante un pipeline de IA en 8 capas (C1–C8) con revisión humana interactiva (Human-in-the-Loop).
+Sistema automatizado de evaluación de informes de práctica profesional/pre-profesional mediante un pipeline de IA en 8 capas (C1–C8)
 
 ---
 
