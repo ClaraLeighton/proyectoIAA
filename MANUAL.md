@@ -1,5 +1,7 @@
 # Manual de Usuario — Evaluador de Perfil de Egreso
 
+Las capturas incluidas en este manual muestran el flujo principal de uso: configuración, carga, procesamiento, revisión de resultados, exportación y comparación de cohortes.
+
 ## 1. Instrucciones paso a paso
 
 ### 1.1 Primer uso: configurar las API keys
@@ -91,13 +93,22 @@ Ejemplo de rubrica.json (si se quiere crear una rubrica)
 ```
 
 Ejemplo matriz.csv (si se quiere crear una matriz debe seguir este formato)
-![matriz-ejemplo.png](assets/matriz-ejemplo.png)
+
+<p align="center">
+  <img src="assets/matriz-ejemplo.png" alt="Ejemplo de matriz de competencias en formato CSV" width="850">
+</p>
+<p align="center"><em>Ejemplo visual del formato esperado para una matriz de competencias personalizada.</em></p>
 
 6. Haz clic en **"Crear Cohorte"**.
 7. El sistema comenzará a procesar los informes automáticamente.
 
 ### 1.3 Monitorear el procesamiento
-![Procesamiento.png](assets/Procesamiento.png)
+
+<p align="center">
+  <img src="assets/Procesamiento.png" alt="Vista de procesamiento de informes" width="900">
+</p>
+<p align="center"><em>Vista de procesamiento: avance global, estado por informe y progreso por competencia.</em></p>
+
 1. Durante el procesamiento, la vista **"Procesando"** muestra:
    - Barra de progreso global.
    - Progreso individual de cada informe (qué capa del pipeline está ejecutando).
@@ -109,23 +120,53 @@ Ejemplo matriz.csv (si se quiere crear una matriz debe seguir este formato)
 1. En **"Resultados Macro"** (vista por defecto tras el procesamiento), observa:
    - Gráfico de barras con el promedio por competencia en toda la cohorte.
    - Tabla resumen con niveles promedio y desglose JPC.
-![macro.png](assets/macro.png)
+
+<p align="center">
+  <img src="assets/macro.png" alt="Vista de resultados macro por cohorte" width="900">
+</p>
+<p align="center"><em>Vista macro: resumen agregado de la cohorte, competencias evidenciadas y competencias por reforzar.</em></p>
+
 2. Haz clic en **"Resultados Micro"**, haz clic en un informe específico para ver su **detalle completo**.
-![micro.png](assets/micro.png)
-![micro-detail.png](assets/micro-detail.png)
+
+<p align="center">
+  <img src="assets/micro.png" alt="Vista micro con listado de informes de una cohorte" width="900">
+</p>
+<p align="center"><em>Vista micro: listado de informes procesados dentro de una cohorte.</em></p>
+
+<p align="center">
+  <img src="assets/micro-detail.png" alt="Detalle de evaluación de un informe individual" width="900">
+</p>
+<p align="center"><em>Detalle de informe: resultados por competencia, justificaciones, secciones fuente y citas.</em></p>
 
 ### 1.5 Exportar resultados a Excel
 
 1. Desde la vista **"Configuración"** de la cohorte (o desde el detalle de informe), haz clic en **"Exportar a Excel"**.
-![excel-macro.png](assets/excel-macro.png)
+
+<p align="center">
+  <img src="assets/excel-macro.png" alt="Archivo Excel exportado con resultados de evaluación" width="900">
+</p>
+<p align="center"><em>Exportación a Excel: resultados consolidados y hojas de detalle para análisis externo.</em></p>
+
 ### 1.6 Comparar dos cohortes
 
 1. Desde el menú lateral, selecciona **"Comparar Cohortes"**.
 2. Elige dos cohortes de los menús desplegables.
 3. El sistema mostrará gráficos comparativos lado a lado por competencia.
-![comparisson.png](assets/comparisson.png) 
-![comparisson-2.png](assets/comparisson-2.png)
-![comparisson-3.png](assets/comparisson-3.png)
+
+<p align="center">
+  <img src="assets/comparisson.png" alt="Vista de comparación entre cohortes" width="900">
+</p>
+<p align="center"><em>Comparación entre cohortes: selección de cohortes y resumen visual de resultados.</em></p>
+
+<p align="center">
+  <img src="assets/comparisson-2.png" alt="Gráficos comparativos por competencia" width="900">
+</p>
+<p align="center"><em>Comparación por competencia: diferencias de logro entre cohortes.</em></p>
+
+<p align="center">
+  <img src="assets/comparisson-3.png" alt="Tabla comparativa de cohortes" width="900">
+</p>
+<p align="center"><em>Tabla comparativa: detalle resumido para identificar brechas y mejoras.</em></p>
 ---
 
 ## 2. Consideraciones relevantes
