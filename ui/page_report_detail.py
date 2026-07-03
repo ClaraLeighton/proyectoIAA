@@ -39,7 +39,7 @@ def _estado_comp(nivel: int, confianza: float) -> tuple[str, str]:
     if nivel >= 2 and confianza >= 0.55:
         return "Cumple", "ok"
     if nivel >= 2:
-        return "Cumple con baja confianza", "mid"
+        return "Cumple con revisión", "mid"
     if confianza < 0.45:
         return "Revisar evidencia", "risk"
     return "No cumple", "risk"
@@ -65,9 +65,7 @@ def _micro_detail_chart(preview: list[dict]) -> str:
     return f'<div class="macro-mini-bars">{"".join(bars)}</div>'
 
 
-def _micro_detail_html(report, preview: list[dict], total: int, aprobadas: int, no_aprobadas: int, nivel_prom: float) -> str:
-    aprob_pct = aprobadas / total * 100 if total else 0
-    confianza_prom = sum(r.get("confianza", 0) for r in preview) / total if total else 0
+def _micro_analytics_html(preview: list[dict], total: int) -> str:
     dist = {0: 0, 1: 0, 2: 0, 3: 0}
     for r in preview:
         dist[int(r.get("nivel", 0))] = dist.get(int(r.get("nivel", 0)), 0) + 1
@@ -80,12 +78,34 @@ def _micro_detail_html(report, preview: list[dict], total: int, aprobadas: int, 
     )
 
     return _html_block(f"""
+    <section class="micro-detail-analytics compact">
+      <div class="macro-panel macro-bars-card">
+        <div class="macro-panel-head">
+          <div><h3>Resumen por competencia</h3><p>Cada barra es una competencia. Más alta significa mayor nivel logrado.</p></div>
+        </div>
+        {_micro_detail_chart(preview)}
+      </div>
+      <div class="macro-panel macro-distribution-card">
+        <h3>Distribución por niveles</h3>
+        <div class="macro-ring" style="{pie_vars}">
+          <div><strong>{total}</strong><span>competencias</span></div>
+        </div>
+        <div class="macro-legend">{legend}</div>
+      </div>
+    </section>
+    """)
+
+
+def _micro_detail_html(report, total: int, aprobadas: int, no_aprobadas: int) -> str:
+    aprob_pct = aprobadas / total * 100 if total else 0
+
+    return _html_block(f"""
     <div class="micro-detail-dashboard">
       <section class="micro-detail-hero">
         <div>
           <span class="uandes-badge-tipo">Informe individual</span>
           <h2>{escape(report.pdf_name)}</h2>
-          <p>Lectura micro del perfil de egreso: nivel alcanzado por competencia, evidencia usada y confianza del evaluador.</p>
+          <p>Lectura micro del perfil de egreso: nivel alcanzado por competencia y evidencia usada.</p>
         </div>
         <div class="micro-detail-score">
           <strong title="Competencias que alcanzaron grado 2 (Uso concreto) o superior sobre el total evaluado en este informe">{aprob_pct:.0f}%</strong>
@@ -96,23 +116,6 @@ def _micro_detail_html(report, preview: list[dict], total: int, aprobadas: int, 
         <div><strong title="Total de competencias evaluadas en este informe">{total}</strong><span>competencias evaluadas</span></div>
         <div><strong title="Alcanzaron grado 2 (Uso concreto) o superior">{aprobadas}</strong><span>aprobadas</span></div>
         <div><strong title="Tienen grado 0 (Sin evidencia) o 1 (Solo teoría)">{no_aprobadas}</strong><span>por revisar</span></div>
-        <div><strong title="Promedio del grado de evidencia entre todas las competencias del informe">{nivel_prom:.2f}/3</strong><span>nivel promedio</span></div>
-        <div><strong title="Certeza promedio del evaluador al asignar los niveles de logro">{confianza_prom * 100:.0f}%</strong><span>confianza promedio</span></div>
-      </section>
-      <section class="micro-detail-analytics compact">
-        <div class="macro-panel macro-bars-card">
-          <div class="macro-panel-head">
-            <div><h3>Resumen por competencia</h3><p>Cada barra es una competencia. Más alta significa mayor nivel logrado.</p></div>
-          </div>
-          {_micro_detail_chart(preview)}
-        </div>
-        <div class="macro-panel macro-distribution-card">
-          <h3>Distribución por niveles</h3>
-          <div class="macro-ring" style="{pie_vars}">
-            <div><strong>{total}</strong><span>competencias</span></div>
-          </div>
-          <div class="macro-legend">{legend}</div>
-        </div>
       </section>
       <section class="micro-comp-section">
         <div class="micro-panel-head">
@@ -141,7 +144,6 @@ def _competency_summary_html(r: dict) -> str:
     citas_html = "".join(f"<li>{escape(cita)}</li>" for cita in citas[:5]) if citas else "<li>Sin citas detectadas.</li>"
     label = f"Nivel {nivel}" if not es_error else "Error"
     pct = min(100, max(0, nivel / 3 * 100)) if not es_error else 0
-    confianza_text = f"{confianza * 100:.0f}% confianza" if not es_error else ""
     
     return _html_block(f"""
     <div class="micro-comp-tile-detail {cls}">
@@ -153,7 +155,6 @@ def _competency_summary_html(r: dict) -> str:
       <div class="micro-comp-tile-meter"><i style="width:{pct:.1f}%" title="Grado {nivel}: {LEVEL_LABELS.get(nivel, '')}"></i></div>
       <div class="micro-comp-tile-foot">
         <span title="Grado {nivel} — {LEVEL_LABELS.get(nivel, '')}">{label}</span>
-        <span title="Certeza del evaluador al asignar este nivel">{confianza_text}</span>
       </div>
       <details class="micro-comp-inline-detail">
         <summary>Ver detalle</summary>
@@ -257,10 +258,9 @@ def render():
     total = len(preview)
     aprobadas = sum(1 for r in preview if r["nivel"] >= 2)
     no_aprobadas = total - aprobadas
-    nivel_prom = sum(r["nivel"] for r in preview) / total if total else 0
 
     st.markdown(
-        _micro_detail_html(report, preview, total, aprobadas, no_aprobadas, nivel_prom),
+        _micro_detail_html(report, total, aprobadas, no_aprobadas),
         unsafe_allow_html=True,
     )
 
@@ -293,6 +293,8 @@ def render():
                                 st.rerun()
                             else:
                                 st.error(f"No se pudo re-evaluar {cid}.")
+
+    st.markdown(_micro_analytics_html(preview, total), unsafe_allow_html=True)
 
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
@@ -327,7 +329,7 @@ def render():
             wb2.save(out2)
             out2.seek(0)
             st.download_button(
-                "Descargar reporte de procesamiento",
+                "Descargar Reporte Tecnico",
                 data=out2,
                 file_name=f"{report.pdf_name.replace('.pdf', '')}_procesamiento.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

@@ -261,7 +261,6 @@ def _html_block(template: str) -> str:
 
 
 def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, competencias):
-    score_pct = _clamp_pct(g["score_pct"] * 100)
     aprob_pct = _clamp_pct(g["tasa_aprobacion_global"] * 100)
     nivel_pct = _clamp_pct((g["nivel_promedio_global"] / 3) * 100 if g["nivel_promedio_global"] else 0)
     comp_list = sorted(competencias.items(), key=lambda item: _sort_competencia_id(item[0]))
@@ -300,16 +299,14 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
     tiles = []
     for cid, data in comp_list:
         aprob = data.get("tasa_aprobacion", 0) * 100
-        score = data.get("score_pct", 0) * 100
         estado, estado_cls, _ = _estado_competencia(data.get("tasa_aprobacion", 0))
         tip_logro = f'{data.get("aprobadas", 0)} de {data.get("total_reportes", 0)} reportes alcanzaron grado 2 (Uso concreto) o superior en esta competencia'
-        tip_dominio = f'Puntaje obtenido: {data.get("score_actual", 0)} de {data.get("score_max", 0)} puntos posibles. Refleja la profundidad promedio de la competencia en toda la cohorte.'
         tiles.append(
             f'<div class="macro-comp-tile {estado_cls}">'
             f'<div class="macro-comp-top"><strong>{escape(cid)}</strong><span>{estado}</span></div>'
             f'<p>{escape(data.get("nombre", ""))}</p>'
             f'<div class="macro-comp-meter"><i style="width:{_clamp_pct(aprob):.1f}%"></i></div>'
-            f'<div class="macro-comp-foot"><span title="{tip_logro}">{aprob:.0f}% logro</span><b title="{tip_dominio}">{score:.0f}% dominio</b></div>'
+            f'<div class="macro-comp-foot"><span title="{tip_logro}">{aprob:.0f}% aprobación</span></div>'
             f'</div>'
         )
 
@@ -318,7 +315,6 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
         dist = data.get("distribucion", {})
         total = data.get("total_reportes", 0)
         aprob = data.get("tasa_aprobacion", 0) * 100
-        score = data.get("score_pct", 0) * 100
         cells = []
         for lvl in ["0", "1", "2", "3"]:
             count = dist.get(lvl, 0)
@@ -337,7 +333,6 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
             f'<td><div class="macro-table-meter"><i style="width:{_clamp_pct(aprob):.1f}%"></i></div><b title="{data.get("aprobadas", 0)} de {data.get("total_reportes", 0)} reportes con grado ≥ 2">{aprob:.0f}%</b></td>'
             f'{"".join(cells)}'
             f'<td><span class="macro-clasif {_clasif_css_class(data.get("tasa_aprobacion", 0))}">{_clasificar_competencia(data.get("tasa_aprobacion", 0))}</span></td>'
-            f'<td title="{data.get("score_actual", 0)} de {data.get("score_max", 0)} puntos acumulados en esta competencia">{score:.0f}%</td>'
             f'</tr>'
         )
 
@@ -348,12 +343,6 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
           <div class="macro-eyebrow">{escape(tipo_label)} · Cohorte · {g["total_reportes"]} informes</div>
           <h2>{escape(cohort["name"])}</h2>
           <p>Este panel resume cómo se manifiesta el perfil de egreso en los <strong>{g["total_reportes"]} informes</strong> evaluados de esta cohorte. Muestra qué competencias están evidenciadas, cuáles requieren refuerzo y con qué grado de evidencia se acredita cada una.</p>
-        </div>
-        <div class="macro-donut-card">
-          <div class="macro-donut" style="--score:{score_pct:.1f}">
-            <div><strong title="{g.get('score_actual', 0)} de {g.get('score_max', 0)} puntos acumulados en todas las competencias">{score_pct:.0f}%</strong><span>logro global</span></div>
-          </div>
-          <p>Suma de grados de evidencia alcanzados dividida por el máximo posible. Refleja qué tan profundo se demuestra el perfil de egreso en la cohorte.</p>
         </div>
       </section>
 
@@ -450,7 +439,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
       <section class="macro-bottom-grid">
         <div class="macro-panel">
           <div class="macro-panel-title">Competencias evidenciadas</div>
-          <p class="macro-panel-note">Competencias con mayor grado de evidencia acumulado. Ordenadas por logro global descendente.</p>
+          <p class="macro-panel-note">Competencias con mayor grado de evidencia acumulado. Ordenadas de mayor a menor evidencia.</p>
           {''.join(top_rows) if top_rows else '<p>Sin competencias disponibles.</p>'}
         </div>
         <div class="macro-panel macro-gap-panel">
@@ -485,7 +474,6 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
                 <th title="Grado 2: Uso concreto – evidencia de aplicación durante la práctica"><span style="color:{LEVEL_COLORS["2"]}">{LEVEL_SHORT["2"]}</span></th>
                 <th title="Grado 3: Dominio técnico – evidencia sólida con reflexión y justificación"><span style="color:{LEVEL_COLORS["3"]}">{LEVEL_SHORT["3"]}</span></th>
                 <th>Clasificación</th>
-                <th>Logro %</th>
               </tr>
             </thead>
             <tbody>{"".join(matrix_rows)}</tbody>
@@ -565,7 +553,7 @@ def render():
         )
     with col_d:
         st.download_button(
-            "Descargar reporte de procesamiento",
+            "Descargar Reporte Tecnico",
             data=_generate_processing_excel(cohort["name"], cohort.get("report_ids", [])),
             file_name=f"Reporte de Procesamiento - {cohort['name']}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

@@ -1,12 +1,13 @@
 import streamlit as st
 import base64
 import io
+from html import escape
 from pipeline.cohorts import get_cohort, compute_cohort_macro, update_cohort_name
 from pipeline.cohorts import remove_report_from_cohort
 from pipeline.persistence import load_report
 from pipeline.reportes_export import build_export_index, exportar_excel_multi_hoja
 from openpyxl import load_workbook
-from ui.components import page_hero, badge, metric_grid, action_tiles
+from ui.components import page_hero, badge, action_tiles
 from ui.icons import chart, upload, download, trash
 
 
@@ -15,6 +16,38 @@ def _formatear_tipo(tipo: str) -> str:
     nombre = nombre.replace("Pre ", "Pre-")
     nombre = nombre.replace("Practica", "Práctica")
     return nombre
+
+
+def _cohort_profile_summary_html(macro: dict) -> str:
+    competencias = macro.get("competencias", {})
+    comp_list = sorted(competencias.items(), key=lambda item: item[1].get("tasa_aprobacion", 0))
+    total = len(comp_list)
+    aprobadas = sum(1 for _, data in comp_list if data.get("tasa_aprobacion", 0) >= 0.70)
+    perfil_pct = aprobadas / total * 100 if total else 0
+    debiles = [(cid, data) for cid, data in comp_list if data.get("tasa_aprobacion", 0) < 0.70]
+
+    if debiles:
+        debiles_html = "".join(
+            f'<span><b>{escape(cid)}</b> {data.get("tasa_aprobacion", 0) * 100:.0f}%</span>'
+            for cid, data in debiles[:8]
+        )
+    else:
+        debiles_html = '<span><b>Sin brechas</b> 100%</span>'
+
+    return (
+        '<div class="cohort-profile-summary">'
+        '<div class="cohort-profile-card primary">'
+        '<span>Perfil de egreso aprobado</span>'
+        f'<strong>{perfil_pct:.0f}%</strong>'
+        f'<p>{aprobadas} de {total} competencias evidenciadas con al menos 70% de aprobación.</p>'
+        '</div>'
+        '<div class="cohort-profile-card weak">'
+        '<span>Competencias débiles de esta cohorte</span>'
+        f'<strong>{len(debiles)}</strong>'
+        f'<div class="cohort-weak-list">{debiles_html}</div>'
+        '</div>'
+        '</div>'
+    )
 
 
 @st.dialog("Eliminar Informes")
@@ -69,7 +102,6 @@ def render():
     tipo_label = _formatear_tipo(cohort.get("tipo_documento", ""))
     n_reports = len(cohort.get("report_ids", []))
     macro = compute_cohort_macro(cohort_id)
-    g = macro["global"]
 
     meta_items = [
         badge(tipo_label, "outline"),
@@ -85,17 +117,7 @@ def render():
         back_target="cohorts",
     )
 
-    def get_status_class(val):
-        if isinstance(val, float):
-            if val >= 0.70: return "ok"
-            if val >= 0.50: return "mid"
-            return "risk"
-        return ""
-
-    metric_grid([
-        {"label": "Score Global", "value": f'{g["score_pct"]:.1%}' if g["total_reportes"] > 0 else "—", "status": get_status_class(g["score_pct"]), "sub": "Promedio ponderado según desempeño"},
-        {"label": "Nivel Promedio", "value": f'{g["nivel_promedio_global"]:.2f}' if g["total_reportes"] > 0 else "—", "status": get_status_class(g["nivel_promedio_global"] / 3), "sub": "Escala de 0 a 3 (Sin evidencia a Dominio técnico)"},
-    ])
+    st.markdown(_cohort_profile_summary_html(macro), unsafe_allow_html=True)
 
     st.subheader("Acciones Rápidas")
     
@@ -154,7 +176,7 @@ def render():
     with col_tiles[3]:
         action_tiles([{
             "icon": download(28, 28, "currentColor"),
-            "title": "Descargar reporte de procesamiento",
+            "title": "Descargar Reporte Tecnico",
             "desc": "Solo datos técnicos",
             "tone": "tone-yellow",
             "download": excel_procesamiento_b64,
