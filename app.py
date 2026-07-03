@@ -119,6 +119,7 @@ def _sidebar():
 
         _nav_button("Mis Cohortes", "cohorts", layers(20, 20, "currentColor"))
         _nav_button("Nueva Cohorte", "upload", folder_plus(20, 20, "currentColor"))
+        _nav_button("Comparar Cohortes", "cohort_comparison", chart(20, 20, "currentColor"))
 
         cohort_id = st.session_state.get("selected_cohort_id")
         if cohort_id:
@@ -206,6 +207,9 @@ def main():
     elif page == "upload":
         from ui.page_upload import render as render_upload
         render_upload()
+    elif page == "cohort_comparison":
+        from ui.page_cohort_comparison import render_comparison
+        render_comparison()
     elif page == "processing":
         from ui.page_processing import render as render_processing
         render_processing()
