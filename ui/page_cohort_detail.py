@@ -316,7 +316,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
         matrix_rows.append(
             f'<tr>'
             f'<td><strong>{escape(cid)}</strong><small>{escape(data.get("nombre", ""))}</small></td>'
-            f'<td title="Promedio de grados alcanzado en esta competencia (escala 0 a 3)">{data.get("nivel_promedio", 0):.2f}/3</td>'
+            f'<td title="{data.get("score_actual", 0)}/{data.get("score_max", 0)} puntos en {data.get("total_reportes", 0)} evaluaciones en esta competencia">{data.get("nivel_promedio", 0):.2f}/3</td>'
             f'<td><div class="macro-table-meter"><i style="width:{_clamp_pct(aprob):.1f}%"></i></div><b title="{data.get("aprobadas", 0)} de {data.get("total_reportes", 0)} reportes con grado ≥ 2">{aprob:.0f}%</b></td>'
             f'{"".join(cells)}'
             f'<td><span class="macro-status {estado_cls}" title="{estado_hint}">{estado}</span></td>'
