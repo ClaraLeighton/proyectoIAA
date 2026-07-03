@@ -9,7 +9,7 @@ import uuid
 import streamlit as st
 
 from pipeline.batch_orchestrator import run_batch
-from pipeline.cohorts import create_cohort, get_cohort, add_reports_to_cohort, get_cohort_csv_bytes, get_cohort_json_bytes
+from pipeline.cohorts import create_cohort, get_cohort, add_reports_to_cohort, get_cohort_csv_bytes, get_cohort_json_bytes, append_custom_rubric
 from pipeline.models import BatchConfig
 from pipeline.persistence import load_index, compute_file_hash, find_duplicate_files, find_duplicates_within_batch
 from ui.components import page_hero, processing_panel
@@ -265,6 +265,74 @@ def render():
             key="json_upload",
             help="Si no se provee, se usará la rúbrica por defecto (config/rubrica.json).",
         )
+
+        st.markdown("---")
+        st.markdown("##### Crear Rúbrica Personalizada")
+
+        cr_msg = st.session_state.pop("cr_msg", None)
+        if cr_msg:
+            st.success(cr_msg)
+
+        if st.session_state.pop("cr_reset", False):
+            st.session_state["cr_ids"] = [str(uuid.uuid4())]
+            for k in list(st.session_state.keys()):
+                if k.startswith("cr_s_") or k.startswith("cr_p_"):
+                    del st.session_state[k]
+
+        rubric_name = st.text_input("Nombre", key="cr_name", placeholder="Ej: Mi Rúbrica")
+
+        if "cr_ids" not in st.session_state:
+            st.session_state["cr_ids"] = [str(uuid.uuid4())]
+
+        running_total = 0.0
+        for i, rid in enumerate(st.session_state["cr_ids"]):
+            cols = st.columns([0.3, 2, 1, 0.3])
+            with cols[0]:
+                st.markdown(f"<div style='padding-top:8px'>{i+1}</div>", unsafe_allow_html=True)
+            with cols[1]:
+                st.text_input("Sección", key=f"cr_s_{rid}", placeholder="Introducción", label_visibility="collapsed")
+            with cols[2]:
+                st.number_input("%", 0.0, 100.0, 0.0, step=5.0, format="%.0f", key=f"cr_p_{rid}", label_visibility="collapsed")
+            with cols[3]:
+                if len(st.session_state["cr_ids"]) > 1:
+                    if st.button("−", key=f"cr_del_{rid}"):
+                        st.session_state["cr_ids"] = [r for r in st.session_state["cr_ids"] if r != rid]
+                        st.rerun()
+            running_total += st.session_state.get(f"cr_p_{rid}", 0.0)
+
+        if running_total > 100.0:
+            st.warning(f"La suma de porcentajes es {running_total:.0f}%. Debe ser exactamente 100%.")
+        elif running_total < 100.0 and len(st.session_state["cr_ids"]) > 0:
+            st.caption(f"Suma actual: {running_total:.0f}% — faltan {100.0 - running_total:.0f}%")
+
+        col_add, col_save = st.columns([1, 1])
+        with col_add:
+            if st.button("+ Agregar sección", key="cr_add", use_container_width=True):
+                st.session_state["cr_ids"].append(str(uuid.uuid4()))
+                st.rerun()
+        with col_save:
+            if st.button("Guardar Rúbrica", key="cr_save", type="primary", use_container_width=True):
+                name = st.session_state.get("cr_name", "").strip()
+                if not name:
+                    st.error("Nombre requerido.")
+                else:
+                    fields = []
+                    total = 0.0
+                    for rid in st.session_state["cr_ids"]:
+                        sn = st.session_state.get(f"cr_s_{rid}", "").strip()
+                        sp = st.session_state.get(f"cr_p_{rid}", 0.0)
+                        if sn:
+                            fields.append((sn, sp))
+                            total += sp
+                    if not fields:
+                        st.error("Al menos una sección requerida.")
+                    elif abs(total - 100.0) > 0.1:
+                        st.error(f"Los porcentajes deben sumar 100% (actual: {total:.1f}%).")
+                    else:
+                        append_custom_rubric(name, fields)
+                        st.session_state["cr_msg"] = f"Rúbrica '{name}' creada exitosamente"
+                        st.session_state["cr_reset"] = True
+                        st.rerun()
 
     csv_bytes = csv_file.getvalue() if csv_file else None
     json_bytes = json_file.getvalue() if json_file else None

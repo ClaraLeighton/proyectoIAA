@@ -8,6 +8,7 @@ from typing import Any
 from pipeline.persistence import DATA_DIR, load_report, load_index
 
 COHORTS_PATH = os.path.join(DATA_DIR, "cohorts.json")
+RUBRICA_PATH = "config/rubrica.json"
 
 NIVEL_MAX = 3
 
@@ -291,5 +292,36 @@ def _aggregate_macro(resultados: list[dict], tipo: str, expected_ids: list[str] 
             "tasa_aprobacion_global": tasa_global,
             "nivel_promedio_global": nivel_prom_global,
         },
-        "tipo_documento": tipo,
-    }
+    "tipo_documento": tipo,
+}
+
+
+def append_custom_rubric(name: str, fields: list[tuple[str, float]]) -> str:
+    rubric_key = name.strip().lower().replace(" ", "_").replace("-", "_")
+
+    with open(RUBRICA_PATH, "r") as f:
+        rubrica = json.load(f)
+
+    original_key = rubric_key
+    counter = 1
+    while rubric_key in rubrica:
+        rubric_key = f"{original_key}_{counter}"
+        counter += 1
+
+    rubric_entry = {}
+    for field_name, pct in fields:
+        peso = round(pct / 100.0, 4)
+        field_key = field_name.strip().lower().replace(" ", "_").replace("-", "_")
+        rubric_entry[field_key] = {
+            "peso": peso,
+            "subsecciones": {
+                field_key: peso
+            }
+        }
+
+    rubrica[rubric_key] = rubric_entry
+
+    with open(RUBRICA_PATH, "w") as f:
+        json.dump(rubrica, f, indent=2, ensure_ascii=False)
+
+    return rubric_key
