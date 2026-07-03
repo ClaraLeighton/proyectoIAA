@@ -70545,9 +70545,9 @@
           "nivel": 2,
           "nivel_label": "Uso concreto con resultados descritos",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "Improved Operational Efficiency: By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
@@ -70573,8 +70573,8 @@
           "nivel_label": "Sin evidencia",
           "secciones_fuente": [
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "general_activities",
+            "work_analysis"
           ],
           "citas": [],
           "justificacion": "La evidencia describe exclusivamente actividades de un internship en Falabella Financiero relacionadas con el programa de lealtad CMR Puntos, uso de herramientas tecnológicas (GCP, Looker Studio) y generación de indicadores estratégicos. No hay ninguna mención de la fe católica, sus fundamentos, ni la coherencia intrínseca con la razón, que son el objeto de esta competencia.",
@@ -70596,9 +70596,9 @@
           "nivel": 2,
           "nivel_label": "Uso concreto con resultados descritos",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
@@ -70623,9 +70623,9 @@
           "nivel": 2,
           "nivel_label": "Uso concreto con resultados descritos",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
@@ -70672,9 +70672,9 @@
           "nivel": 2,
           "nivel_label": "Uso concreto con resultados descritos",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "Improved Operational Efficiency: By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
@@ -70696,26 +70696,29 @@
         {
           "competencia_id": "C7",
           "competencia_nombre": "Integra eficazmente equipos de trabajo",
-          "nivel": 0,
-          "nivel_label": "Sin evidencia",
+          "nivel": 2,
+          "nivel_label": "Uso concreto con resultados descritos",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
-          "citas": [],
-          "justificacion": "Error al procesar la respuesta del LLM. 'NoneType' object is not subscriptable",
-          "estado_revision": "sin_evidencia",
+          "citas": [
+            "Improved Operational Efficiency: By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
+            "I received valuable input and feedback from Loyalty team leaders such as Mathias Thoine and Diego Vidaurre, who played a key role in my professional development by providing guidance and support in my work."
+          ],
+          "justificacion": "El estudiante automatizó la generación de indicadores y reportes, mejorando la eficiencia operativa y colaboró con líderes de equipo para recibir retroalimentación. Se describen resultados tangibles como la reducción de tiempo en tareas manuales.",
+          "estado_revision": "respaldo_suficiente",
           "estado_final": "pendiente",
           "p": [
-            0.25,
-            0.25,
-            0.25,
-            0.25
+            0.05,
+            0.15,
+            0.7,
+            0.1
           ],
-          "confianza": 0.25,
-          "entropy": 2.0,
-          "raw_response": "__LLM_ERROR__'NoneType' object is not subscriptable"
+          "confianza": 0.7,
+          "entropy": 1.319,
+          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C7\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante automatizó la generación de indicadores y reportes, mejorando la eficiencia operativa y colaboró con líderes de equipo para recibir retroalimentación. Se describen resultados tangibles como la reducción de tiempo en tareas manuales.\",\n      \"citas\": [\n        \"Improved Operational Efficiency: By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.\",\n        \"I received valuable input and feedback from Loyalty team leaders such as Mathias Thoine and Diego Vidaurre, who played a key role in my professional development by providing guidance and support in my work.\"\n      ],\n      \"p\": [0.05, 0.15, 0.7, 0.1]\n    }\n  ]\n}"
         },
         {
           "competencia_id": "C9",
@@ -70723,9 +70726,9 @@
           "nivel": 1,
           "nivel_label": "No demuestra aplicación",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "\"Improved Operational Efficiency: By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.\""
@@ -70749,9 +70752,9 @@
           "nivel": 1,
           "nivel_label": "No demuestra aplicación",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "Contribution to the Organization: 8  ● Improved Operational Efficiency: By automating the generation of indicatorsand reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
@@ -70803,9 +70806,9 @@
           "nivel": 2,
           "nivel_label": "Uso concreto con resultados descritos",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "\"By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.\",\"During my internship, I contributed to the generation of strategic indicators, validation of results, and creation of reports through panels in Looker Studio, including the Panel 360.\""
@@ -70829,9 +70832,9 @@
           "nivel": 2,
           "nivel_label": "Uso concreto con resultados descritos",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "Improved Operational Efficiency: By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
@@ -70856,9 +70859,9 @@
           "nivel": 0,
           "nivel_label": "Sin evidencia",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [],
           "justificacion": "No se menciona la resolución de problemas complejos de ingeniería civil ni la aplicación de principios de ciencias de la ingeniería.",
@@ -70880,9 +70883,9 @@
           "nivel": 1,
           "nivel_label": "No demuestra aplicación",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "In addition, I received valuable input and feedback from Loyalty team leaders such as Mathias Thoine and Diego Vidaurre, who played a key role in my professional development by providing guidance and support in my work.",
@@ -70907,23 +70910,23 @@
           "nivel": 0,
           "nivel_label": "Sin evidencia",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [],
-          "justificacion": "Error al procesar la respuesta del LLM. Error code: 404 - {'error': {'message': 'Provider returned error', 'code': 404, 'metadata': {'raw': '{\"error\":\"The model `qwen3-coder-480b-a35b-instruct` has been deprecated. Please use `qwen3-coder-480b-a35b-instruct-turbo` instead.\"}', 'provider_name': 'Venice', 'is_byok': False, 'retry_after_seconds': 30, 'retry_after_seconds_raw': 29.551}}, 'user_id': 'user_3DYXIhBeQOjPBMtMKJ2WdY0BBbk'}",
+          "justificacion": "Los fragmentos no mencionan problemas éticos ni responsabilidades profesionales de la ingeniería.",
           "estado_revision": "sin_evidencia",
           "estado_final": "pendiente",
           "p": [
-            0.25,
-            0.25,
-            0.25,
-            0.25
+            0.5,
+            0.2,
+            0.2,
+            0.1
           ],
-          "confianza": 0.25,
-          "entropy": 2.0,
-          "raw_response": "__LLM_ERROR__Error code: 404 - {'error': {'message': 'Provider returned error', 'code': 404, 'metadata': {'raw': '{\"error\":\"The model `qwen3-coder-480b-a35b-instruct` has been deprecated. Please use `qwen3-coder-480b-a35b-instruct-turbo` instead.\"}', 'provider_name': 'Venice', 'is_byok': False, 'retry_after_seconds': 30, 'retry_after_seconds_raw': 29.551}}, 'user_id': 'user_3DYXIhBeQOjPBMtMKJ2WdY0BBbk'}"
+          "confianza": 0.5,
+          "entropy": 1.761,
+          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C16\",\n      \"nivel\": 0,\n      \"justificacion\": \"Los fragmentos no mencionan problemas éticos ni responsabilidades profesionales de la ingeniería.\",\n      \"citas\": [],\n      \"p\": [0.5, 0.2, 0.2, 0.1]\n    }\n  ]\n}"
         },
         {
           "competencia_id": "C14",
@@ -70931,9 +70934,9 @@
           "nivel": 2,
           "nivel_label": "Uso concreto con resultados descritos",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
@@ -70954,28 +70957,30 @@
           "raw_response": "```json\n{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C14\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante implementó soluciones concretas utilizando herramientas específicas (Looker Studio) para automatizar la generación de indicadores e informes, logrando resultados tangibles como la reducción de tiempo en tareas manuales y una mayor eficiencia operativa. Aunque describe resultados cuantificables, no se evidencia reflexión profunda sobre alternativas técnicas o trade-offs.\",\n      \"citas\": [\n        \"By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.\",\n        \"The reports and analysis provided contributed to more informed and strategic decision making throughout the organization.\",\n        \"I contributed to the generation of strategic indicators, validation of results, and creation of reports through panels in Looker Studio\"\n      ],\n      \"p\": [0.05, 0.25, 0.60, 0.10]\n    }\n  ]\n}\n```"
         },
         {
-          "competencia_id": "C18",
+          "competencia_id": "C18 - Diseña software",
           "competencia_nombre": "Diseña software",
-          "nivel": 0,
-          "nivel_label": "Sin evidencia",
+          "nivel": 1,
+          "nivel_label": "No demuestra aplicación",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
-          "citas": [],
-          "justificacion": "Error al procesar la respuesta del LLM. 'NoneType' object is not subscriptable",
-          "estado_revision": "sin_evidencia",
+          "citas": [
+            "During my internship, I contributed to the generation of strategic indicators, validation of results, and creation of reports through panels in Looker Studio, including the Panel 360."
+          ],
+          "justificacion": "El estudiante menciona la creación de paneles en Looker Studio, pero no proporciona detalles técnicos sobre el diseño de software o arquitectura.",
+          "estado_revision": "respaldo_suficiente",
           "estado_final": "pendiente",
           "p": [
-            0.25,
-            0.25,
-            0.25,
-            0.25
+            0.1,
+            0.7,
+            0.15,
+            0.05
           ],
-          "confianza": 0.25,
-          "entropy": 2.0,
-          "raw_response": "__LLM_ERROR__'NoneType' object is not subscriptable"
+          "confianza": 0.7,
+          "entropy": 1.319,
+          "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C18 - Diseña software\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona la creación de paneles en Looker Studio, pero no proporciona detalles técnicos sobre el diseño de software o arquitectura.\",\n      \"citas\": [\"During my internship, I contributed to the generation of strategic indicators, validation of results, and creation of reports through panels in Looker Studio, including the Panel 360.\"],\n      \"p\": [0.1, 0.7, 0.15, 0.05]\n    }\n  ]\n}"
         },
         {
           "competencia_id": "C19",
@@ -70983,9 +70988,9 @@
           "nivel": 1,
           "nivel_label": "No demuestra aplicación",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "Improved Operational Efficiency: By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
@@ -71010,9 +71015,9 @@
           "nivel": 2,
           "nivel_label": "Uso concreto con resultados descritos",
           "secciones_fuente": [
+            "general_activities",
             "abstract",
-            "work_analysis",
-            "general_activities"
+            "work_analysis"
           ],
           "citas": [
             "By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
@@ -71167,20 +71172,20 @@
           "similitud_calculada": true,
           "recuperacion_ejecutada": true,
           "chunks_recuperados": 3,
-          "dictamen_generado": false,
-          "estado_cobertura": "sin_evidencia",
+          "dictamen_generado": true,
+          "estado_cobertura": "procesada",
           "estado_final": "pendiente",
-          "nivel_asignado": 0,
-          "p0": 0.25,
-          "p1": 0.25,
-          "p2": 0.25,
-          "p3": 0.25,
-          "C_cobertura_citas": 0.0,
+          "nivel_asignado": 2,
+          "p0": 0.05,
+          "p1": 0.15,
+          "p2": 0.7,
+          "p3": 0.1,
+          "C_cobertura_citas": 0.6667,
           "S_pertinencia_seccion": 0.8,
           "R_similitud_promedio": 0.6437,
-          "F_confianza": 0.25,
-          "JPC": 0.4234,
-          "JPC_aplicable": false
+          "F_confianza": 0.7,
+          "JPC": 0.7026,
+          "JPC_aplicable": true
         },
         {
           "competencia_id": "C9",
@@ -71339,15 +71344,15 @@
           "estado_cobertura": "sin_evidencia",
           "estado_final": "pendiente",
           "nivel_asignado": 0,
-          "p0": 0.25,
-          "p1": 0.25,
-          "p2": 0.25,
-          "p3": 0.25,
+          "p0": 0.5,
+          "p1": 0.2,
+          "p2": 0.2,
+          "p3": 0.1,
           "C_cobertura_citas": 0.0,
           "S_pertinencia_seccion": 0.8,
           "R_similitud_promedio": 0.5938,
-          "F_confianza": 0.25,
-          "JPC": 0.411,
+          "F_confianza": 0.5,
+          "JPC": 0.4735,
           "JPC_aplicable": false
         },
         {
@@ -71372,25 +71377,25 @@
           "JPC_aplicable": true
         },
         {
-          "competencia_id": "C18",
+          "competencia_id": "C18 - Diseña software",
           "embedding_generado": true,
           "similitud_calculada": true,
           "recuperacion_ejecutada": true,
           "chunks_recuperados": 3,
-          "dictamen_generado": false,
-          "estado_cobertura": "sin_evidencia",
+          "dictamen_generado": true,
+          "estado_cobertura": "procesada",
           "estado_final": "pendiente",
-          "nivel_asignado": 0,
-          "p0": 0.25,
-          "p1": 0.25,
-          "p2": 0.25,
-          "p3": 0.25,
-          "C_cobertura_citas": 0.0,
-          "S_pertinencia_seccion": 0.8,
+          "nivel_asignado": 1,
+          "p0": 0.1,
+          "p1": 0.7,
+          "p2": 0.15,
+          "p3": 0.05,
+          "C_cobertura_citas": 0.3333,
+          "S_pertinencia_seccion": 0.4,
           "R_similitud_promedio": 0.5666,
-          "F_confianza": 0.25,
-          "JPC": 0.4042,
-          "JPC_aplicable": false
+          "F_confianza": 0.7,
+          "JPC": 0.5,
+          "JPC_aplicable": true
         },
         {
           "competencia_id": "C19",
@@ -71436,13 +71441,13 @@
         }
       ],
       "tiempos": {
-        "T_procesamiento_automatico_min": 21.62,
+        "T_procesamiento_automatico_min": null,
         "T_revision_humana_min": null,
         "T_ajustes_min": null,
         "T_IA_total_min": null
       },
       "historial_ajustes": [],
-      "tiempo_c7_s": 0.001
+      "tiempo_c7_s": 0.0
     }
   },
   "resultados_competencias": [
@@ -71820,29 +71825,34 @@
     },
     {
       "competencia_id": "C7",
-      "competencia_nombre": "Integra eficazmente equipos de trabajo",
-      "nivel": 0,
-      "justificacion": "Error al procesar la respuesta del LLM. 'NoneType' object is not subscriptable",
-      "citas": [],
-      "p": [
-        0.25,
-        0.25,
-        0.25,
-        0.25
+      "nivel": 2,
+      "justificacion": "El estudiante automatizó la generación de indicadores y reportes, mejorando la eficiencia operativa y colaboró con líderes de equipo para recibir retroalimentación. Se describen resultados tangibles como la reducción de tiempo en tareas manuales.",
+      "citas": [
+        "Improved Operational Efficiency: By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.",
+        "I received valuable input and feedback from Loyalty team leaders such as Mathias Thoine and Diego Vidaurre, who played a key role in my professional development by providing guidance and support in my work."
       ],
+      "p": [
+        0.05,
+        0.15,
+        0.7,
+        0.1
+      ],
+      "competencia_nombre": "Integra eficazmente equipos de trabajo",
       "max_nivel": 3,
-      "raw_response": "__LLM_ERROR__'NoneType' object is not subscriptable",
+      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C7\",\n      \"nivel\": 2,\n      \"justificacion\": \"El estudiante automatizó la generación de indicadores y reportes, mejorando la eficiencia operativa y colaboró con líderes de equipo para recibir retroalimentación. Se describen resultados tangibles como la reducción de tiempo en tareas manuales.\",\n      \"citas\": [\n        \"Improved Operational Efficiency: By automating the generation of indicators and reports, I optimized the area's internal processes, allowing for greater operational efficiency and a reduction in time spent on manual and repetitive tasks.\",\n        \"I received valuable input and feedback from Loyalty team leaders such as Mathias Thoine and Diego Vidaurre, who played a key role in my professional development by providing guidance and support in my work.\"\n      ],\n      \"p\": [0.05, 0.15, 0.7, 0.1]\n    }\n  ]\n}",
       "reporte": {
         "competencia_id": "C7",
-        "estado_capa_6": "ERROR",
-        "dictamen_generado": false,
-        "formato_llm_ok": false,
-        "citas_validas": false,
+        "estado_capa_6": "OK",
+        "dictamen_generado": true,
+        "formato_llm_ok": true,
+        "citas_validas": true,
         "modelo_llm": "openrouter/free",
         "proveedor": "openrouter",
         "uso_pdf": false,
-        "error": "'NoneType' object is not subscriptable",
-        "tiempo_c6_s": 13.012
+        "error": null,
+        "tiempo_c6_s": 44.477,
+        "reintentos": 1,
+        "modelo_original": null
       },
       "evidencia_recuperada": [
         {
@@ -72284,29 +72294,31 @@
     },
     {
       "competencia_id": "C16",
-      "competencia_nombre": "Reconoce los problemas y responsabilidades asociados a la práctica de la ingeniería",
       "nivel": 0,
-      "justificacion": "Error al procesar la respuesta del LLM. Error code: 404 - {'error': {'message': 'Provider returned error', 'code': 404, 'metadata': {'raw': '{\"error\":\"The model `qwen3-coder-480b-a35b-instruct` has been deprecated. Please use `qwen3-coder-480b-a35b-instruct-turbo` instead.\"}', 'provider_name': 'Venice', 'is_byok': False, 'retry_after_seconds': 30, 'retry_after_seconds_raw': 29.551}}, 'user_id': 'user_3DYXIhBeQOjPBMtMKJ2WdY0BBbk'}",
+      "justificacion": "Los fragmentos no mencionan problemas éticos ni responsabilidades profesionales de la ingeniería.",
       "citas": [],
       "p": [
-        0.25,
-        0.25,
-        0.25,
-        0.25
+        0.5,
+        0.2,
+        0.2,
+        0.1
       ],
+      "competencia_nombre": "Reconoce los problemas y responsabilidades asociados a la práctica de la ingeniería",
       "max_nivel": 3,
-      "raw_response": "__LLM_ERROR__Error code: 404 - {'error': {'message': 'Provider returned error', 'code': 404, 'metadata': {'raw': '{\"error\":\"The model `qwen3-coder-480b-a35b-instruct` has been deprecated. Please use `qwen3-coder-480b-a35b-instruct-turbo` instead.\"}', 'provider_name': 'Venice', 'is_byok': False, 'retry_after_seconds': 30, 'retry_after_seconds_raw': 29.551}}, 'user_id': 'user_3DYXIhBeQOjPBMtMKJ2WdY0BBbk'}",
+      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C16\",\n      \"nivel\": 0,\n      \"justificacion\": \"Los fragmentos no mencionan problemas éticos ni responsabilidades profesionales de la ingeniería.\",\n      \"citas\": [],\n      \"p\": [0.5, 0.2, 0.2, 0.1]\n    }\n  ]\n}",
       "reporte": {
         "competencia_id": "C16",
-        "estado_capa_6": "ERROR",
-        "dictamen_generado": false,
-        "formato_llm_ok": false,
-        "citas_validas": false,
+        "estado_capa_6": "OK_NIVEL0",
+        "dictamen_generado": [],
+        "formato_llm_ok": true,
+        "citas_validas": true,
         "modelo_llm": "openrouter/free",
         "proveedor": "openrouter",
         "uso_pdf": false,
-        "error": "Error code: 404 - {'error': {'message': 'Provider returned error', 'code': 404, 'metadata': {'raw': '{\"error\":\"The model `qwen3-coder-480b-a35b-instruct` has been deprecated. Please use `qwen3-coder-480b-a35b-instruct-turbo` instead.\"}', 'provider_name': 'Venice', 'is_byok': False, 'retry_after_seconds': 30, 'retry_after_seconds_raw': 29.551}}, 'user_id': 'user_3DYXIhBeQOjPBMtMKJ2WdY0BBbk'}",
-        "tiempo_c6_s": 8.185
+        "error": null,
+        "tiempo_c6_s": 22.197,
+        "reintentos": 0,
+        "modelo_original": null
       },
       "evidencia_recuperada": [
         {
@@ -72401,30 +72413,34 @@
       "r_similitud": 0.6002
     },
     {
-      "competencia_id": "C18",
-      "competencia_nombre": "Diseña software",
-      "nivel": 0,
-      "justificacion": "Error al procesar la respuesta del LLM. 'NoneType' object is not subscriptable",
-      "citas": [],
-      "p": [
-        0.25,
-        0.25,
-        0.25,
-        0.25
+      "competencia_id": "C18 - Diseña software",
+      "nivel": 1,
+      "justificacion": "El estudiante menciona la creación de paneles en Looker Studio, pero no proporciona detalles técnicos sobre el diseño de software o arquitectura.",
+      "citas": [
+        "During my internship, I contributed to the generation of strategic indicators, validation of results, and creation of reports through panels in Looker Studio, including the Panel 360."
       ],
+      "p": [
+        0.1,
+        0.7,
+        0.15,
+        0.05
+      ],
+      "competencia_nombre": "Diseña software",
       "max_nivel": 3,
-      "raw_response": "__LLM_ERROR__'NoneType' object is not subscriptable",
+      "raw_response": "{\n  \"evaluaciones\": [\n    {\n      \"competencia_id\": \"C18 - Diseña software\",\n      \"nivel\": 1,\n      \"justificacion\": \"El estudiante menciona la creación de paneles en Looker Studio, pero no proporciona detalles técnicos sobre el diseño de software o arquitectura.\",\n      \"citas\": [\"During my internship, I contributed to the generation of strategic indicators, validation of results, and creation of reports through panels in Looker Studio, including the Panel 360.\"],\n      \"p\": [0.1, 0.7, 0.15, 0.05]\n    }\n  ]\n}",
       "reporte": {
         "competencia_id": "C18",
-        "estado_capa_6": "ERROR",
-        "dictamen_generado": false,
-        "formato_llm_ok": false,
-        "citas_validas": false,
+        "estado_capa_6": "OK",
+        "dictamen_generado": true,
+        "formato_llm_ok": true,
+        "citas_validas": true,
         "modelo_llm": "openrouter/free",
         "proveedor": "openrouter",
         "uso_pdf": false,
-        "error": "'NoneType' object is not subscriptable",
-        "tiempo_c6_s": 24.701
+        "error": null,
+        "tiempo_c6_s": 19.019,
+        "reintentos": 0,
+        "modelo_original": null
       },
       "evidencia_recuperada": [
         {

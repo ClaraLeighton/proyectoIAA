@@ -12,6 +12,12 @@ DEFAULT_LEVELS = {
     3: "Dominio técnico con reflexión e impacto",
 }
 
+FALLBACK_MODELS = [
+    "google/gemini-2.5-flash",
+    "gpt-4o-mini",
+    "anthropic/claude-3-haiku",
+]
+
 DEFAULT_LEVEL_DETAILS = {
     0: [
         "No hay mención de la competencia en el documento.",
@@ -57,7 +63,13 @@ def _build_system_prompt() -> str:
     return """Eres un evaluador académico especializado en evaluar competencias.
 Tu tarea es evaluar el desempeño de un estudiante en una competencia basándote
 ÚNICAMENTE en la evidencia textual proporcionada.
-No debes hacer suposiciones ni inferencias más allá de lo que el texto explícitamente comunica."""
+No debes hacer suposiciones ni inferencias más allá de lo que el texto explícitamente comunica.
+
+INSTRUCCIÓN CRÍTICA DE FORMATO:
+Debes responder ÚNICAMENTE con un objeto JSON válido.
+NO incluyas markdown, bloques de código, comillas triples, ni texto adicional antes o después del JSON.
+Tu respuesta debe comenzar exactamente con "{" y terminar exactamente con "}".
+Usa exactamente los nombres de campo especificados en el FORMATO DE SALIDA."""
 
 
 def _build_rubric_text(levels: dict[int, str], level_details: dict[int, list[str]]) -> str:
@@ -100,9 +112,13 @@ def _build_user_prompt(
 COMPETENCIA A EVALUAR
 {comp_text}
 
-FORMATO DE SALIDA
-Debes responder ÚNICAMENTE con un objeto JSON válido, sin texto adicional.
-El JSON debe tener esta estructura:
+FORMATO DE SALIDA — INSTRUCCIONES ESTRICTAS
+Debes responder ÚNICAMENTE con un objeto JSON válido y completo.
+NO incluyas markdown, bloques de código (```), comillas triples, ni texto adicional antes o después del JSON.
+Tu respuesta debe comenzar EXACTAMENTE con "{{" y terminar EXACTAMENTE con "}}".
+Usa EXACTAMENTE estos nombres de campo: "competencia_id", "nivel", "justificacion", "citas", "p"
+
+El JSON debe tener esta estructura exacta:
 {{
   "evaluaciones": [
     {{
@@ -115,11 +131,15 @@ El JSON debe tener esta estructura:
   ]
 }}
 
-Reglas:
-- Debes incluir UNA evaluación (un solo elemento en evaluaciones).
-- "citas" debe contener fragmentos textuales exactos de la evidencia proporcionada (puede ser vacío si nivel=0).
-- "p" es la distribución de probabilidad para niveles [0..{max_level}]. Debe sumar 1 y tener {max_level + 1} elementos.
-- El nivel asignado debe ser coherente con p (el mayor valor de p debe corresponder al nivel asignado)."""
+Reglas obligatorias:
+- Debes incluir UNA evaluación (un solo elemento en el arreglo "evaluaciones").
+- "competencia_id": debe ser una cadena de texto, exactamente como se proporciona arriba.
+- "nivel": debe ser un número entero entre 0 y {max_level}.
+- "justificacion": debe ser una cadena de texto de máximo 2 oraciones.
+- "citas": debe ser un arreglo de cadenas de texto con fragmentos textuales exactos de la evidencia proporcionada (puede ser un arreglo vacío [] si nivel=0).
+- "p": debe ser un arreglo de números flotantes con exactamente {max_level + 1} elementos, que sumen 1.0.
+- El mayor valor en "p" debe corresponder al nivel asignado en "nivel".
+- Si nivel=0, "citas" debe ser un arreglo vacío []."""
     return prompt
 
 
@@ -140,9 +160,13 @@ Descripción: {competencia.get('descripcion', '')}
 
 La evidencia de esta competencia se encuentra en el PDF adjunto.
 
-FORMATO DE SALIDA
-Debes responder ÚNICAMENTE con un objeto JSON válido, sin texto adicional.
-El JSON debe tener esta estructura:
+FORMATO DE SALIDA — INSTRUCCIONES ESTRICTAS
+Debes responder ÚNICAMENTE con un objeto JSON válido y completo.
+NO incluyas markdown, bloques de código (```), comillas triples, ni texto adicional antes o después del JSON.
+Tu respuesta debe comenzar EXACTAMENTE con "{{" y terminar EXACTAMENTE con "}}".
+Usa EXACTAMENTE estos nombres de campo: "competencia_id", "nivel", "justificacion", "citas", "p"
+
+El JSON debe tener esta estructura exacta:
 {{
   "evaluaciones": [
     {{
@@ -155,11 +179,15 @@ El JSON debe tener esta estructura:
   ]
 }}
 
-Reglas:
-- Debes incluir UNA evaluación (un solo elemento en evaluaciones).
-- "citas" debe contener fragmentos textuales exactos de la evidencia del PDF adjunto (puede ser vacío si nivel=0).
-- "p" es la distribución de probabilidad para niveles [0..{max_level}]. Debe sumar 1 y tener {max_level + 1} elementos.
-- El nivel asignado debe ser coherente con p (el mayor valor de p debe corresponder al nivel asignado)."""
+Reglas obligatorias:
+- Debes incluir UNA evaluación (un solo elemento en el arreglo "evaluaciones").
+- "competencia_id": debe ser una cadena de texto, exactamente como se proporciona arriba.
+- "nivel": debe ser un número entero entre 0 y {max_level}.
+- "justificacion": debe ser una cadena de texto de máximo 2 oraciones.
+- "citas": debe ser un arreglo de cadenas de texto con fragmentos textuales exactos de la evidencia del PDF adjunto (puede ser un arreglo vacío [] si nivel=0).
+- "p": debe ser un arreglo de números flotantes con exactamente {max_level + 1} elementos, que sumen 1.0.
+- El mayor valor en "p" debe corresponder al nivel asignado en "nivel".
+- Si nivel=0, "citas" debe ser un arreglo vacío []."""
     return prompt
 
 
@@ -199,24 +227,54 @@ def _fix_json(raw: str) -> str | None:
     return fixed
 
 
-def _parse_batch_response(raw: str, num_levels: int) -> list[dict] | None:
-    raw_clean = raw.strip()
-    json_match = re.search(r"\{.*\}", raw_clean, re.DOTALL)
-    if not json_match:
+def _extract_json(raw: str) -> str | None:
+    raw = raw.strip()
+    if not raw:
         return None
 
-    data = None
+    # Remove markdown code fences (```json ... ``` or ``` ... ```)
+    raw = re.sub(r'^```(?:json)?\s*\n?', '', raw)
+    raw = re.sub(r'\n?```\s*$', '', raw)
+    raw = raw.strip()
+
+    # Remove HTML comments
+    raw = re.sub(r'<!--.*?-->', '', raw, flags=re.DOTALL)
+
+    # Find the first '{'
+    start = raw.find('{')
+    if start == -1:
+        return None
+
+    # Try to find a matching closing '}'
+    end = raw.rfind('}')
+    if end != -1 and end > start:
+        candidate = raw[start:end + 1]
+    else:
+        candidate = raw[start:]
+
     try:
-        data = json.loads(json_match.group())
+        json.loads(candidate)
+        return candidate
     except json.JSONDecodeError:
-        fixed = _fix_json(json_match.group())
+        fixed = _fix_json(candidate)
         if fixed:
             try:
-                data = json.loads(fixed)
+                json.loads(fixed)
+                return fixed
             except json.JSONDecodeError:
                 return None
-        else:
-            return None
+    return None
+
+
+def _parse_batch_response(raw: str, num_levels: int) -> list[dict] | None:
+    json_str = _extract_json(raw)
+    if not json_str:
+        return None
+
+    try:
+        data = json.loads(json_str)
+    except json.JSONDecodeError:
+        return None
 
     evaluaciones = data.get("evaluaciones")
     if not isinstance(evaluaciones, list) or not evaluaciones:
@@ -278,9 +336,11 @@ def run_batch(
     provider: str = "openrouter",
     config_activa: dict | None = None,
     use_pdf: bool = False,
+    max_retries: int = 3,
 ) -> list[dict]:
-    provider = "openrouter"
-    m = model or SUPPORTED_PROVIDERS["openrouter"]["llm_model"]
+    provider = provider or "openrouter"
+    prov_info = SUPPORTED_PROVIDERS.get(provider, {})
+    m = model or prov_info.get("llm_model", SUPPORTED_PROVIDERS["openrouter"]["llm_model"])
     cfg = config_activa or {}
     levels, level_details = _extract_levels(cfg)
     max_level = max(levels.keys())
@@ -290,24 +350,57 @@ def run_batch(
     use_pdf_effective = use_pdf
     for comp, evidencia in competencias_con_evidencia:
         t0 = time.time()
-        error_msg = ""
-
-        if use_pdf_effective:
-            evidence_block = _build_competency_text(comp, evidencia)
-            user_prompt = _build_user_prompt_sin_evidencia(comp, levels, level_details, max_level)
-            raw = _call_llm(sys_prompt, user_prompt, provider, api_key, m, evidence_block)
-        else:
-            user_prompt = _build_user_prompt(comp, evidencia, levels, level_details, max_level)
-            raw = _call_llm(sys_prompt, user_prompt, provider, api_key, m)
-
-        if raw.startswith("__LLM_ERROR__"):
-            error_msg = raw[len("__LLM_ERROR__"):]
-
         ev_result = None
-        if not error_msg:
+        last_error = ""
+        raw = ""
+        current_model = m
+        retries_used = 0
+        model_swapped = False
+
+        for attempt in range(max_retries):
+            if use_pdf_effective:
+                evidence_block = _build_competency_text(comp, evidencia)
+                user_prompt = _build_user_prompt_sin_evidencia(comp, levels, level_details, max_level)
+                raw = _call_llm(sys_prompt, user_prompt, provider, api_key, current_model, evidence_block)
+            else:
+                user_prompt = _build_user_prompt(comp, evidencia, levels, level_details, max_level)
+                raw = _call_llm(sys_prompt, user_prompt, provider, api_key, current_model)
+
+            if raw.startswith("__LLM_ERROR__"):
+                last_error = raw[len("__LLM_ERROR__"):]
+                # Detect model deprecation and auto-switch to suggested model
+                model_match = re.search(r'`([^`]+)`\s+instead', last_error)
+                if model_match and attempt < max_retries - 1:
+                    suggested = model_match.group(1)
+                    if suggested != current_model:
+                        current_model = suggested
+                        model_swapped = True
+                        retries_used = attempt + 1
+                        continue
+                # Try fallback models if available
+                if attempt < max_retries - 1 and "model" in last_error.lower() and not model_match:
+                    fallback_idx = attempt
+                    if fallback_idx < len(FALLBACK_MODELS) and FALLBACK_MODELS[fallback_idx] != current_model:
+                        current_model = FALLBACK_MODELS[fallback_idx]
+                        model_swapped = True
+                        retries_used = attempt + 1
+                        continue
+                if attempt < max_retries - 1:
+                    time.sleep(2 ** attempt)
+                    retries_used = attempt + 1
+                    continue
+                break
+
             parsed = _parse_batch_response(raw, max_level + 1)
             if parsed:
                 ev_result = parsed[0]
+                retries_used = attempt
+                break
+
+            last_error = "Respuesta del LLM no válida (JSON inválido)"
+            if attempt < max_retries - 1:
+                time.sleep(2 ** attempt)
+                retries_used = attempt + 1
 
         if ev_result:
             ev_result["competencia_nombre"] = comp.get("nombre", "")
@@ -319,19 +412,22 @@ def run_batch(
                 "dictamen_generado": ev_result["nivel"] > 0 or ev_result["citas"],
                 "formato_llm_ok": True,
                 "citas_validas": True,
-                "modelo_llm": m,
+                "modelo_llm": current_model,
                 "proveedor": provider,
                 "uso_pdf": use_pdf_effective,
                 "error": None,
                 "tiempo_c6_s": round(time.time() - t0, 3),
+                "reintentos": retries_used,
+                "modelo_original": m if model_swapped else None,
             }
             resultados.append(ev_result)
         else:
+            error_details = last_error if last_error else "Respuesta del LLM no válida"
             resultados.append({
                 "competencia_id": comp["competencia_id"],
                 "competencia_nombre": comp.get("nombre", ""),
                 "nivel": 0,
-                "justificacion": f"Error al procesar la respuesta del LLM. {error_msg}" if error_msg else "Error al procesar la respuesta del LLM.",
+                "justificacion": f"Error al procesar la respuesta del LLM. {error_details}",
                 "citas": [],
                 "p": [1.0 / (max_level + 1)] * (max_level + 1),
                 "max_nivel": max_level,
@@ -342,11 +438,13 @@ def run_batch(
                     "dictamen_generado": False,
                     "formato_llm_ok": False,
                     "citas_validas": False,
-                    "modelo_llm": m,
+                    "modelo_llm": current_model,
                     "proveedor": provider,
                     "uso_pdf": use_pdf_effective,
-                    "error": error_msg if error_msg else "Respuesta del LLM no válida",
+                    "error": error_details,
                     "tiempo_c6_s": round(time.time() - t0, 3),
+                    "reintentos": retries_used,
+                    "modelo_original": m if model_swapped else None,
                 },
             })
     return resultados

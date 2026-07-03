@@ -3,6 +3,11 @@ import fitz
 import io
 from typing import Any
 
+DEPRECATED_MODEL_MAP: dict[str, str] = {
+    "qwen3-coder-480b-a35b-instruct": "qwen3-coder-480b-a35b-instruct-turbo",
+    "qwen3-128b-instruct": "qwen3-128b-instruct-turbo",
+}
+
 SUPPORTED_PROVIDERS = {
     "gemini": {
         "embedding_model": "models/gemini-embedding-2",
@@ -168,6 +173,10 @@ def evaluate_llm(
     elif provider == "openrouter":
         from openai import OpenAI
         m = model or SUPPORTED_PROVIDERS["openrouter"]["llm_model"]
+        # Check if model is known to be deprecated
+        base_model = m.split("/")[-1] if "/" in m else m
+        if base_model in DEPRECATED_MODEL_MAP:
+            m = m.replace(base_model, DEPRECATED_MODEL_MAP[base_model])
         client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
         try:
             messages = [

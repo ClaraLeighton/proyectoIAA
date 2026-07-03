@@ -122,11 +122,17 @@ def _competency_summary_html(r: dict) -> str:
     justificacion = r.get("justificacion", "Sin justificación")
     secciones = r.get("secciones_fuente", [])
     citas = r.get("citas", [])
+    es_error = "Error al procesar" in justificacion or "Error al procesar" in justificacion
     estado, cls = _estado_comp(nivel, confianza)
+    if es_error:
+        cls = "risk"
+        estado = "Error"
     
-    # Mapeo de estado a clases para badges
     badge_variant = "green" if cls == "ok" else ("yellow" if cls == "mid" else "red")
     citas_html = "".join(f"<li>{escape(cita)}</li>" for cita in citas[:5]) if citas else "<li>Sin citas detectadas.</li>"
+    label = f"Nivel {nivel}" if not es_error else "Error"
+    pct = min(100, max(0, nivel / 3 * 100)) if not es_error else 0
+    confianza_text = f"{confianza * 100:.0f}% confianza" if not es_error else ""
     
     return _html_block(f"""
     <div class="micro-comp-tile-detail {cls}">
@@ -135,15 +141,15 @@ def _competency_summary_html(r: dict) -> str:
         <span class="comp-status-badge">{badge(escape(estado), badge_variant)}</span>
       </div>
       <h5>{escape(nombre)}</h5>
-      <div class="micro-comp-tile-meter"><i style="width:{min(100, max(0, nivel / 3 * 100)):.1f}%"></i></div>
+      <div class="micro-comp-tile-meter"><i style="width:{pct:.1f}%"></i></div>
       <div class="micro-comp-tile-foot">
-        <span>Nivel {nivel}</span>
-        <span>{confianza * 100:.0f}% confianza</span>
+        <span>{label}</span>
+        <span>{confianza_text}</span>
       </div>
       <details class="micro-comp-inline-detail">
         <summary>Ver detalle</summary>
         <div>
-          <p><b>Nivel:</b> {escape(LEVEL_LABELS.get(nivel, ""))}</p>
+          <p><b>Nivel:</b> {escape(LEVEL_LABELS.get(nivel, "")) if not es_error else "Error"}</p>
           <p><b>Justificación:</b> {escape(justificacion)}</p>
           <p><b>Secciones fuente:</b> {escape(", ".join(secciones) if secciones else "Sin secciones")}</p>
           <p><b>Citas:</b></p>
@@ -152,6 +158,63 @@ def _competency_summary_html(r: dict) -> str:
       </details>
     </div>
     """)
+
+
+def _re_evaluar_competencia(report, competencia_id: str) -> bool:
+    from pipeline import c6_evaluador
+    from pipeline.c7_agregador import run as c7_run
+    from pipeline.persistence import save_report
+
+    pipeline = report.pipeline_state
+    c1 = pipeline.get("c1", {})
+    competencias = c1.get("competencias_activas", [])
+    config_activa = c1.get("config_activa", {})
+
+    comp = next((c for c in competencias if c["competencia_id"] == competencia_id), None)
+    if not comp:
+        st.error(f"No se encontró la competencia {competencia_id} en la configuración.")
+        return False
+
+    resultados = pipeline.get("resultados_competencias", [])
+    resultado = next((r for r in resultados if r["competencia_id"] == competencia_id), None)
+    if not resultado:
+        st.error(f"No se encontraron resultados para {competencia_id}.")
+        return False
+
+    evidencia = resultado.get("evidencia_recuperada", [])
+    c6_api_key = pipeline.get("c6_api_key") or st.session_state.get("openrouter_key_input") or ""
+    c6_provider = pipeline.get("c6_provider", "openrouter")
+
+    nuevo_resultado = c6_evaluador.run(
+        competencia=comp,
+        evidencia_recuperada=evidencia,
+        api_key=c6_api_key,
+        model=None,
+        provider=c6_provider,
+        config_activa=config_activa,
+    )
+
+    nuevo_resultado["evidencia_recuperada"] = evidencia
+    nuevo_resultado["r_similitud"] = resultado.get("r_similitud", 0.0)
+
+    for i, r in enumerate(resultados):
+        if r["competencia_id"] == competencia_id:
+            resultados[i] = nuevo_resultado
+            break
+
+    levels, _ = c6_evaluador._extract_levels(config_activa)
+    c7 = pipeline.get("c7", {})
+    nuevo_c7 = c7_run(
+        resultados_competencias=resultados,
+        mapa_relevancia=pipeline.get("c2", {}).get("mapa_relevancia", {}),
+        reportes_acumulados=[r.get("reporte", {}) for r in resultados],
+        niveles_labels=levels,
+    )
+    pipeline["c7"] = nuevo_c7
+    pipeline["resultados_competencias"] = resultados
+    report.pipeline_state = pipeline
+    save_report(report)
+    return True
 
 
 def render():
@@ -163,6 +226,8 @@ def render():
         return
 
     preview = report.vista_preliminar
+    pipeline_results = report.pipeline_state.get("resultados_competencias", [])
+    resultados_map = {r["competencia_id"]: r for r in pipeline_results} if pipeline_results else {}
     tipo = report.tipo_documento.replace("_", " ").title()
     timestamp = report.timestamp[:19] if hasattr(report, "timestamp") and report.timestamp else ""
 
@@ -190,13 +255,35 @@ def render():
         unsafe_allow_html=True,
     )
 
+    has_errors = any(
+        resultados_map.get(r["competencia_id"], {}).get("reporte", {}).get("estado_capa_6") == "ERROR"
+        for r in preview
+    )
+    if has_errors:
+        st.warning("Algunas competencias tienen errores de evaluación. Usa los botones 'Re-evaluar' para reintentar.", icon="⚠️")
+
     ordered_preview = sorted(preview, key=lambda item: _sort_competencia_id(item.get("competencia_id", "")))
     for i in range(0, len(ordered_preview), 4):
         row = ordered_preview[i:i + 4]
         cols = st.columns(4)
         for j, r in enumerate(row):
             with cols[j]:
+                cid = r.get("competencia_id", "")
                 st.markdown(_competency_summary_html(r), unsafe_allow_html=True)
+                resultado = resultados_map.get(cid, {})
+                if resultado.get("reporte", {}).get("estado_capa_6") == "ERROR":
+                    reintentos = resultado.get("reporte", {}).get("reintentos", 0)
+                    label = "Re-evaluar"
+                    if reintentos:
+                        label += f" ({reintentos} intentos)"
+                    if st.button(label, key=f"retry_{cid}", use_container_width=True):
+                        with st.spinner(f"Re-evaluando {cid}..."):
+                            ok = _re_evaluar_competencia(report, cid)
+                            if ok:
+                                st.success(f"{cid} re-evaluada correctamente.")
+                                st.rerun()
+                            else:
+                                st.error(f"No se pudo re-evaluar {cid}.")
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
