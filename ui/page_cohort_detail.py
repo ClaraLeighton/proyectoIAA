@@ -15,6 +15,22 @@ LEVEL_LABELS = {"0": "Sin evidencia", "1": "Solo teoría", "2": "Uso concreto", 
 LEVEL_SHORT = {"0": "SE", "1": "TE", "2": "UC", "3": "DT"}
 
 
+def _promedio_a_nivel(promedio: float) -> str:
+    if promedio >= 2.5: return "3"
+    if promedio >= 1.5: return "2"
+    if promedio >= 0.5: return "1"
+    return "0"
+
+def _promedio_a_label(promedio: float) -> str:
+    return LEVEL_LABELS[_promedio_a_nivel(promedio)]
+
+
+def _hex_to_rgba(h: str, a: float) -> str:
+    h = h.lstrip("#")
+    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    return f"rgba({r},{g},{b},{a})"
+
+
 def _formatear_tipo(tipo: str) -> str:
     nombre = tipo.replace("_", " ").title()
     nombre = nombre.replace("Pre ", "Pre-")
@@ -33,10 +49,10 @@ def _clamp_pct(value: float) -> float:
 
 def _estado_competencia(tasa_aprobacion: float) -> tuple[str, str, str]:
     if tasa_aprobacion >= 0.70:
-        return "Consolidada", "ok", "La mayoría de los informes demuestra esta competencia de forma consistente (≥ 70% alcanza grado 2 o superior)."
+        return "Evidenciada", "ok", "La mayoría de los informes demuestra esta competencia de forma consistente (≥ 70% alcanza grado 2 o superior)."
     if tasa_aprobacion >= 0.50:
-        return "En desarrollo", "mid", "La competencia aparece en varios informes, pero aún no de forma consistente (50–69% alcanza grado 2 o superior)."
-    return "Brecha prioritaria", "risk", "Existe poca o ninguna evidencia de esta competencia en los informes evaluados (< 50% alcanza grado 2 o superior)."
+        return "Parcialmente evidenciada", "mid", "La competencia aparece en varios informes, pero aún no de forma consistente (50–69% alcanza grado 2 o superior)."
+    return "Escasa evidencia", "risk", "Existe poca o ninguna evidencia de esta competencia en los informes evaluados (< 50% alcanza grado 2 o superior)."
 
 
 def _clasificar_competencia(tasa_aprobacion: float) -> str:
@@ -150,7 +166,7 @@ def _legend_html(nivel_dist: dict, total: int) -> str:
         count = nivel_dist.get(lvl, 0)
         pct = count / total * 100 if total else 0
         items.append(
-            f'<span title="{count} de {total} evaluaciones con grado {lvl}: {LEVEL_LABELS[lvl]}"><i style="background:{LEVEL_COLORS[lvl]}"></i>'
+            f'<span title="Del total de evaluaciones en los informes: {count} de {total} con grado {lvl} ({LEVEL_LABELS[lvl]})"><i style="background:{LEVEL_COLORS[lvl]}"></i>'
             f'{LEVEL_LABELS[lvl]} <strong>{count}</strong> ({pct:.0f}%)</span>'
         )
     return f'<div class="macro-legend">{"".join(items)}</div>'
@@ -303,7 +319,6 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
         total = data.get("total_reportes", 0)
         aprob = data.get("tasa_aprobacion", 0) * 100
         score = data.get("score_pct", 0) * 100
-        estado, estado_cls, estado_hint = _estado_competencia(data.get("tasa_aprobacion", 0))
         cells = []
         for lvl in ["0", "1", "2", "3"]:
             count = dist.get(lvl, 0)
@@ -313,13 +328,14 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
                 f'style="--heat:{heat:.2f};background:{LEVEL_COLORS[lvl]}">'
                 f'{count}</span></td>'
             )
+        n_prom = data.get("nivel_promedio", 0)
+        n_key = _promedio_a_nivel(n_prom)
         matrix_rows.append(
             f'<tr>'
             f'<td><strong>{escape(cid)}</strong><small>{escape(data.get("nombre", ""))}</small></td>'
-            f'<td title="{data.get("score_actual", 0)}/{data.get("score_max", 0)} puntos en {data.get("total_reportes", 0)} evaluaciones en esta competencia">{data.get("nivel_promedio", 0):.2f}/3</td>'
+            f'<td title="Promedio {n_prom:.2f}/3 — {data.get("score_actual", 0)}/{data.get("score_max", 0)} puntos en {data.get("total_reportes", 0)} evaluaciones"><i style="background:{LEVEL_COLORS[n_key]};width:9px;height:9px;border-radius:999px;display:inline-block;margin-right:5px"></i>{escape(_promedio_a_label(n_prom))}</td>'
             f'<td><div class="macro-table-meter"><i style="width:{_clamp_pct(aprob):.1f}%"></i></div><b title="{data.get("aprobadas", 0)} de {data.get("total_reportes", 0)} reportes con grado ≥ 2">{aprob:.0f}%</b></td>'
             f'{"".join(cells)}'
-            f'<td><span class="macro-status {estado_cls}" title="{estado_hint}">{estado}</span></td>'
             f'<td><span class="macro-clasif {_clasif_css_class(data.get("tasa_aprobacion", 0))}">{_clasificar_competencia(data.get("tasa_aprobacion", 0))}</span></td>'
             f'<td title="{data.get("score_actual", 0)} de {data.get("score_max", 0)} puntos acumulados en esta competencia">{score:.0f}%</td>'
             f'</tr>'
@@ -331,7 +347,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
         <div class="macro-hero-copy">
           <div class="macro-eyebrow">{escape(tipo_label)} · Cohorte · {g["total_reportes"]} informes</div>
           <h2>{escape(cohort["name"])}</h2>
-          <p>Este panel resume cómo se manifiesta el perfil de egreso en los <strong>{g["total_reportes"]} informes</strong> evaluados de esta cohorte. Muestra qué competencias están consolidadas, cuáles requieren refuerzo y con qué grado de evidencia se acredita cada una.</p>
+          <p>Este panel resume cómo se manifiesta el perfil de egreso en los <strong>{g["total_reportes"]} informes</strong> evaluados de esta cohorte. Muestra qué competencias están evidenciadas, cuáles requieren refuerzo y con qué grado de evidencia se acredita cada una.</p>
         </div>
         <div class="macro-donut-card">
           <div class="macro-donut" style="--score:{score_pct:.1f}">
@@ -344,21 +360,21 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
       <section class="macro-dashboard-grid">
         <div class="macro-color-card red">
           <span>Porcentaje de logro</span>
-          <strong title="{total_aprobadas} de {total_comps} evaluaciones con grado 2 o superior">{aprob_pct:.1f}%</strong>
+          <strong title="Se evaluaron todas las competencias en los {g['total_reportes']} informes: {total_aprobadas} de {total_comps} alcanzaron grado 2 o superior">{aprob_pct:.1f}%</strong>
           <div class="macro-mini-track"><div style="width:{aprob_pct:.1f}%"></div></div>
           <small>Informes que alcanzan al menos grado 2 (Uso concreto) sobre el total evaluado.</small>
         </div>
         <div class="macro-color-card yellow">
           <span>Perfil de egreso cubierto</span>
-          <strong title="{cumplidas} de {len(comp_list)} competencias consolidadas (logro ≥ 70%)">{perfil_pct:.0f}%</strong>
+          <strong title="{cumplidas} de {len(comp_list)} competencias evidenciadas (logro ≥ 70%)">{perfil_pct:.0f}%</strong>
           <div class="macro-mini-track"><div style="width:{perfil_pct:.1f}%"></div></div>
-          <small>{cumplidas} consolidadas · {desarrollo} en desarrollo · {brecha} con brecha</small>
+          <small><span class="macro-mini-pill ok"><i class="ok"></i>{cumplidas} evidenciadas</span> <span class="macro-mini-pill mid"><i class="mid"></i>{desarrollo} parcialmente evidenciadas</span> <span class="macro-mini-pill risk"><i class="risk"></i>{brecha} con escasa evidencia</span></small>
         </div>
         <div class="macro-color-card blue">
           <span>Grado de evidencia promedio</span>
-          <strong title="Puntaje total: {g.get('score_actual', 0)} de {g.get('score_max', 0)} puntos posibles en {total_comps} evaluaciones">{g["nivel_promedio_global"]:.2f}/3</strong>
-          <div class="macro-mini-track"><div style="width:{nivel_pct:.1f}%"></div></div>
-          <small>0 Sin evidencia · 1 Solo teoría · 2 Uso concreto · 3 Dominio técnico</small>
+          <strong title="Entre todas las competencias evaluadas en los {g['total_reportes']} informes: {g.get('score_actual', 0)} de {g.get('score_max', 0)} puntos acumulados">{g["nivel_promedio_global"]:.2f}/3</strong>
+          <div class="macro-mini-track"><div style="width:{nivel_pct:.1f}%;background:{LEVEL_COLORS[_promedio_a_nivel(g['nivel_promedio_global'])]}"></div></div>
+          <small>{''.join(f'<span class="macro-mini-pill" style="background:{_hex_to_rgba(LEVEL_COLORS[lvl], 0.12)};color:{LEVEL_COLORS[lvl]}"><i style="background:{LEVEL_COLORS[lvl]};width:9px;height:9px;border-radius:999px;display:inline-block"></i>{lvl}: {LEVEL_LABELS[lvl]}</span> ' for lvl in ['0','1','2','3'])}</small>
         </div>
         <div class="macro-mini-card">
           <span>Competencias por reforzar</span>
@@ -374,14 +390,14 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
             <p>Cada tarjeta representa una competencia. El color de la barra lateral y la barra de progreso indican qué tan presente está en los informes de la cohorte.</p>
           </div>
           <div class="macro-status-legend">
-            <span><i class="ok"></i>Consolidada (≥ 70%)</span>
-            <span><i class="mid"></i>En desarrollo (50–69%)</span>
-            <span><i class="risk"></i>Brecha prioritaria (&lt; 50%)</span>
+            <span title="La mayoría de los informes demuestra esta competencia de forma consistente (logro ≥ 70%)"><i class="ok"></i>Evidenciada (≥ 70%)</span>
+            <span title="La competencia aparece en varios informes, pero aún no es consistente (logro entre 50% y 69%)"><i class="mid"></i>Parcialmente evidenciada (50–69%)</span>
+            <span title="Existe poca o ninguna evidencia de esta competencia en los informes (logro &lt; 50%)"><i class="risk"></i>Escasa evidencia (&lt; 50%)</span>
           </div>
           <div class="macro-state-descriptions">
-            <span><b>Consolidada</b> — la mayoría de los informes demuestra esta competencia de forma consistente.</span>
-            <span><b>En desarrollo</b> — la competencia aparece en varios informes, pero aún no es consistente.</span>
-            <span><b>Brecha prioritaria</b> — existe poca o ninguna evidencia de esta competencia en los informes.</span>
+            <span><b>Evidenciada</b> — la mayoría de los informes demuestra esta competencia de forma consistente.</span>
+            <span><b>Parcialmente evidenciada</b> — la competencia aparece en varios informes, pero aún no es consistente.</span>
+            <span><b>Escasa evidencia</b> — existe poca o ninguna evidencia de esta competencia en los informes.</span>
           </div>
         </div>
         <div class="macro-comp-grid">{"".join(tiles)}</div>
@@ -415,16 +431,16 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
           </div>
           {line_chart}
           <div class="macro-line-help">
-            <span>Ambas líneas altas → competencia consolidada: se demuestra con frecuencia y profundidad</span>
+            <span>Ambas líneas altas → competencia evidenciada: se demuestra con frecuencia y profundidad</span>
             <span>Línea azul alta y roja media → aparece en muchos informes, pero con evidencia superficial</span>
-            <span>Ambas líneas bajas → brecha prioritaria: pocos informes evidencian la competencia</span>
+            <span>Ambas líneas bajas → escasa evidencia: pocos informes evidencian la competencia</span>
           </div>
         </div>
         <div class="macro-panel macro-distribution-card">
           <div class="macro-panel-title">Distribución del grado de evidencia</div>
           <div class="macro-pie-wrap">
             <div class="macro-ring" style="--n0:{nivel_dist.get("0", 0) / total_comps * 100 if total_comps else 0:.1f};--n1:{nivel_dist.get("1", 0) / total_comps * 100 if total_comps else 0:.1f};--n2:{nivel_dist.get("2", 0) / total_comps * 100 if total_comps else 0:.1f};--n3:{nivel_dist.get("3", 0) / total_comps * 100 if total_comps else 0:.1f}">
-              <div><strong title="{total_comps} evaluaciones en {g['total_reportes']} informes">{total_comps}</strong><span>evaluaciones</span></div>
+              <div><strong title="Total de evaluaciones de todas las competencias en los {g['total_reportes']} informes">{total_comps}</strong><span>evaluaciones</span></div>
             </div>
           </div>
           {_legend_html(nivel_dist, total_comps)}
@@ -433,7 +449,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
 
       <section class="macro-bottom-grid">
         <div class="macro-panel">
-          <div class="macro-panel-title">Competencias consolidadas</div>
+          <div class="macro-panel-title">Competencias evidenciadas</div>
           <p class="macro-panel-note">Competencias con mayor grado de evidencia acumulado. Ordenadas por logro global descendente.</p>
           {''.join(top_rows) if top_rows else '<p>Sin competencias disponibles.</p>'}
         </div>
@@ -462,13 +478,12 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
             <thead>
               <tr>
                 <th>Competencia</th>
-                <th>Grado Ø</th>
+                <th title="Promedio del grado de evidencia: Sin evidencia / Solo teoría / Uso concreto / Dominio técnico">Nivel</th>
                 <th>% Logro</th>
                 <th title="Grado 0: Sin evidencia – la competencia no aparece en el informe"><span style="color:{LEVEL_COLORS["0"]}">{LEVEL_SHORT["0"]}</span></th>
                 <th title="Grado 1: Solo teoría – se mencionan conceptos pero sin aplicación"><span style="color:{LEVEL_COLORS["1"]}">{LEVEL_SHORT["1"]}</span></th>
                 <th title="Grado 2: Uso concreto – evidencia de aplicación durante la práctica"><span style="color:{LEVEL_COLORS["2"]}">{LEVEL_SHORT["2"]}</span></th>
                 <th title="Grado 3: Dominio técnico – evidencia sólida con reflexión y justificación"><span style="color:{LEVEL_COLORS["3"]}">{LEVEL_SHORT["3"]}</span></th>
-                <th>Estado</th>
                 <th>Clasificación</th>
                 <th>Logro %</th>
               </tr>

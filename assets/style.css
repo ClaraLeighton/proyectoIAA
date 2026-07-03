@@ -487,19 +487,24 @@ h1 *, h2 *, h3 *, .uandes-hero-title * {
 .uandes-page-hero-meta {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 12px;
   flex-wrap: wrap;
+  background: var(--uandes-card-bg);
+  border: 1px solid var(--uandes-border);
+  border-radius: 12px;
+  padding: 10px 16px;
+  width: fit-content;
 }
 .uandes-page-hero-meta-item {
-  font-size: 14px;
-  color: var(--uandes-text-secondary);
-  font-weight: 500;
+  font-size: 13px;
+  color: var(--uandes-text);
+  font-weight: 700;
 }
 .uandes-page-hero-meta-divider {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
+  width: 1px;
+  height: 18px;
+  border-radius: 0;
   background: var(--uandes-border);
 }
 .uandes-page-hero-actions {
@@ -800,9 +805,10 @@ h1 *, h2 *, h3 *, .uandes-hero-title * {
   color: #3b82f6;
 }
 .uandes-badge-outline {
-  background: transparent;
-  border: 1px solid var(--uandes-border);
-  color: var(--uandes-text-secondary);
+  background: var(--uandes-red-lighter);
+  border: 1px solid var(--uandes-red);
+  color: var(--uandes-red);
+  font-weight: 800;
 }
 
 /* ─── BUTTONS (Streamlit override + custom) ─── */
@@ -1922,9 +1928,9 @@ div[data-baseweb="notification"] {
 }
 .macro-donut-card p {
   margin-top: 12px;
-  color: var(--uandes-text-secondary);
+  color: var(--uandes-text);
   font-size: 12px;
-  line-height: 1.35;
+  line-height: 1.5;
 }
 .macro-donut {
   width: 172px;
@@ -1952,8 +1958,9 @@ div[data-baseweb="notification"] {
 .macro-color-card.blue { background: var(--bg-blue); }
 .macro-color-card small {
   margin-top: 9px;
-  line-height: 1.35;
-  color: var(--uandes-text-secondary) !important;
+  line-height: 1.5;
+  font-size: 12px;
+  color: var(--uandes-text) !important;
 }
 
 .macro-mini-track {
@@ -2145,12 +2152,17 @@ div[data-baseweb="notification"] {
 .macro-ring strong[title],
 .macro-rank-row em[title],
 .macro-gap-row em[title],
-.macro-legend span[title] {
+.macro-legend span[title],
+.macro-status-legend span[title] {
   cursor: help;
   text-decoration: underline dotted rgba(0,0,0,0.25);
 }
 .macro-matrix-table td[title] {
   cursor: help;
+}
+.macro-matrix-table th[title] {
+  cursor: help;
+  text-decoration: underline dotted rgba(0,0,0,0.25);
 }
 .macro-matrix-table b[title] {
   cursor: help;
@@ -2389,10 +2401,23 @@ div[data-baseweb="notification"] {
   line-height: 1;
 }
 .macro-mini-card p {
-  color: var(--uandes-text-secondary);
+  color: var(--uandes-text);
   font-size: 12px;
-  line-height: 1.35;
+  line-height: 1.5;
 }
+.macro-mini-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.macro-mini-pill.ok { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+.macro-mini-pill.mid { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.macro-mini-pill.risk { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
 
 /* ─── MACRO REFINEMENT: PAGE-NATIVE CARDS ─── */
 .macro-dashboard {
