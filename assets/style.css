@@ -2099,6 +2099,7 @@ div[data-baseweb="notification"] {
 .macro-level-codes span[data-tooltip]:hover::before {
   opacity: 1;
 }
+.macro-level-codes i,
 .macro-status-legend i,
 .macro-legend i {
   width: 9px;
@@ -2292,6 +2293,11 @@ div[data-baseweb="notification"] {
   padding: 10px 12px;
   white-space: nowrap;
 }
+.macro-matrix-table th[title] {
+  cursor: help;
+  border-bottom: 1px dashed rgba(255,255,255,0.3);
+}
+
 .macro-matrix-table td {
   padding: 10px 12px;
   border-bottom: 1px solid var(--uandes-border-light);
@@ -2723,6 +2729,26 @@ div[data-baseweb="notification"] {
 .macro-status-legend span {
   background: var(--uandes-card-bg);
   border: 1px solid var(--uandes-border);
+}
+
+.macro-state-descriptions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--uandes-border-light);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--uandes-text-secondary);
+}
+.macro-state-descriptions span {
+  display: block;
+}
+.macro-state-descriptions b {
+  color: var(--uandes-text);
+  font-weight: 700;
 }
 
 .config-meta-card p {
