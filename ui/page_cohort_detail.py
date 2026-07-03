@@ -150,7 +150,7 @@ def _legend_html(nivel_dist: dict, total: int) -> str:
         count = nivel_dist.get(lvl, 0)
         pct = count / total * 100 if total else 0
         items.append(
-            f'<span><i style="background:{LEVEL_COLORS[lvl]}"></i>'
+            f'<span title="{count} de {total} evaluaciones con grado {lvl}: {LEVEL_LABELS[lvl]}"><i style="background:{LEVEL_COLORS[lvl]}"></i>'
             f'{LEVEL_LABELS[lvl]} <strong>{count}</strong> ({pct:.0f}%)</span>'
         )
     return f'<div class="macro-legend">{"".join(items)}</div>'
@@ -254,6 +254,8 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
     brecha = sum(1 for _, c in comp_list if c.get("tasa_aprobacion", 0) < 0.50)
     perfil_pct = cumplidas / len(comp_list) * 100 if comp_list else 0
 
+    total_aprobadas = nivel_dist.get("2", 0) + nivel_dist.get("3", 0)
+
     sorted_by_score = sorted(comp_list, key=lambda item: item[1].get("score_pct", 0), reverse=True)
     line_chart = _build_line_chart(comp_list)
     bar_chart = _build_bar_chart(comp_list)
@@ -264,7 +266,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
             f'<div class="macro-rank-row">'
             f'<strong>{escape(cid)}</strong>'
             f'<span>{escape(data.get("nombre", "")[:52])}</span>'
-            f'<em>{pct:.0f}%</em>'
+            f'<em title="{data.get("aprobadas", 0)} de {data.get("total_reportes", 0)} reportes con grado ≥ 2">{pct:.0f}%</em>'
             f'</div>'
         )
 
@@ -275,7 +277,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
         weak_rows.append(
             f'<div class="macro-gap-row">'
             f'<div><strong>{escape(cid)}</strong><span>{escape(data.get("nombre", "")[:48])}</span></div>'
-            f'<em>{pct:.0f}% logro</em>'
+            f'<em title="{data.get("aprobadas", 0)} de {data.get("total_reportes", 0)} reportes con grado ≥ 2">{pct:.0f}% logro</em>'
             f'</div>'
         )
 
@@ -284,12 +286,14 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
         aprob = data.get("tasa_aprobacion", 0) * 100
         score = data.get("score_pct", 0) * 100
         estado, estado_cls, _ = _estado_competencia(data.get("tasa_aprobacion", 0))
+        tip_logro = f'{data.get("aprobadas", 0)} de {data.get("total_reportes", 0)} reportes alcanzaron grado 2 (Uso concreto) o superior en esta competencia'
+        tip_dominio = f'Puntaje obtenido: {data.get("score_actual", 0)} de {data.get("score_max", 0)} puntos posibles. Refleja la profundidad promedio de la competencia en toda la cohorte.'
         tiles.append(
             f'<div class="macro-comp-tile {estado_cls}">'
             f'<div class="macro-comp-top"><strong>{escape(cid)}</strong><span>{estado}</span></div>'
             f'<p>{escape(data.get("nombre", ""))}</p>'
             f'<div class="macro-comp-meter"><i style="width:{_clamp_pct(aprob):.1f}%"></i></div>'
-            f'<div class="macro-comp-foot"><span>{aprob:.0f}% logro</span><b>{score:.0f}% dominio</b></div>'
+            f'<div class="macro-comp-foot"><span title="{tip_logro}">{aprob:.0f}% logro</span><b title="{tip_dominio}">{score:.0f}% dominio</b></div>'
             f'</div>'
         )
 
@@ -312,12 +316,12 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
         matrix_rows.append(
             f'<tr>'
             f'<td><strong>{escape(cid)}</strong><small>{escape(data.get("nombre", ""))}</small></td>'
-            f'<td>{data.get("nivel_promedio", 0):.2f}/3</td>'
-            f'<td><div class="macro-table-meter"><i style="width:{_clamp_pct(aprob):.1f}%"></i></div><b>{aprob:.0f}%</b></td>'
+            f'<td title="Promedio de grados alcanzado en esta competencia (escala 0 a 3)">{data.get("nivel_promedio", 0):.2f}/3</td>'
+            f'<td><div class="macro-table-meter"><i style="width:{_clamp_pct(aprob):.1f}%"></i></div><b title="{data.get("aprobadas", 0)} de {data.get("total_reportes", 0)} reportes con grado ≥ 2">{aprob:.0f}%</b></td>'
             f'{"".join(cells)}'
             f'<td><span class="macro-status {estado_cls}" title="{estado_hint}">{estado}</span></td>'
             f'<td><span class="macro-clasif {_clasif_css_class(data.get("tasa_aprobacion", 0))}">{_clasificar_competencia(data.get("tasa_aprobacion", 0))}</span></td>'
-            f'<td>{score:.0f}%</td>'
+            f'<td title="{data.get("score_actual", 0)} de {data.get("score_max", 0)} puntos acumulados en esta competencia">{score:.0f}%</td>'
             f'</tr>'
         )
 
@@ -331,7 +335,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
         </div>
         <div class="macro-donut-card">
           <div class="macro-donut" style="--score:{score_pct:.1f}">
-            <div><strong>{score_pct:.0f}%</strong><span>logro global</span></div>
+            <div><strong title="{g.get('score_actual', 0)} de {g.get('score_max', 0)} puntos acumulados en todas las competencias">{score_pct:.0f}%</strong><span>logro global</span></div>
           </div>
           <p>Suma de grados de evidencia alcanzados dividida por el máximo posible. Refleja qué tan profundo se demuestra el perfil de egreso en la cohorte.</p>
         </div>
@@ -340,25 +344,25 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
       <section class="macro-dashboard-grid">
         <div class="macro-color-card red">
           <span>Porcentaje de logro</span>
-          <strong>{aprob_pct:.1f}%</strong>
+          <strong title="{total_aprobadas} de {total_comps} evaluaciones con grado 2 o superior">{aprob_pct:.1f}%</strong>
           <div class="macro-mini-track"><div style="width:{aprob_pct:.1f}%"></div></div>
           <small>Informes que alcanzan al menos grado 2 (Uso concreto) sobre el total evaluado.</small>
         </div>
         <div class="macro-color-card yellow">
           <span>Perfil de egreso cubierto</span>
-          <strong>{perfil_pct:.0f}%</strong>
+          <strong title="{cumplidas} de {len(comp_list)} competencias consolidadas (logro ≥ 70%)">{perfil_pct:.0f}%</strong>
           <div class="macro-mini-track"><div style="width:{perfil_pct:.1f}%"></div></div>
           <small>{cumplidas} consolidadas · {desarrollo} en desarrollo · {brecha} con brecha</small>
         </div>
         <div class="macro-color-card blue">
           <span>Grado de evidencia promedio</span>
-          <strong data-tooltip="0: Sin evidencia – el informe no menciona ni evidencia la competencia&#10;1: Solo teoría – menciona conceptos pero sin aplicación práctica demostrable&#10;2: Uso concreto – aplica conocimientos, describe resultados, pero sin profundidad técnica&#10;3: Dominio técnico – evalúa alternativas, justifica decisiones y reflexiona sobre el impacto">{g["nivel_promedio_global"]:.2f}/3</strong>
+          <strong title="Puntaje total: {g.get('score_actual', 0)} de {g.get('score_max', 0)} puntos posibles en {total_comps} evaluaciones">{g["nivel_promedio_global"]:.2f}/3</strong>
           <div class="macro-mini-track"><div style="width:{nivel_pct:.1f}%"></div></div>
           <small>0 Sin evidencia · 1 Solo teoría · 2 Uso concreto · 3 Dominio técnico</small>
         </div>
         <div class="macro-mini-card">
           <span>Competencias por reforzar</span>
-          <strong>{brecha}</strong>
+          <strong title="{brecha} competencias con menos del 50% de logro, prioritarias para el plan de mejora">{brecha}</strong>
           <p>competencias con menos del 50% de logro. Son las que presentan menor presencia del perfil de egreso en la cohorte.</p>
         </div>
       </section>
@@ -420,7 +424,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
           <div class="macro-panel-title">Distribución del grado de evidencia</div>
           <div class="macro-pie-wrap">
             <div class="macro-ring" style="--n0:{nivel_dist.get("0", 0) / total_comps * 100 if total_comps else 0:.1f};--n1:{nivel_dist.get("1", 0) / total_comps * 100 if total_comps else 0:.1f};--n2:{nivel_dist.get("2", 0) / total_comps * 100 if total_comps else 0:.1f};--n3:{nivel_dist.get("3", 0) / total_comps * 100 if total_comps else 0:.1f}">
-              <div><strong>{total_comps}</strong><span>evaluaciones</span></div>
+              <div><strong title="{total_comps} evaluaciones en {g['total_reportes']} informes">{total_comps}</strong><span>evaluaciones</span></div>
             </div>
           </div>
           {_legend_html(nivel_dist, total_comps)}
