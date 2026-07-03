@@ -403,6 +403,7 @@ def run_batch(
                 retries_used = attempt + 1
 
         if ev_result:
+            ev_result["competencia_id"] = comp["competencia_id"]
             ev_result["competencia_nombre"] = comp.get("nombre", "")
             ev_result["max_nivel"] = max_level
             ev_result["raw_response"] = raw

@@ -1,3 +1,4 @@
+import re
 import streamlit as st
 from html import escape
 from textwrap import dedent
@@ -29,6 +30,11 @@ def _sort_competencia_id(cid: str):
     return int(digits) if digits else cid
 
 
+def _clean_cid(raw: str) -> str:
+    m = re.match(r"(C\d+)", raw)
+    return m.group(1) if m else raw
+
+
 def _estado_comp(nivel: int, confianza: float) -> tuple[str, str]:
     if nivel >= 2 and confianza >= 0.55:
         return "Cumple", "ok"
@@ -50,10 +56,11 @@ def _micro_detail_chart(preview: list[dict]) -> str:
         confianza = r.get("confianza", 0)
         estado, cls = _estado_comp(nivel, confianza)
         height = 22 + (nivel / max_nivel) * 92
+        clean = _clean_cid(cid)
         bars.append(
-            f'<div class="macro-mini-bar {cls}" title="{escape(cid)} · Nivel {nivel} · {estado}">'
+            f'<div class="macro-mini-bar {cls}" title="{escape(clean)} · Nivel {nivel} · {estado}">'
             f'<i style="height:{height:.1f}px;background:{LEVEL_COLORS.get(nivel, "#8E98A3")}"></i>'
-            f'<strong>N{nivel}</strong><span>{escape(cid)}</span></div>'
+            f'<strong>N{nivel}</strong><span>{escape(clean)}</span></div>'
         )
     return f'<div class="macro-mini-bars">{"".join(bars)}</div>'
 
@@ -117,7 +124,7 @@ def _micro_detail_html(report, preview: list[dict], total: int, aprobadas: int, 
 
 
 def _competency_summary_html(r: dict) -> str:
-    cid = r.get("competencia_id", "")
+    cid = _clean_cid(r.get("competencia_id", ""))
     nivel = int(r.get("nivel", 0))
     nombre = r.get("competencia_nombre", "")
     confianza = r.get("confianza", 0)
