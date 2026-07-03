@@ -58,7 +58,7 @@ def _micro_detail_chart(preview: list[dict]) -> str:
         height = 22 + (nivel / max_nivel) * 92
         clean = _clean_cid(cid)
         bars.append(
-            f'<div class="macro-mini-bar {cls}" title="{escape(clean)} · Nivel {nivel} · {estado}">'
+            f'<div class="macro-mini-bar {cls}" title="{escape(clean)}: {escape(r.get("competencia_nombre", ""))} · Grado {nivel} ({LEVEL_LABELS.get(nivel, "")}) · {estado}">'
             f'<i style="height:{height:.1f}px;background:{LEVEL_COLORS.get(nivel, "#8E98A3")}"></i>'
             f'<strong>N{nivel}</strong><span>{escape(clean)}</span></div>'
         )
@@ -74,7 +74,7 @@ def _micro_detail_html(report, preview: list[dict], total: int, aprobadas: int, 
 
     pie_vars = ";".join(f"--n{k}:{(dist.get(k, 0) / total * 100 if total else 0):.1f}" for k in [0, 1, 2, 3])
     legend = "".join(
-        f'<span><i style="background:{LEVEL_COLORS[lvl]}"></i>'
+        f'<span title="{LEVEL_LABELS[lvl]}: {dist.get(lvl, 0)} competencia(s) en este nivel"><i style="background:{LEVEL_COLORS[lvl]}"></i>'
         f'{LEVEL_LABELS[lvl]} <strong>{dist.get(lvl, 0)}</strong></span>'
         for lvl, label in LEVEL_LABELS.items()
     )
@@ -88,16 +88,16 @@ def _micro_detail_html(report, preview: list[dict], total: int, aprobadas: int, 
           <p>Lectura micro del perfil de egreso: nivel alcanzado por competencia, evidencia usada y confianza del evaluador.</p>
         </div>
         <div class="micro-detail-score">
-          <strong>{aprob_pct:.0f}%</strong>
+          <strong title="Competencias que alcanzaron grado 2 (Uso concreto) o superior sobre el total evaluado en este informe">{aprob_pct:.0f}%</strong>
           <span>competencias aprobadas</span>
         </div>
       </section>
       <section class="micro-detail-metrics">
-        <div><strong>{total}</strong><span>competencias evaluadas</span></div>
-        <div><strong>{aprobadas}</strong><span>aprobadas</span></div>
-        <div><strong>{no_aprobadas}</strong><span>por revisar</span></div>
-        <div><strong>{nivel_prom:.2f}/3</strong><span>nivel promedio</span></div>
-        <div><strong>{confianza_prom * 100:.0f}%</strong><span>confianza promedio</span></div>
+        <div><strong title="Total de competencias evaluadas en este informe">{total}</strong><span>competencias evaluadas</span></div>
+        <div><strong title="Alcanzaron grado 2 (Uso concreto) o superior">{aprobadas}</strong><span>aprobadas</span></div>
+        <div><strong title="Tienen grado 0 (Sin evidencia) o 1 (Solo teoría)">{no_aprobadas}</strong><span>por revisar</span></div>
+        <div><strong title="Promedio del grado de evidencia entre todas las competencias del informe">{nivel_prom:.2f}/3</strong><span>nivel promedio</span></div>
+        <div><strong title="Certeza promedio del evaluador al asignar los niveles de logro">{confianza_prom * 100:.0f}%</strong><span>confianza promedio</span></div>
       </section>
       <section class="micro-detail-analytics compact">
         <div class="macro-panel macro-bars-card">
@@ -147,13 +147,13 @@ def _competency_summary_html(r: dict) -> str:
     <div class="micro-comp-tile-detail {cls}">
       <div class="micro-comp-tile-top">
         <strong class="comp-id">{escape(cid)}</strong>
-        <span class="comp-status-badge">{badge(escape(estado), badge_variant)}</span>
+        <span class="comp-status-badge" title="Estado: {escape(estado)}">{badge(escape(estado), badge_variant)}</span>
       </div>
       <h5>{escape(nombre)}</h5>
-      <div class="micro-comp-tile-meter"><i style="width:{pct:.1f}%"></i></div>
+      <div class="micro-comp-tile-meter"><i style="width:{pct:.1f}%" title="Grado {nivel}: {LEVEL_LABELS.get(nivel, '')}"></i></div>
       <div class="micro-comp-tile-foot">
-        <span>{label}</span>
-        <span>{confianza_text}</span>
+        <span title="Grado {nivel} — {LEVEL_LABELS.get(nivel, '')}">{label}</span>
+        <span title="Certeza del evaluador al asignar este nivel">{confianza_text}</span>
       </div>
       <details class="micro-comp-inline-detail">
         <summary>Ver detalle</summary>
