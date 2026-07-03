@@ -1,9 +1,11 @@
 import streamlit as st
 import base64
+import io
 from pipeline.cohorts import get_cohort, compute_cohort_macro, update_cohort_name
 from pipeline.cohorts import remove_report_from_cohort
 from pipeline.persistence import load_report
 from pipeline.reportes_export import build_export_index, exportar_excel_multi_hoja
+from openpyxl import load_workbook
 from ui.components import page_hero, badge, metric_grid, action_tiles
 from ui.icons import chart, upload, download, trash
 
@@ -98,10 +100,29 @@ def render():
     st.subheader("Acciones Rápidas")
     
     export_index = build_export_index(cohort.get("report_ids", []))
-    excel_io = exportar_excel_multi_hoja(export_index)
-    excel_b64 = base64.b64encode(excel_io.getvalue()).decode()
-    
-    col_tiles = st.columns(4)
+    excel_full = exportar_excel_multi_hoja(export_index)
+
+    excel_full.seek(0)
+    wb = load_workbook(excel_full)
+    if "Reporte de Procesamiento" in wb.sheetnames:
+        del wb["Reporte de Procesamiento"]
+    out = io.BytesIO()
+    wb.save(out)
+    out.seek(0)
+    excel_resultados_b64 = base64.b64encode(out.getvalue()).decode()
+
+    excel_full.seek(0)
+    wb2 = load_workbook(excel_full)
+    keep = "Reporte de Procesamiento"
+    for sn in list(wb2.sheetnames):
+        if sn != keep:
+            del wb2[sn]
+    out2 = io.BytesIO()
+    wb2.save(out2)
+    out2.seek(0)
+    excel_procesamiento_b64 = base64.b64encode(out2.getvalue()).decode()
+
+    col_tiles = st.columns(5)
     with col_tiles[0]:
         action_tiles([{
             "icon": chart(28, 28, "currentColor"),
@@ -123,14 +144,24 @@ def render():
     with col_tiles[2]:
         action_tiles([{
             "icon": download(28, 28, "currentColor"),
-            "title": "Exportar Excel",
-            "desc": "Descargar resultados validados",
+            "title": "Exportar Resultados",
+            "desc": "Resumen macro y evaluación",
             "tone": "tone-yellow",
-            "download": excel_b64,
-            "filename": f"{cohort['name']}.xlsx"
+            "download": excel_resultados_b64,
+            "filename": f"{cohort['name']}_resultados.xlsx"
         }])
 
     with col_tiles[3]:
+        action_tiles([{
+            "icon": download(28, 28, "currentColor"),
+            "title": "Descargar reporte de procesamiento",
+            "desc": "Solo datos técnicos",
+            "tone": "tone-yellow",
+            "download": excel_procesamiento_b64,
+            "filename": f"{cohort['name']}_procesamiento.xlsx"
+        }])
+
+    with col_tiles[4]:
         action_tiles([{
             "icon": trash(28, 28, "currentColor"),
             "title": "Eliminar Informes",

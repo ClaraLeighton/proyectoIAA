@@ -3,7 +3,10 @@ from html import escape
 from textwrap import dedent
 
 from pipeline.cohorts import get_cohort, compute_cohort_macro
+from pipeline.persistence import load_report
 from pipeline.reportes_export import build_export_index, exportar_excel_multi_hoja
+from openpyxl import load_workbook
+import io
 from ui.components import page_hero, empty_state, badge
 
 
@@ -34,6 +37,96 @@ def _estado_competencia(tasa_aprobacion: float) -> tuple[str, str, str]:
     if tasa_aprobacion >= 0.50:
         return "En desarrollo", "mid", "La competencia aparece en varios informes, pero aún no de forma consistente (50–69% alcanza grado 2 o superior)."
     return "Brecha prioritaria", "risk", "Existe poca o ninguna evidencia de esta competencia en los informes evaluados (< 50% alcanza grado 2 o superior)."
+
+
+def _clasificar_competencia(tasa_aprobacion: float) -> str:
+    if tasa_aprobacion >= 0.70:
+        return "Evidenciada"
+    if tasa_aprobacion >= 0.50:
+        return "Parcialmente evidenciada"
+    return "Escasa evidencia"
+
+
+def _clasif_css_class(tasa_aprobacion: float) -> str:
+    c = _clasificar_competencia(tasa_aprobacion)
+    return "evidenciada" if c == "Evidenciada" else "parcial" if "Parcialmente" in c else "escasa"
+
+
+def _generate_macro_only_excel(report_ids: list[str]) -> io.BytesIO:
+    data = exportar_excel_multi_hoja(build_export_index(report_ids))
+    wb = load_workbook(data)
+    if "Reporte de Procesamiento" in wb.sheetnames:
+        del wb["Reporte de Procesamiento"]
+    out = io.BytesIO()
+    wb.save(out)
+    out.seek(0)
+    return out
+
+
+def _generate_processing_excel(cohort_name: str, report_ids: list[str]) -> io.BytesIO:
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Font, PatternFill
+
+    output = io.BytesIO()
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Reporte de Procesamiento"
+
+    headers = [
+        "Informe", "Tiempo procesamiento (min)", "Modelo embeddings",
+        "Proveedor", "Cantidad chunks", "Cantidad embeddings",
+        "Competencias evaluadas", "Secciones detectadas",
+        "Secciones ausentes", "Logs disponibles",
+    ]
+    ws.append(headers)
+    hf = PatternFill("solid", fgColor="E7E5E4")
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+        cell.fill = hf
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    for rid in report_ids:
+        report = load_report(rid)
+        if not report or report.estado != "completado":
+            continue
+
+        ps = report.pipeline_state
+        rp = report.reporte_procesamiento
+        tiempos = rp.get("tiempos", {})
+        trazas = rp.get("trazabilidad_competencias", [])
+        c2 = ps.get("c2", {})
+        c3 = ps.get("c3", {})
+        c4 = ps.get("c4", {})
+
+        ws.append([
+            report.pdf_name,
+            tiempos.get("T_procesamiento_automatico_min", ""),
+            c4.get("reporte", {}).get("modelo_embeddings", ""),
+            c4.get("reporte", {}).get("proveedor", ""),
+            c3.get("reporte", {}).get("total_chunks", ""),
+            c4.get("reporte", {}).get("chunks_embeddings", ""),
+            len(trazas),
+            ", ".join(c2.get("secciones_detectadas", [])),
+            ", ".join(c2.get("secciones_ausentes", [])),
+            f"Ajustes: {len(rp.get('historial_ajustes', []))}" if rp.get("historial_ajustes") else "Sin ajustes",
+        ])
+
+    ws.freeze_panes = "A2"
+    for col, w in enumerate(["A:44", "B:24", "C:32", "D:18", "E:18", "F:20", "G:22", "H:44", "I:44", "J:30"], 1):
+        ws.column_dimensions[chr(64 + col) if col <= 26 else None].width = int(w.split(":")[1])  # simplified
+    ws.column_dimensions["A"].width = 44
+    ws.column_dimensions["B"].width = 24
+    ws.column_dimensions["C"].width = 32
+    ws.column_dimensions["D"].width = 18
+    ws.column_dimensions["E"].width = 18
+    ws.column_dimensions["F"].width = 20
+    ws.column_dimensions["G"].width = 22
+    ws.column_dimensions["H"].width = 44
+    ws.column_dimensions["I"].width = 44
+    ws.column_dimensions["J"].width = 30
+    wb.save(output)
+    output.seek(0)
+    return output
 
 
 def _build_stacked_bar(dist: dict, total: int) -> str:
@@ -223,6 +316,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
             f'<td><div class="macro-table-meter"><i style="width:{_clamp_pct(aprob):.1f}%"></i></div><b>{aprob:.0f}%</b></td>'
             f'{"".join(cells)}'
             f'<td><span class="macro-status {estado_cls}" title="{estado_hint}">{estado}</span></td>'
+            f'<td><span class="macro-clasif {_clasif_css_class(data.get("tasa_aprobacion", 0))}">{_clasificar_competencia(data.get("tasa_aprobacion", 0))}</span></td>'
             f'<td>{score:.0f}%</td>'
             f'</tr>'
         )
@@ -371,6 +465,7 @@ def _macro_dashboard_html(cohort, tipo_label, g, nivel_dist, total_comps, compet
                 <th title="Grado 2: Uso concreto – evidencia de aplicación durante la práctica"><span style="color:{LEVEL_COLORS["2"]}">{LEVEL_SHORT["2"]}</span></th>
                 <th title="Grado 3: Dominio técnico – evidencia sólida con reflexión y justificación"><span style="color:{LEVEL_COLORS["3"]}">{LEVEL_SHORT["3"]}</span></th>
                 <th>Estado</th>
+                <th>Clasificación</th>
                 <th>Logro %</th>
               </tr>
             </thead>
@@ -430,7 +525,7 @@ def render():
         unsafe_allow_html=True,
     )
 
-    col_a, col_b, col_c = st.columns(3)
+    col_a, col_b, col_c, col_d = st.columns(4)
     with col_a:
         if st.button("Resultados Micro", use_container_width=True):
             st.session_state["page"] = "cohort_reports"
@@ -441,12 +536,20 @@ def render():
             st.session_state["page"] = "upload"
             st.rerun()
     with col_c:
-        export_index = build_export_index(cohort.get("report_ids", []))
         st.download_button(
             "Exportar Excel",
-            data=exportar_excel_multi_hoja(export_index),
+            data=_generate_macro_only_excel(cohort.get("report_ids", [])),
             file_name=f"{cohort['name']}_resultados.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             key=f"macro_export_{cohort_id}",
+            use_container_width=True,
+        )
+    with col_d:
+        st.download_button(
+            "Descargar reporte de procesamiento",
+            data=_generate_processing_excel(cohort["name"], cohort.get("report_ids", [])),
+            file_name=f"Reporte de Procesamiento - {cohort['name']}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            key=f"procesamiento_export_{cohort_id}",
             use_container_width=True,
         )

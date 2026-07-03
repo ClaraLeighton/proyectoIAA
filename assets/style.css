@@ -2369,6 +2369,19 @@ div[data-baseweb="notification"] {
 .macro-status.ok { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
 .macro-status.mid { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
 .macro-status.risk { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+.macro-clasif {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.macro-clasif.evidenciada { background: rgba(34, 197, 94, 0.12); color: #16a34a; }
+.macro-clasif.parcial { background: rgba(245, 158, 11, 0.12); color: #d97706; }
+.macro-clasif.escasa { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
 .macro-right-rail {
   display: flex;
   flex-direction: column;

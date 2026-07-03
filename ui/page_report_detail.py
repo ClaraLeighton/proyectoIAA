@@ -3,6 +3,8 @@ from html import escape
 from textwrap import dedent
 from pipeline.persistence import load_report
 from pipeline.reportes_export import exportar_reporte_individual
+from openpyxl import load_workbook
+import io
 from ui.components import page_hero, badge
 from ui.icons import search, file_text
 
@@ -285,7 +287,7 @@ def render():
                             else:
                                 st.error(f"No se pudo re-evaluar {cid}.")
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         if st.button("Ver informe", use_container_width=True):
             from ui.page_cohort_reports import _show_pdf_preview_modal
@@ -293,19 +295,43 @@ def render():
     with col2:
         buf = exportar_reporte_individual(report_id)
         if buf.getvalue():
+            wb = load_workbook(buf)
+            if "Reporte de Procesamiento" in wb.sheetnames:
+                del wb["Reporte de Procesamiento"]
+            out = io.BytesIO()
+            wb.save(out)
+            out.seek(0)
             st.download_button(
                 "Descargar .xlsx",
-                data=buf,
+                data=out,
                 file_name=f"{report.pdf_name.replace('.pdf', '')}_evaluacion.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True,
             )
     with col3:
+        buf2 = exportar_reporte_individual(report_id)
+        if buf2.getvalue():
+            wb2 = load_workbook(buf2)
+            keep = "Reporte de Procesamiento"
+            for sn in list(wb2.sheetnames):
+                if sn != keep:
+                    del wb2[sn]
+            out2 = io.BytesIO()
+            wb2.save(out2)
+            out2.seek(0)
+            st.download_button(
+                "Descargar reporte de procesamiento",
+                data=out2,
+                file_name=f"{report.pdf_name.replace('.pdf', '')}_procesamiento.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                use_container_width=True,
+            )
+    with col4:
         if st.button("Volver a informes", use_container_width=True):
             st.session_state.pop("selected_report_id", None)
             st.session_state["page"] = "cohort_reports"
             st.rerun()
-    with col4:
+    with col5:
         if st.button("Volver a cohorte", use_container_width=True):
             st.session_state.pop("selected_report_id", None)
             st.session_state["page"] = "cohort_config"
